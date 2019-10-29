@@ -13,10 +13,84 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Archivos de encabezado\Interface">
+      <UniqueIdentifier>{54126bed-24f3-4cc5-bd0d-8ed6a5d825ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Render">
+      <UniqueIdentifier>{766c3e01-9123-4616-9635-02bdcd78809c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{9c3bab54-f5c1-47f3-bf21-3d829c53fb1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Render">
+      <UniqueIdentifier>{80b2e321-19b7-46e6-a96f-fedb1b2fab2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Camara">
+      <UniqueIdentifier>{3ca9fbe3-7afa-46d0-b916-dd71629e3cc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Input">
+      <UniqueIdentifier>{29c82e05-6b71-4af2-8e5d-72387cb29a9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Camara">
+      <UniqueIdentifier>{9e64b31d-bff2-4d47-bddb-02583f9e2cfd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Input">
+      <UniqueIdentifier>{7bd9c604-67b0-4196-9881-5e74e7d71347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="Input\InputManager.cpp">
+      <Filter>Archivos de origen\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Camara\Camara.cpp">
+      <Filter>Archivos de origen\Camara</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Model.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\NodoScene.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Render.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Scene.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\SceneObj.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Interface\ISceneClass.h">
+      <Filter>Archivos de encabezado\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Camara.h">
+      <Filter>Archivos de encabezado\Camara</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\InputManager.h">
+      <Filter>Archivos de encabezado\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Camara\Camara.h">
+      <Filter>Archivos de encabezado\Camara</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Model.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\NodoScene.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Render.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Scene.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\SceneObj.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

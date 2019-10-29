@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-// - IMPORTANTE: El include de Glew debe llamarse siempre ANTES de llamar al de GLFW.
+
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm.hpp>
@@ -78,7 +78,7 @@ int main() {
 	// Liberamos recursos.
 }
 
-
+// --------------------------- FUNCIONES ----------------------------
 
 // - Esta función callback será llamada cada vez que el área de dibujo OpenGL deba ser redibujada.
 void window_refresh_callback(GLFWwindow* window) {
