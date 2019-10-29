@@ -1,10 +1,6 @@
 #include "Scene.h"
 
-Scene::Scene() {}
-
-Scene::~Scene() {}
-
-void Scene::InitObjs()
+Scene::Scene() 
 {
 	this->verticesPrueba = {
 				glm::vec3(-0.5f, -0.5f, 0.0f),  //Izq
@@ -13,6 +9,12 @@ void Scene::InitObjs()
 	};
 
 	this->triangulo = new Render(verticesPrueba);
+}
+
+Scene::~Scene() {}
+
+void Scene::InitObjs()
+{
 	this->triangulo->Init();
 }
 

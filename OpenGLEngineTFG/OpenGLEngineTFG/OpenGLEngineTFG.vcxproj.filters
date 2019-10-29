@@ -37,6 +37,12 @@
     <Filter Include="Archivos de origen\Input">
       <UniqueIdentifier>{7bd9c604-67b0-4196-9881-5e74e7d71347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Loaders">
+      <UniqueIdentifier>{48d05e93-e651-4504-9e4c-e7460a7084c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Loaders">
+      <UniqueIdentifier>{03db9263-a1e7-4c5e-9de0-b3a0c43d93ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,6 +72,9 @@
     <ClCompile Include="PagShaderProgram.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="Loaders\lodepng.cpp">
+      <Filter>Archivos de origen\Loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
@@ -94,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="PagShaderProgram.h">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Loaders\lodepng.h">
+      <Filter>Archivos de encabezado\Loaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

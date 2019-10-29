@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Camara\Camara.cpp" />
     <ClCompile Include="Input\InputManager.cpp" />
+    <ClCompile Include="Loaders\lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PagShaderProgram.cpp" />
     <ClCompile Include="Render\Model.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="Camara\Camara.h" />
     <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="Interface\ISceneClass.h" />
+    <ClInclude Include="Loaders\lodepng.h" />
     <ClInclude Include="PagShaderProgram.h" />
     <ClInclude Include="Render\Model.h" />
     <ClInclude Include="Render\NodoScene.h" />

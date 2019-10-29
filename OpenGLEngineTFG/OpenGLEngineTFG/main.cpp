@@ -87,6 +87,7 @@ int main() {
 
 	// Liberamos recursos.
 	delete basicShader;
+	delete escenaInicial;
 }
 
 // --------------------------- FUNCIONES ----------------------------

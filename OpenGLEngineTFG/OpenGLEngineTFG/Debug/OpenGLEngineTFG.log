@@ -1,1 +1,4 @@
-﻿  OpenGLEngineTFG.vcxproj -> C:\Users\Alex\source\repos\AlexTFG\OpenGLEngineTFG\Debug\OpenGLEngineTFG.exe
+﻿  Render.cpp
+C:\Users\Alex\source\repos\AlexTFG\OpenGLEngineTFG\OpenGLEngineTFG\Render\Render.h(1,9): warning C4068: pragma desconocida
+C:\Users\Alex\source\repos\AlexTFG\OpenGLEngineTFG\OpenGLEngineTFG\Render\Render.cpp(99,20): warning C4018: '<': no coinciden signed/unsigned
+  OpenGLEngineTFG.vcxproj -> C:\Users\Alex\source\repos\AlexTFG\OpenGLEngineTFG\Debug\OpenGLEngineTFG.exe

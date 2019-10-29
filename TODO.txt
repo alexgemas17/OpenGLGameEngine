@@ -1,0 +1,9 @@
+Reestructurar
+	- Render -> Reestructurar Init() para cargar según: vertices, textura, normales, etc...
+	- Scene -> Modificar Loop para meter deltaTime
+
+Añadir:
+	- Crear la clase model para situarlo en el espacio y aplicar transformaciones
+	- Crear cámara y movimiento básico
+	- Crear InputManager y movimiento básico
+	- Crear NodoScene para tener jerarquias
