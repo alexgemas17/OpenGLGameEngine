@@ -43,6 +43,9 @@
 *.user
 *.sln.docstates
 
+# Visual Studio 2015/2017/2019 cache/options directory
+.vs/
+
 # Build results
 [Dd]ebug/
 [Rr]elease/
