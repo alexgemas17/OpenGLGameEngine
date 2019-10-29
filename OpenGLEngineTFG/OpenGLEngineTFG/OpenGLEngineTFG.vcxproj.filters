@@ -63,13 +63,13 @@
     <ClCompile Include="Render\SceneObj.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
+    <ClCompile Include="PagShaderProgram.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
       <Filter>Archivos de encabezado\Interface</Filter>
-    </ClInclude>
-    <ClInclude Include="Camara.h">
-      <Filter>Archivos de encabezado\Camara</Filter>
     </ClInclude>
     <ClInclude Include="Input\InputManager.h">
       <Filter>Archivos de encabezado\Input</Filter>
@@ -92,5 +92,16 @@
     <ClInclude Include="Render\SceneObj.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
+    <ClInclude Include="PagShaderProgram.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\BasicShader-frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BasicShader-vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

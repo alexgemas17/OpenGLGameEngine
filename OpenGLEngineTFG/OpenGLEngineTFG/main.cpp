@@ -5,6 +5,9 @@
 #include <GLFW\glfw3.h>
 #include <glm.hpp>
 
+#include "PagShaderProgram.h"
+#include "Render/Scene.h"
+
 void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -61,21 +64,29 @@ int main() {
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
+	PagShaderProgram* basicShader = new PagShaderProgram();
+	basicShader->createShaderProgram("Shaders/BasicShader");
+
 	// Iniciamos la escena
-	// Scene->Init();
+	Scene* escenaInicial = new Scene();
+	escenaInicial->InitObjs();
 
 	// ---- RENDER LOOP ----
 	while (!glfwWindowShouldClose(window)) {
 		//Inputs
 
-		//Render
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		//Update
+		escenaInicial->UpdateObjs();
 
+		//Render
+		escenaInicial->DrawObjs(basicShader);
+		
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	// Liberamos recursos.
+	delete basicShader;
 }
 
 // --------------------------- FUNCIONES ----------------------------

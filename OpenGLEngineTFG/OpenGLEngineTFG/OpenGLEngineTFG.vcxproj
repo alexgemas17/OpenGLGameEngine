@@ -132,6 +132,7 @@
     <ClCompile Include="Camara\Camara.cpp" />
     <ClCompile Include="Input\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PagShaderProgram.cpp" />
     <ClCompile Include="Render\Model.cpp" />
     <ClCompile Include="Render\NodoScene.cpp" />
     <ClCompile Include="Render\Render.cpp" />
@@ -139,15 +140,19 @@
     <ClCompile Include="Render\SceneObj.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camara.h" />
     <ClInclude Include="Camara\Camara.h" />
     <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="Interface\ISceneClass.h" />
+    <ClInclude Include="PagShaderProgram.h" />
     <ClInclude Include="Render\Model.h" />
     <ClInclude Include="Render\NodoScene.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Render\Scene.h" />
     <ClInclude Include="Render\SceneObj.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\BasicShader-frag.glsl" />
+    <None Include="Shaders\BasicShader-vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
