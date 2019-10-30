@@ -30,7 +30,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
 	// Creamos la ventana de la app.
-	GLFWwindow* window = glfwCreateWindow(1024, 576, "TFG UJA ENGIE", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1024, 576, "TFG UJA ENGINE", nullptr, nullptr);
 
 	if (window == nullptr) {
 		std::cout << "ERROR al abrir la ventada de GLFW" << std::endl;

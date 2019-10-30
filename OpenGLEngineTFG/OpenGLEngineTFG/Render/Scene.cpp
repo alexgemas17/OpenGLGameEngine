@@ -2,23 +2,40 @@
 
 Scene::Scene() 
 {
-	glPrimitiveRestartIndex(0xFFFF);
+	glPrimitiveRestartIndex(0xFFFFFFFF);
 	glEnable(GL_PRIMITIVE_RESTART);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 
 	std::vector<glm::vec3> puntos = {
 		glm::vec3(0.5f,  0.5f, 0.0f),
 		glm::vec3(0.5f, -0.5f, 0.0f),
 		glm::vec3(-0.5f, -0.5f, 0.0f),
+		glm::vec3(-0.5f, 0.5f, 0.0f)
 	};
 
+	/*std::vector<glm::vec3> puntos;
+	puntos.push_back(glm::vec3(0.5f, 0.5f, 0.0f));
+	puntos.push_back(glm::vec3(0.5f, -0.5f, 0.0f));
+	puntos.push_back(glm::vec3(-0.5f, -0.5f, 0.0f));
+	puntos.push_back(glm::vec3(-0.5f, 0.5f, 0.0f));*/
+
 	std::vector<GLuint> index = {
-		0,1,2
+		0,2,1,3,2,0,0xFFFFFFFF
 	};
+
+	/*std::vector<GLuint> index;
+	index.push_back(0);
+	index.push_back(2);
+	index.push_back(1);
+	index.push_back(3);
+	index.push_back(2);
+	index.push_back(0);
+	index.push_back(0xFFFFFFFF);*/
 
 	std::vector<glm::vec3> color = {
 		glm::vec3(1.0f, 0.0f, 0.0f),

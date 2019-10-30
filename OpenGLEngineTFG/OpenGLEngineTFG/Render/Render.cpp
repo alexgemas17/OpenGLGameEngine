@@ -28,7 +28,10 @@ Render::~Render()
 
 //------------------------------- PUBLIC -------------------------------
 void Render::Init() {
-	algo();
+	//algo();
+	InitVAO();
+	InitVBO();
+	InitIBO();
 }
 
 void Render::Draw(PagShaderProgram* shader)
@@ -38,10 +41,10 @@ void Render::Draw(PagShaderProgram* shader)
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
 
-	glDrawElements(GL_POINT, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 ImageData Render::loadImage(std::string url) {
@@ -95,27 +98,28 @@ void Render::algo()
 
 	//Generamos el IBO
 	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ARRAY_BUFFER, IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->model.index.size(), this->model.index.data(), GL_STATIC_DRAW);
 }
 
 void Render::InitVAO() {
 	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &IBO);
 }
 
 void Render::InitVBO() {
 	//Enlazamos las siguientes funciones al VAO
 	glBindVertexArray(VAO);
 
-	//Generamos el VBO
-	glGenBuffers(1, &VBO);
+	// Enlazamos el VBO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * this->model.puntos.size(), this->model.puntos.data(), GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec3), ((GLubyte*)NULL + (0)));
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * this->model.puntos.size(), this->model.puntos.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -125,13 +129,12 @@ void Render::InitIBO() {
 	//Enlazamos las siguientes funciones al VAO
 	glBindVertexArray(VAO);
 
-	//Generamos el VBO
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ARRAY_BUFFER, IBO);
+	//Enlazamos el VBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->model.index.size(), &this->model.index[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->model.index.size(), this->model.index.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
