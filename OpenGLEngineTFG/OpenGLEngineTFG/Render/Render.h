@@ -36,10 +36,10 @@ private:
 
 	unsigned int VAO;
 	unsigned int VBO;
-
 	unsigned int IBO;
-
 	unsigned int texture;
+
+	unsigned int CoordTexturaBuffer;
 
 	TypeRender typeRender;
 
@@ -55,6 +55,7 @@ private:
 	void InitVAO();
 	void InitVBO();
 	void InitIBO();
+	void InitCoordTextura();
 	void InitTextura();
 
 	void algo();

@@ -27,16 +27,20 @@ Render::~Render()
 }
 
 //------------------------------- PUBLIC -------------------------------
-void Render::Init() {
-	//algo();
+void Render::Init()
+{
 	InitVAO();
 	InitVBO();
 	InitIBO();
+	InitCoordTextura();
+	InitTextura();
 }
 
 void Render::Draw(PagShaderProgram* shader)
 {
 	shader->use();
+
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
@@ -103,13 +107,16 @@ void Render::algo()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->model.index.size(), this->model.index.data(), GL_STATIC_DRAW);
 }
 
-void Render::InitVAO() {
+void Render::InitVAO() 
+{
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &CoordTexturaBuffer);
 	glGenBuffers(1, &IBO);
 }
 
-void Render::InitVBO() {
+void Render::InitVBO() 
+{
 	//Enlazamos las siguientes funciones al VAO
 	glBindVertexArray(VAO);
 
@@ -125,7 +132,8 @@ void Render::InitVBO() {
 	glBindVertexArray(0);
 }
 
-void Render::InitIBO() {
+void Render::InitIBO() 
+{
 	//Enlazamos las siguientes funciones al VAO
 	glBindVertexArray(VAO);
 
@@ -138,7 +146,25 @@ void Render::InitIBO() {
 	glBindVertexArray(0);
 }
 
-void Render::InitTextura() {
+void Render::InitCoordTextura()
+{
+	//Enlazamos las siguientes funciones al VAO
+	glBindVertexArray(VAO);
+
+	// Enlazamos el CoordTexturaBuffer
+	glBindBuffer(GL_ARRAY_BUFFER, CoordTexturaBuffer);
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec2), ((GLubyte*)NULL + (0)));
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * this->model.coordenada_textura.size(), this->model.coordenada_textura.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void Render::InitTextura() 
+{
 	//Enlazamos las siguientes funciones al VAO
 	glBindVertexArray(VAO);
 

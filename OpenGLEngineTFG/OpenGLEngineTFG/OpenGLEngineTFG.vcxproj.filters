@@ -115,5 +115,11 @@
     <None Include="Shaders\BasicShader-vert.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\BasicShaderTexture-frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BasicShaderTexture-vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
