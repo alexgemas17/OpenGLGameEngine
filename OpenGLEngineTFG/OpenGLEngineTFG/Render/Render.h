@@ -11,6 +11,13 @@ struct ImageData {
 	unsigned width, height;
 };
 
+struct ModelData {
+	std::vector<glm::vec3> puntos;
+	std::vector<GLuint> index;
+	std::vector<glm::vec2> coordenada_textura;
+	std::string urlImg;
+};
+
 enum TypeRender { Puntos, PuntosTextura, PuntosNormalesTextura, PuntosNormalesTexturaBump};
 
 class Render {
@@ -30,7 +37,7 @@ private:
 	unsigned int VAO;
 	unsigned int VBO;
 
-	unsigned int EBO;
+	unsigned int IBO;
 
 	unsigned int texture;
 
@@ -40,14 +47,15 @@ private:
 	unsigned int* indices;
 	ImageData data;
 	std::string urlImg;
+	ModelData model;
 
 	ImageData loadImage(std::string url);
 
 	//Inits según el tipo que se haya especificado
 	void InitVAO();
-	void InitPuntos();
+	void InitVBO();
+	void InitIBO();
 	void InitTextura();
 
-	void oldInit();
-	std::vector<glm::vec3> puntos;
+	void algo();
 };

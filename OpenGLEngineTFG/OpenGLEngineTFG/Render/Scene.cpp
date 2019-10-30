@@ -2,27 +2,22 @@
 
 Scene::Scene() 
 {
-	float vertices[] = {
-		// positions          // colors           // texture coords
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-	};
-	unsigned int indices[] = {
-		0, 1, 3, // first triangle
-		1, 2, 3  // second triangle
-	};
+	glPrimitiveRestartIndex(0xFFFF);
+	glEnable(GL_PRIMITIVE_RESTART);
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_BLEND);
 
 	std::vector<glm::vec3> puntos = {
 		glm::vec3(0.5f,  0.5f, 0.0f),
 		glm::vec3(0.5f, -0.5f, 0.0f),
 		glm::vec3(-0.5f, -0.5f, 0.0f),
-		glm::vec3(-0.5f,  0.5f, 0.0f)
 	};
 
 	std::vector<GLuint> index = {
-		0,1,2,3
+		0,1,2
 	};
 
 	std::vector<glm::vec3> color = {
@@ -39,9 +34,6 @@ Scene::Scene()
 		glm::vec2(0.0f, 1.0f)
 	};
 
-
-
-	//this->triangulo = new Render(vertices, indices, "..\\Data\\Texturas\\wall.png");
 	this->triangulo = new Render(puntos, index, color, coordenada_textura,"..\\Data\\Texturas\\wall.png");
 }
 
@@ -61,7 +53,7 @@ void Scene::UpdateObjs()
 void Scene::DrawObjs(PagShaderProgram* shader)
 {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	this->triangulo->Draw(shader);
 }
