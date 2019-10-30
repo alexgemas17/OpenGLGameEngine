@@ -11,12 +11,17 @@ struct ImageData {
 	unsigned width, height;
 };
 
+enum TypeRender { Puntos, PuntosTextura, PuntosNormalesTextura, PuntosNormalesTexturaBump};
+
 class Render {
 public:
-	Render(std::vector<glm::vec3> _vertices);
+	Render(float vertices[], unsigned int indices[]);
+	Render(float vertices[], unsigned int indices[], std::string urlImg);
+
 	~Render();
 
 	void Init();
+
 	void Draw(PagShaderProgram* shader);
 
 private:
@@ -28,5 +33,17 @@ private:
 
 	unsigned int texture;
 
+	TypeRender typeRender;
+
+	float* vertices;
+	unsigned int* indices;
+	ImageData data;
+	std::string urlImg;
+
 	ImageData loadImage(std::string url);
+
+	//Inits según el tipo que se haya especificado
+	void InitVAO();
+	void InitPuntos();
+	void InitTextura();
 };
