@@ -17,6 +17,7 @@ class Render {
 public:
 	Render(float vertices[], unsigned int indices[]);
 	Render(float vertices[], unsigned int indices[], std::string urlImg);
+	Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> color, std::vector<glm::vec2> coordenada_textura, std::string urlImg);
 
 	~Render();
 
@@ -46,4 +47,7 @@ private:
 	void InitVAO();
 	void InitPuntos();
 	void InitTextura();
+
+	void oldInit();
+	std::vector<glm::vec3> puntos;
 };

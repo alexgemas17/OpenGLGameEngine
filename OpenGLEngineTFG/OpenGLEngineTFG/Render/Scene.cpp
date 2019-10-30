@@ -14,7 +14,35 @@ Scene::Scene()
 		1, 2, 3  // second triangle
 	};
 
-	this->triangulo = new Render(vertices, indices, "..\\Data\\Texturas\\wall.png");
+	std::vector<glm::vec3> puntos = {
+		glm::vec3(0.5f,  0.5f, 0.0f),
+		glm::vec3(0.5f, -0.5f, 0.0f),
+		glm::vec3(-0.5f, -0.5f, 0.0f),
+		glm::vec3(-0.5f,  0.5f, 0.0f)
+	};
+
+	std::vector<GLuint> index = {
+		0,1,2,3
+	};
+
+	std::vector<glm::vec3> color = {
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 1.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 0.0f)
+	};
+
+	std::vector<glm::vec2> coordenada_textura = {
+		glm::vec2(1.0f, 1.0f),
+		glm::vec2(1.0f, 0.0f),
+		glm::vec2(0.0f, 0.0f),
+		glm::vec2(0.0f, 1.0f)
+	};
+
+
+
+	//this->triangulo = new Render(vertices, indices, "..\\Data\\Texturas\\wall.png");
+	this->triangulo = new Render(puntos, index, color, coordenada_textura,"..\\Data\\Texturas\\wall.png");
 }
 
 Scene::~Scene() {}
