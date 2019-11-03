@@ -65,7 +65,8 @@ int main() {
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	PagShaderProgram* basicShader = new PagShaderProgram();
-	basicShader->createShaderProgram("Shaders/BasicShaderTexture");
+	//basicShader->createShaderProgram("Shaders/BasicShaderTexture");
+	basicShader->createShaderProgram("Shaders/BasicShader");
 
 	// Iniciamos la escena
 	Scene* escenaInicial = new Scene();
