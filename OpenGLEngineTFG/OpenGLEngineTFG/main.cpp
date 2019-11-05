@@ -78,17 +78,6 @@ int main() {
 	// ---- RENDER LOOP ----
 	while (!glfwWindowShouldClose(window)) {
 		//Inputs
-		if (InputManager::getInstance()->getInputButtonDown(Key_B)) {
-			std::cout << "Se ha pulsado A " << std::endl;
-		}
-		
-		if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_ALT)) {
-			std::cout << "Se ha pulsado left shift " << std::endl;
-		}
-
-		if (InputManager::getInstance()->getInputButtonDown(Key_ENTER)) {
-			std::cout << "Se ha pulsado enter " << std::endl;
-		}
 
 		//Update
 		escenaInicial->UpdateObjs();

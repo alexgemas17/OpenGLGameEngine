@@ -1,4 +1,4 @@
-#pragma one
+#pragma once
 
 #include <vector>
 #include <glm.hpp>
@@ -22,6 +22,7 @@ enum TypeRender { Puntos, PuntosTextura, PuntosNormalesTextura, PuntosNormalesTe
 
 class Render {
 public:
+	Render();
 	Render(float vertices[], unsigned int indices[]);
 	Render(float vertices[], unsigned int indices[], std::string urlImg);
 	Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> color, std::vector<glm::vec2> coordenada_textura, std::string urlImg);

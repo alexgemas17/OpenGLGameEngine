@@ -2,6 +2,8 @@
 
 #include "../Loaders/lodepng.h"
 
+Render::Render(): VAO(0), VBO(0), IBO(0), texture(0) {}
+
 Render::Render(float _vertices[], unsigned int _indices[]):
 	VAO(0), VBO(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
 	typeRender(Puntos)
@@ -38,7 +40,7 @@ void Render::Init()
 
 void Render::Draw(PagShaderProgram* shader)
 {
-	shader->use();
+	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 

@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include "../Input/InputManager.h"
+
 Scene::Scene() 
 {
 	glPrimitiveRestartIndex(0xFFFFFFFF);
@@ -77,25 +79,34 @@ Scene::Scene()
 	};
 
 	this->triangulo = new Render(puntos, index, color, coordenada_textura,"..\\Data\\Texturas\\wall.png");
+
+	triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
+	triangulo2->Scale(0.5f, 0.5f, 0.5f);
 }
 
 Scene::~Scene() {}
 
 void Scene::InitObjs()
 {
-	this->triangulo->Init();
+	this->triangulo2->Init();
+	//this->triangulo->Init();
 }
 
 /* Recorremos los objetos que necesiten actualizar su estado */
 void Scene::UpdateObjs()
 {
-	//TODO
+	//Inputs de prueba
+	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
+		triangulo2->Rotate(45.0f, glm::vec3(0,0,1));
+	}
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)
 {
+	//"Limpiamos" los buffers
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	this->triangulo->Draw(shader);
+	//Dibujamos los objetos
+	this->triangulo2->DrawObj(shader);
 }

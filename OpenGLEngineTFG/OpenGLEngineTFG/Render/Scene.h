@@ -5,6 +5,7 @@
 #include <GL\glew.h>
 
 #include "../PagShaderProgram.h"
+#include "SceneObj.h"
 
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
@@ -24,5 +25,6 @@ private:
 	//---------- VARIABLES DE PRUEBA --------------
 	std::vector<glm::vec3> verticesPrueba;
 	Render* triangulo;
+	SceneObj* triangulo2;
 };
 

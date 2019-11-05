@@ -1,10 +1,8 @@
 #include "InputManager.h"
 
-#include <iostream>
-
 InputManager* InputManager::instance = nullptr;
 
-InputManager::InputManager(): buttonUp(false), buttonDown(false), keyCode(-1) {}
+InputManager::InputManager(): buttonUp(false), buttonDown(false), keyCode(-1), lag(false) {}
 
 InputManager::~InputManager() {}
 
@@ -19,8 +17,13 @@ InputManager* InputManager::getInstance()
 
 bool InputManager::getInputButtonDown(KeyCode key)
 {
-	if (key == this->keyCode && this->buttonDown) return true;
-	return false;
+	if (key == this->keyCode && this->buttonDown && !lag) {
+		lag = true;
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 bool InputManager::getInputButtonUp(KeyCode key)
@@ -38,6 +41,7 @@ bool InputManager::getInputAnyButton(KeyCode key)
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS) {
+		lag = false;
 		this->keyCode = key;
 		this->buttonDown = true;
 

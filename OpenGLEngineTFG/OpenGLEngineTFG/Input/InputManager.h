@@ -1,4 +1,4 @@
-#pragma one
+#pragma once
 
 #include <vector>
 #include <glm.hpp>
@@ -65,6 +65,7 @@ private:
 	// Instancia singleton.
 	static InputManager* instance;
 
+	bool lag;
 	bool buttonUp;
 	bool buttonDown;
 	int keyCode;
