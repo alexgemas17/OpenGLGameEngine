@@ -7,6 +7,7 @@
 
 #include "PagShaderProgram.h"
 #include "Render/Scene.h"
+#include "Input/InputManager.h"
 
 void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -55,10 +56,12 @@ int main() {
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
+	InputManager::getInstance();
 
 	// Registramos los callbacks
 	glfwSetWindowRefreshCallback(window, window_refresh_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	//glfwSetKeyCallback(window, key_callback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
@@ -75,10 +78,21 @@ int main() {
 	// ---- RENDER LOOP ----
 	while (!glfwWindowShouldClose(window)) {
 		//Inputs
+		if (InputManager::getInstance()->getInputButtonDown(Key_B)) {
+			std::cout << "Se ha pulsado A " << std::endl;
+		}
+		
+		if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_ALT)) {
+			std::cout << "Se ha pulsado left shift " << std::endl;
+		}
+
+		if (InputManager::getInstance()->getInputButtonDown(Key_ENTER)) {
+			std::cout << "Se ha pulsado enter " << std::endl;
+		}
 
 		//Update
 		escenaInicial->UpdateObjs();
-
+		
 		//Render
 		escenaInicial->DrawObjs(basicShader);
 		
@@ -92,34 +106,27 @@ int main() {
 }
 
 // --------------------------- FUNCIONES ----------------------------
-
-// - Esta función callback será llamada cada vez que el área de dibujo OpenGL deba ser redibujada.
 void window_refresh_callback(GLFWwindow* window) {
 	//Llamamos a la función correspodiente a las acciones al refrescar la ventana.
 	//PagRenderer::getInstance()->refreshCallback();
 
-	// - GLFW usa un doble buffer para que no haya parpadeo. Esta orden
-	// intercambia el buffer back (que se ha estado dibujando) por el
-	// que se mostraba hasta ahora front.
 	glfwSwapBuffers(window);
 }
-// - Esta función callback será llamada cada vez que se cambie el tamaño del área de dibujo OpenGL.
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	//PagRenderer::getInstance()->size_callback(width, height);
 
 	window_refresh_callback(window);
 }
-// - Esta función callback será llamada cada vez que se pulse una tecla dirigida al área de dibujo OpenGL.
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	}
+	//Actualizamos los estados del Input Manager
+	InputManager::getInstance()->key_callback(window, key, scancode, action, mods);
 
 	window_refresh_callback(window);
 }
 
-// - Esta función callback será llamada cada vez que se pulse algún botón del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
 	if (action == GLFW_PRESS) {
 		//PagRenderer::getInstance()->ratonPress(button);
@@ -129,13 +136,11 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	}
 }
 
-// - Esta función callback será llamada cada vez que se mueva la rueda del ratón sobre el área de dibujo OpenGL.
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	//PagRenderer::getInstance()->scroll_callback(xoffset, yoffset);
 	window_refresh_callback(window);
 }
 
-// - Esta función callback será llamada cada vez que se mueva el ratón sobre el área de dibujo OpenGL.
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
