@@ -20,7 +20,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader)
 	this->Draw(shader);
 }
 
-void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4 modelMatrix)
+void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4 &modelMatrix)
 {
 	//Especificamos que vamos a usar el shader que nos han pasado.
 	shader->use();

@@ -78,15 +78,18 @@ Scene::Scene()
 		glm::vec2(0.0f, 1.0f)
 	};
 
-	this->triangulo = new Render(puntos, index, color, coordenada_textura,"..\\Data\\Texturas\\wall.png");
+	//this->triangulo = new Render(puntos, index, color, coordenada_textura,"..\\Data\\Texturas\\wall.png");
+	SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
+	triangulo1->Scale(0.5f, 0.5f, 0.5f);
 
-	triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
+	SceneObj *triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
 	triangulo2->Scale(0.5f, 0.5f, 0.5f);
 
 	this->nodo = new NodoScene();
+	nodo->addObj(triangulo1);
 	
 	NodoScene *level1 = new NodoScene();
-	level1->Translate(1.5f, 1.0f, 1.0f);
+	level1->Translate(0.6f, -0.5f, 0.0f);
 	level1->addObj(triangulo2);
 
 	nodo->addNodo(level1);
@@ -96,8 +99,7 @@ Scene::~Scene() {}
 
 void Scene::InitObjs()
 {
-	this->triangulo2->Init();
-	//this->triangulo->Init();
+	this->nodo->InitObjs();
 }
 
 /* Recorremos los objetos que necesiten actualizar su estado */
@@ -105,11 +107,11 @@ void Scene::UpdateObjs()
 {
 	//Inputs de prueba
 	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
-		triangulo2->Rotate(45.0f, glm::vec3(0,0,1));
+		nodo->Translate(0.5f, 0.0f, 0.0f);
 	}
 
 	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
-		triangulo2->Translate(1.5f,1.0f,1.0f);
+		nodo->Translate(-0.5f,0.0f,0.0f);
 	}
 }
 
@@ -120,6 +122,5 @@ void Scene::DrawObjs(PagShaderProgram* shader)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Dibujamos los objetos
-	//this->triangulo2->DrawObj(shader);
 	this->nodo->DrawObjs(shader);
 }

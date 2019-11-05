@@ -25,8 +25,6 @@ private:
 
 	//---------- VARIABLES DE PRUEBA --------------
 	std::vector<glm::vec3> verticesPrueba;
-	Render* triangulo;
-	SceneObj* triangulo2;
 	NodoScene* nodo;
 };
 
