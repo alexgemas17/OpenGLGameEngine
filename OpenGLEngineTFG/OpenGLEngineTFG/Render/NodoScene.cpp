@@ -1,4 +1,5 @@
 #include "NodoScene.h"
+#include <gtc/matrix_transform.hpp>
 
 NodoScene::NodoScene(): Model() {}
 NodoScene::~NodoScene() {}
@@ -15,7 +16,15 @@ void NodoScene::addObj(SceneObj* obj)
 
 void NodoScene::DrawObjs(PagShaderProgram* shader)
 {
+	// DATOS CÁMARA BORRAR
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+	// DATOS VENTANA -> ¿TENER CÁMARA?
+	glm::mat4 projection = glm::perspective(glm::radians(45.0f), 1024.0f / 576.0f, 0.1f, 100.0f);
+
 	glm::mat4 model = this->getModelMatrix();
+	model = projection * view * model;
 	DrawObjsRecursive(shader, this, model);
 }
 
@@ -29,7 +38,7 @@ void NodoScene::UpdateObjs()
 	UpdateObjsRecursive(this);
 }
 
-/* PRIVATE FUNCIONS */
+/* --------------------- PRIVATE FUNCIONS ---------------------*/
 void NodoScene::InitObjsRecursive(NodoScene* nodo)
 {
 	if (nodo->nodos.empty()) {
@@ -54,7 +63,7 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 
 void NodoScene::UpdateObjsRecursive(NodoScene* nodo)
 {
-
+	//TODO
 }
 
 void NodoScene::DrawObjsRecursive(PagShaderProgram* shader, NodoScene* nodo, glm::mat4 &modelMatrix)

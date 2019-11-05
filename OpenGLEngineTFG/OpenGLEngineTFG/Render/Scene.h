@@ -22,9 +22,7 @@ public:
 	void DrawObjs(PagShaderProgram* shader);
 
 private:
-
-	//---------- VARIABLES DE PRUEBA --------------
-	std::vector<glm::vec3> verticesPrueba;
+	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
 	NodoScene* nodo;
 };
 

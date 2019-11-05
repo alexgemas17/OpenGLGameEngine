@@ -52,23 +52,23 @@ Scene::Scene()
 	};
 
 	std::vector<GLuint> index = {
-		2,0,5,0xFFFFFFFF,
-		5,0,1,0xFFFFFFFF,
+		4,0,5,4, 0xFFFFFFFF,
+		5,0,1,5, 0xFFFFFFFF,
 
-		0,2,1,0xFFFFFFFF,
-		1,2,3,0xFFFFFFFF,
+		0,2,1,0, 0xFFFFFFFF,
+		1,2,3,1, 0xFFFFFFFF,
 
-		5,7,4,0xFFFFFFFF,
-		4,7,6,0xFFFFFFFF,
+		5,7,4,5, 0xFFFFFFFF,
+		4,7,6,4, 0xFFFFFFFF,
 
-		4,6,0,0xFFFFFFFF,
-		0,6,2,0xFFFFFFFF,
+		4,6,0,4, 0xFFFFFFFF,
+		0,6,2,0, 0xFFFFFFFF,
 
-		1,3,5,0xFFFFFFFF,
-		5,3,7,0xFFFFFFFF,
+		1,3,5,1, 0xFFFFFFFF,
+		5,3,7,5, 0xFFFFFFFF,
 
-		2,6,3,0xFFFFFFFF,
-		3,6,7,0xFFFFFFFF
+		2,6,3,2, 0xFFFFFFFF,
+		3,6,7,3, 0xFFFFFFFF
 	};
 
 	std::vector<glm::vec2> coordenada_textura = {
@@ -78,20 +78,25 @@ Scene::Scene()
 		glm::vec2(0.0f, 1.0f)
 	};
 
-	//this->triangulo = new Render(puntos, index, color, coordenada_textura,"..\\Data\\Texturas\\wall.png");
+	// ----- Objeto 1 ----- 
 	SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
 	triangulo1->Scale(0.5f, 0.5f, 0.5f);
+	triangulo1->Rotate(45.0f, glm::vec3(0,1,0));
+	triangulo1->Rotate(25.0f, glm::vec3(1, 0, 0));
 
+	// ----- Objeto 2 ----- 
 	SceneObj *triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
 	triangulo2->Scale(0.5f, 0.5f, 0.5f);
+	triangulo2->Rotate(45.0f, glm::vec3(0, 0, 1));
 
-	this->nodo = new NodoScene();
-	nodo->addObj(triangulo1);
-	
+	// ----- Nodo nivel 1 ----- 
 	NodoScene *level1 = new NodoScene();
 	level1->Translate(0.6f, -0.5f, 0.0f);
 	level1->addObj(triangulo2);
 
+	// ----- Nodo Raiz ----- 
+	this->nodo = new NodoScene();
+	nodo->addObj(triangulo1);
 	nodo->addNodo(level1);
 }
 
@@ -113,6 +118,8 @@ void Scene::UpdateObjs()
 	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
 		nodo->Translate(-0.5f,0.0f,0.0f);
 	}
+
+	nodo->Rotate((float)glfwGetTime() * 0.2, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)

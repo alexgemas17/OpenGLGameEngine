@@ -18,19 +18,19 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 int main() {
 
-	// Iniciamos GLFW
+	//  -------------------- Iniciamos GLFW -------------------- 
 	if (glfwInit() != GLFW_TRUE) {
 		std::cout << "ERROR al inicializar GLFW" << std::endl;
 		return -1;
 	}
 
-	// Configuramos GLFW
+	//  -------------------- Configuramos GLFW -------------------- 
 	glfwWindowHint(GLFW_SAMPLES, 4); // Activa antialiasing con 4 muestras.
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-	// Creamos la ventana de la app.
+	//  -------------------- Creamos la ventana de la app -------------------- 
 	GLFWwindow* window = glfwCreateWindow(1024, 576, "TFG UJA ENGINE", nullptr, nullptr);
 
 	if (window == nullptr) {
@@ -38,11 +38,9 @@ int main() {
 		glfwTerminate();
 		return -2;
 	}
-
-	// Hace que la ventana que se pasa como argumento use el contexto de GLFW cuyas características se han definido previamente.
 	glfwMakeContextCurrent(window);
 
-	// Iniciamos GLEW
+	//  -------------------- Iniciamos GLEW -------------------- 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK) {
 		std::cout << "Failed to initialize GLEW" << std::endl;
@@ -50,34 +48,33 @@ int main() {
 		return -3;
 	}
 
-	// Vemos las propiedades de la máquina
+	//  -------------------- Info de la gráfica  -------------------- 
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VENDOR) << std::endl;
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-	InputManager::getInstance();
-
-	// Registramos los callbacks
+	// -------------------- Registramos los callbacks -------------------- 
 	glfwSetWindowRefreshCallback(window, window_refresh_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//glfwSetKeyCallback(window, key_callback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
+	// -------------------- Creamos los shaders -------------------- 
 	PagShaderProgram* basicShader = new PagShaderProgram();
 	//basicShader->createShaderProgram("Shaders/BasicShaderTexture");
 	basicShader->createShaderProgram("Shaders/BasicShader");
 
-	// Iniciamos la escena
+	// -------------------- Creamos la escena --------------------  
 	Scene* escenaInicial = new Scene();
 	escenaInicial->InitObjs();
 
-	// ---- RENDER LOOP ----
+	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
 		//Inputs
+		// Se obtienen los inputs desde el callback.
 
 		//Update
 		escenaInicial->UpdateObjs();
@@ -89,7 +86,7 @@ int main() {
 		glfwPollEvents();
 	}
 
-	// Liberamos recursos.
+	// -------------------- Liberamos recursos --------------------  
 	delete basicShader;
 	delete escenaInicial;
 }
