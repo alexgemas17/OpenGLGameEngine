@@ -16,6 +16,7 @@ public:
 	~SceneObj();
 
 	void DrawObj(PagShaderProgram* shader);
+	void DrawObj(PagShaderProgram* shader, glm::mat4 modelMatrix);
 
 private:
 	std::vector<glm::vec3> puntos;

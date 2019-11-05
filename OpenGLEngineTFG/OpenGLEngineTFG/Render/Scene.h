@@ -6,6 +6,7 @@
 
 #include "../PagShaderProgram.h"
 #include "SceneObj.h"
+#include "NodoScene.h"
 
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
@@ -26,5 +27,6 @@ private:
 	std::vector<glm::vec3> verticesPrueba;
 	Render* triangulo;
 	SceneObj* triangulo2;
+	NodoScene* nodo;
 };
 

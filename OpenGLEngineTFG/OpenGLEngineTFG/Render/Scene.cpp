@@ -82,6 +82,14 @@ Scene::Scene()
 
 	triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
 	triangulo2->Scale(0.5f, 0.5f, 0.5f);
+
+	this->nodo = new NodoScene();
+	
+	NodoScene *level1 = new NodoScene();
+	level1->Translate(1.5f, 1.0f, 1.0f);
+	level1->addObj(triangulo2);
+
+	nodo->addNodo(level1);
 }
 
 Scene::~Scene() {}
@@ -99,6 +107,10 @@ void Scene::UpdateObjs()
 	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
 		triangulo2->Rotate(45.0f, glm::vec3(0,0,1));
 	}
+
+	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
+		triangulo2->Translate(1.5f,1.0f,1.0f);
+	}
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)
@@ -108,5 +120,6 @@ void Scene::DrawObjs(PagShaderProgram* shader)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Dibujamos los objetos
-	this->triangulo2->DrawObj(shader);
+	//this->triangulo2->DrawObj(shader);
+	this->nodo->DrawObjs(shader);
 }
