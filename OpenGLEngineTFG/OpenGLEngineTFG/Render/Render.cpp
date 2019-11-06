@@ -31,7 +31,6 @@ Render::~Render()
 //------------------------------- PUBLIC -------------------------------
 void Render::Init()
 {
-	std::cout << "Init Obj " << std::endl;
 	InitVAO();
 	InitVBO();
 	InitIBO();

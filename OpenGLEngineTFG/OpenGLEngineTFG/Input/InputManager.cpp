@@ -38,6 +38,11 @@ bool InputManager::getInputAnyButton(KeyCode key)
 	return false;
 }
 
+bool InputManager::isAnyButtonPressed()
+{
+	return this->buttonDown;
+}
+
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS) {

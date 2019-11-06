@@ -18,7 +18,7 @@ public:
 
 	void InitObjs();
 	void UpdateObjs();
-	void DrawObjs(PagShaderProgram* shader);
+	void DrawObjs(PagShaderProgram* shader, glm::mat4 matrixVP);
 
 private:
 	std::vector<NodoScene*> nodos;

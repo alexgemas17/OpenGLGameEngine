@@ -15,15 +15,25 @@ public:
 	void SetProjection(float newWidth, float newHeight);
 	void moveCamara(float xPosition, float yPosition);
 
+	/* Movimiento de la cámara */
+	void truck(float value);					//Hacia delante/atrás
+	void dolly(float value);					//Hacia delante/atrás
+	void boom_crane(float value);				//Hacia arriba/abajo
+
 	/* Getters */
 	glm::mat4 getView();
 	glm::mat4 getProjection();
-	glm::mat4 getVP();
+	glm::mat4 getMatrixViewProjection();
 
 private:
 	// Matrices para el render
 	glm::mat4 mView;
 	glm::mat4 mProjection;
+
+	//Sistema Coordenadas nuv
+	glm::vec3 n;
+	glm::vec3 u;
+	glm::vec3 v;
 
 	//Datos de la cámara (Posición, a donde mira y vector de arriba)
 	glm::vec3 vecPositionCamera;

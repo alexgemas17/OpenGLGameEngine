@@ -57,6 +57,9 @@ public:
 	/* Devuelve verdadero si la tecla que se ha pasado sin importar si está presionada o no */
 	bool getInputAnyButton(KeyCode key);
 
+	/* Devuelve verdadero si alguna tecla, sin importal cual, se ha pulsado */
+	bool isAnyButtonPressed();
+
 	/* Obtiene qué tecla se ha pulsado y almaneca los distintos estasdos de la tecla (pulsado, soltado, etc..) */
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 

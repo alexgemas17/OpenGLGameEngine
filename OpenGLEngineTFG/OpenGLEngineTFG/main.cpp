@@ -9,6 +9,15 @@
 #include "Render/Scene.h"
 #include "Input/InputManager.h"
 
+const float FOV = 45.0f;
+const int WIDHT = 1024;
+const int HEIGHT = 576;
+const float ZNEAR = 0.1f;
+const float ZFAR = 100.0f;
+
+Scene* world; 
+PagShaderProgram* basicShader;
+
 void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -31,7 +40,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
 	//  -------------------- Creamos la ventana de la app -------------------- 
-	GLFWwindow* window = glfwCreateWindow(1024, 576, "TFG UJA ENGINE", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDHT, HEIGHT, "TFG UJA ENGINE", nullptr, nullptr);
 
 	if (window == nullptr) {
 		std::cout << "ERROR al abrir la ventada de GLFW" << std::endl;
@@ -48,6 +57,8 @@ int main() {
 		return -3;
 	}
 
+	glViewport(0, 0, WIDHT, HEIGHT);
+
 	//  -------------------- Info de la gráfica  -------------------- 
 	std::cout << glGetString(GL_RENDERER) << std::endl;
 	std::cout << glGetString(GL_VENDOR) << std::endl;
@@ -63,13 +74,14 @@ int main() {
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	// -------------------- Creamos los shaders -------------------- 
-	PagShaderProgram* basicShader = new PagShaderProgram();
+	basicShader = new PagShaderProgram();
 	//basicShader->createShaderProgram("Shaders/BasicShaderTexture");
 	basicShader->createShaderProgram("Shaders/BasicShader");
 
 	// -------------------- Creamos la escena --------------------  
-	Scene* escenaInicial = new Scene();
-	escenaInicial->InitObjs();
+	world = new Scene();
+	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
+	world->InitObjs();
 
 	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
@@ -77,30 +89,30 @@ int main() {
 		// Se obtienen los inputs desde el callback.
 
 		//Update
-		escenaInicial->UpdateObjs();
+		world->UpdateObjs();
 		
 		//Render
-		escenaInicial->DrawObjs(basicShader);
+		world->DrawObjs(basicShader);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	// -------------------- Liberamos recursos --------------------  
+	delete world;
 	delete basicShader;
-	delete escenaInicial;
 }
 
 // --------------------------- FUNCIONES ----------------------------
 void window_refresh_callback(GLFWwindow* window) {
 	//Llamamos a la función correspodiente a las acciones al refrescar la ventana.
-	//PagRenderer::getInstance()->refreshCallback();
+	world->DrawObjs(basicShader);
 
 	glfwSwapBuffers(window);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	//PagRenderer::getInstance()->size_callback(width, height);
+	world->framebuffer_size_callback(width, height);
 
 	window_refresh_callback(window);
 }
@@ -123,13 +135,16 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	//PagRenderer::getInstance()->scroll_callback(xoffset, yoffset);
+	world->scroll_callback(xoffset, yoffset);
 	window_refresh_callback(window);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
+	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	//PagRenderer::getInstance()->cursor_position_callback(xpos, ypos);
+
+	//world->cursor_position_callback(xpos, ypos);
+
 	window_refresh_callback(window);
 }

@@ -11,17 +11,60 @@ Camara::Camara(float fov, int width, int height, float zNear, float zFar): mView
 	this->yaw = -15.0;
 	this->pitch = -70.0;
 
-	this->mProjection = glm::perspective( glm::radians(fov), width / float(height), zNear, zFar);
+	this->mProjection = glm::perspective( glm::radians(fov), float(width) / float(height), zNear, zFar);
 
 	// Parsear desde Data/Config??
 	this->vecPositionCamera = glm::vec3(0.0f, 0.0f, -3.0f);
-	this->vecLookAt = glm::vec3(0.0f, 0.0f, 10.0f);
+	this->vecLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->vecUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, vecUp);
 }
 
 Camara::~Camara() {}
+
+/* Movimiento de la cámara */
+void Camara::truck(float value)
+{
+	this->n = normalize(vecPositionCamera - vecLookAt);
+	n *= value;
+
+	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
+	this->v = normalize(cross(u, n));
+
+	vecPositionCamera += n;
+	vecLookAt += n;
+
+	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, v);
+}
+
+void Camara::dolly(float value)
+{
+	this->n = normalize(vecPositionCamera - vecLookAt);
+	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
+	this->v = normalize(cross(u, n));
+
+	u *= value;
+
+	vecPositionCamera += u;
+	vecLookAt += u;
+
+	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, v);
+}
+
+void Camara::boom_crane(float value)
+{
+	this->n = normalize(vecPositionCamera - vecLookAt);
+	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
+	this->v = normalize(cross(u, n));
+
+	v *= value;
+
+	vecPositionCamera += v;
+	vecLookAt += v;
+
+	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, vecUp);
+}
 
 
 void Camara::moveCamara(float xPosition, float yPosition)
@@ -30,46 +73,57 @@ void Camara::moveCamara(float xPosition, float yPosition)
 	this->lastX = xPosition;
 	this->lastY = yPosition;
 
-	// Obtenemos el yaw y pitch.
-	this->yaw += (xPosition - this->lastX) * 0.05;
-	this->pitch += (this->lastY - yPosition) * 0.05;
+	// Obtenemos el yaw y pitch. (Rotación en 'x' e 'y' respectivamente)
+	this->yaw += (xPosition - this->lastX) * 0.05f;
+	this->pitch += (this->lastY - yPosition) * 0.05f;
 
-
+	// Para que no se de la vuelta si superas dicho parámetros.
 	if (pitch > 89.0f)
 		pitch = 89.0f;
 	if (pitch < -89.0f)
 		pitch = -89.0f;
 
 	// Spherical coordinates (r=1).
-	n.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-	n.y = sin(glm::radians(pitch));
-	n.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
+	this->n.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
+	this->n.y = sin(glm::radians(pitch));
+	this->n.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
 
 	this->n = normalize(n);
 	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
 	this->v = normalize(cross(u, n));
-	this->vecLookAt = vecPositionCamera + n;
+	this->vecLookAt = this->vecPositionCamera + this->n;
 
-	this->View = glm::lookAt(vecPositionCamera, vecLookAt, v);
+	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, v);
 }
 
 /* Comprueba si se ha pulsado las teclas para actualizar su estado*/
 void Camara::UpdateCamera()
 {
-	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
-		// TODO
-	}
+	if (InputManager::getInstance()->isAnyButtonPressed()) {
 
-	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
-		// TODO
-	}
+		if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
+			this->dolly(0.2f);
+		}
 
-	if (InputManager::getInstance()->getInputButtonDown(Key_W)) {
-		// TODO
-	}
+		if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
+			this->dolly(-0.2f);
+		}
 
-	if (InputManager::getInstance()->getInputButtonDown(Key_S)) {
-		// TODO
+		if (InputManager::getInstance()->getInputButtonDown(Key_W)) {
+			this->truck(-0.2f);
+		}
+
+		if (InputManager::getInstance()->getInputButtonDown(Key_S)) {
+			this->truck(0.2f);
+		}
+
+		if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_CONTROL)) {
+			this->boom_crane(0.2f);
+		}
+
+		if (InputManager::getInstance()->getInputButtonDown(Key_SPACE)) {
+			this->boom_crane(-0.2f);
+		}
 	}
 }
 
@@ -87,10 +141,10 @@ glm::mat4 Camara::getView()
 
 glm::mat4 Camara::getProjection()
 {
-	return this->getProjection;
+	return this->mProjection;
 }
 
-glm::mat4 Camara::getVP()
+glm::mat4 Camara::getMatrixViewProjection()
 {
 	return this->mProjection * this->mView;
 }

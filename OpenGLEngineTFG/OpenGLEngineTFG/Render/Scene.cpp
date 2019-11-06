@@ -2,7 +2,7 @@
 
 #include "../Input/InputManager.h"
 
-Scene::Scene() 
+Scene::Scene()
 {
 	glPrimitiveRestartIndex(0xFFFFFFFF);
 	glEnable(GL_PRIMITIVE_RESTART);
@@ -107,19 +107,26 @@ void Scene::InitObjs()
 	this->nodo->InitObjs();
 }
 
+void Scene::InitCamara(float fov, int width, int height, float zNear, float zFar)
+{
+	this->camara = new Camara(fov, width, height, zNear, zFar);
+}
+
 /* Recorremos los objetos que necesiten actualizar su estado */
 void Scene::UpdateObjs()
 {
+	camara->UpdateCamera();
+
 	//Inputs de prueba
-	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
+	/*if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
 		nodo->Translate(0.5f, 0.0f, 0.0f);
 	}
 
 	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
 		nodo->Translate(-0.5f,0.0f,0.0f);
-	}
+	}*/
 
-	nodo->Rotate((float)glfwGetTime() * 0.2, glm::vec3(0.0f, 1.0f, 0.0f));
+	nodo->Rotate((float)glfwGetTime() * 0.2f, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)
@@ -129,5 +136,27 @@ void Scene::DrawObjs(PagShaderProgram* shader)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Dibujamos los objetos
-	this->nodo->DrawObjs(shader);
+	this->nodo->DrawObjs(shader, camara->getMatrixViewProjection());
+}
+
+/* Funciones callbacks */
+void Scene::framebuffer_size_callback(int width, int height)
+{
+	glViewport(0, 0, width, height);
+	this->camara->SetProjection(width, height);
+}
+
+void Scene::mouse_button_callback(int button, int action, int mods)
+{
+	//TODO
+}
+
+void Scene::cursor_position_callback(double xpos, double ypos)
+{
+	this->camara->moveCamara(xpos, ypos);
+}
+
+void Scene::scroll_callback(double xoffset, double yoffset)
+{
+	//TODO
 }

@@ -26,7 +26,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4 &modelMatrix)
 	shader->use();
 
 	//Metemos los Uniform correspondientes
-	shader->setUniform("ModelMatrix", modelMatrix);
+	shader->setUniform("MatrixMVP", modelMatrix);
 
 	//Dibujamos
 	this->Draw(shader);
