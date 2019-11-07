@@ -26,9 +26,9 @@ void NodoScene::InitObjs()
 	InitObjsRecursive(this);
 }
 
-void NodoScene::UpdateObjs()
+void NodoScene::UpdateObjs(float deltaTime)
 {
-	UpdateObjsRecursive(this);
+	UpdateObjsRecursive(this, deltaTime);
 }
 
 /* --------------------- PRIVATE FUNCIONS ---------------------*/
@@ -54,9 +54,26 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 	}
 }
 
-void NodoScene::UpdateObjsRecursive(NodoScene* nodo)
+void NodoScene::UpdateObjsRecursive(NodoScene* nodo, float deltaTime)
 {
-	//TODO
+	if (nodo->nodos.empty()) {
+		if (!nodo->objs.empty()) {
+			for (int i = 0; i < nodo->objs.size(); i++) {
+				nodo->objs[i]->UpdateObj(deltaTime);
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < nodo->nodos.size(); i++) {
+			UpdateObjsRecursive(nodo, deltaTime);
+		}
+
+		if (!nodo->objs.empty()) {
+			for (int i = 0; i < nodo->objs.size(); i++) {
+				nodo->objs[i]->UpdateObj(deltaTime);
+			}
+		}
+	}
 }
 
 void NodoScene::DrawObjsRecursive(PagShaderProgram* shader, NodoScene* nodo, glm::mat4 &modelMatrix)

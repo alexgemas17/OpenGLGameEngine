@@ -2,7 +2,7 @@
 
 InputManager* InputManager::instance = nullptr;
 
-InputManager::InputManager(): buttonUp(false), buttonDown(false), keyCode(-1), lag(false) {}
+InputManager::InputManager(): buttonUp(false), buttonDown(false), keyCode(-1), lag(false), window(nullptr) {}
 
 InputManager::~InputManager() {}
 
@@ -17,30 +17,48 @@ InputManager* InputManager::getInstance()
 
 bool InputManager::getInputButtonDown(KeyCode key)
 {
-	if (key == this->keyCode && this->buttonDown && !lag) {
-		lag = true;
-		return true;
-	}
-	else {
-		return false;
+	if (window) {
+		if (glfwGetKey(window, key) == GLFW_PRESS) {
+			this->buttonDown = true;
+			this->buttonUp = false;
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 }
 
 bool InputManager::getInputButtonUp(KeyCode key)
 {
-	if (key == this->keyCode && this->buttonUp) return true;
-	return false;
+	if (window) {
+		if (glfwGetKey(window, key) == GLFW_RELEASE) {
+			this->buttonDown = false;
+			this->buttonUp = true;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
-bool InputManager::getInputAnyButton(KeyCode key)
+bool InputManager::getInputAnyStateButton(KeyCode key)
 {
-	if (key == this->keyCode && (this->buttonUp || this->buttonDown)) return true;
-	return false;
+	if (window) {
+		if (glfwGetKey(window, key) == GLFW_PRESS || glfwGetKey(window, key) == GLFW_RELEASE) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 }
 
 bool InputManager::isAnyButtonPressed()
 {
-	return this->buttonDown;
+	if (this->buttonDown || this->buttonUp) return true;
+	return false;
 }
 
 void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -54,4 +72,9 @@ void InputManager::key_callback(GLFWwindow* window, int key, int scancode, int a
 		this->buttonDown = false;
 		this->keyCode = -1;
 	}
+}
+
+void InputManager::key_callback(GLFWwindow* window)
+{
+	this->window = window;
 }

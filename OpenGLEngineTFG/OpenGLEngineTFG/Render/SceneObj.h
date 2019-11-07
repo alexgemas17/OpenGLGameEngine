@@ -15,6 +15,7 @@ public:
 
 	~SceneObj();
 
+	void UpdateObj(float deltaTime);
 	void DrawObj(PagShaderProgram* shader);
 	void DrawObj(PagShaderProgram* shader, glm::mat4 &modelMatrix);
 

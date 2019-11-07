@@ -15,12 +15,12 @@ const int HEIGHT = 576;
 const float ZNEAR = 0.1f;
 const float ZFAR = 100.0f;
 
+// Eliminar???
 Scene* world; 
 PagShaderProgram* basicShader;
 
 void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
@@ -41,6 +41,7 @@ int main() {
 
 	//  -------------------- Creamos la ventana de la app -------------------- 
 	GLFWwindow* window = glfwCreateWindow(WIDHT, HEIGHT, "TFG UJA ENGINE", nullptr, nullptr);
+	glfwSetWindowPos(window, 300, 150);
 
 	if (window == nullptr) {
 		std::cout << "ERROR al abrir la ventada de GLFW" << std::endl;
@@ -68,10 +69,13 @@ int main() {
 	// -------------------- Registramos los callbacks -------------------- 
 	glfwSetWindowRefreshCallback(window, window_refresh_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetKeyCallback(window, key_callback);
+	//glfwSetKeyCallback(window, key_callback); --> Se hace en el render loop
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+
+	//Hace que mientras se pulse una tecla, ésta devolverá GL_PRESS todo el rato.
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	// -------------------- Creamos los shaders -------------------- 
 	basicShader = new PagShaderProgram();
@@ -85,11 +89,19 @@ int main() {
 
 	double lastTime = glfwGetTime();
 	int nbFrames = 0;
+
+	// Para poder establecer el DeltaTime
+	float deltaTime = 0.0f;	// Tiempo entre dos frames
+	float lastFrame = 0.0f;
 	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
 
+		// ----------------------------- DELTA TIME ----------------------
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		// ----------------------------- FPS ----------------------
-		// Measure speed
 		double currentTime = glfwGetTime();
 		nbFrames++;
 		if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
@@ -100,10 +112,11 @@ int main() {
 		}
 
 		//Inputs
-		// Se obtienen los inputs desde el callback.
+		//processInput(window);
+		InputManager::getInstance()->key_callback(window);
 
 		//Update
-		world->UpdateObjs();
+		world->UpdateObjs(deltaTime);
 		
 		//Render
 		world->DrawObjs(basicShader);
@@ -127,14 +140,6 @@ void window_refresh_callback(GLFWwindow* window) {
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	world->framebuffer_size_callback(width, height);
-
-	window_refresh_callback(window);
-}
-
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
-
-	//Actualizamos los estados del Input Manager
-	InputManager::getInstance()->key_callback(window, key, scancode, action, mods);
 
 	window_refresh_callback(window);
 }

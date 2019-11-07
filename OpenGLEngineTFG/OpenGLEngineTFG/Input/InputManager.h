@@ -55,7 +55,7 @@ public:
 	bool getInputButtonUp(KeyCode key);
 
 	/* Devuelve verdadero si la tecla que se ha pasado sin importar si está presionada o no */
-	bool getInputAnyButton(KeyCode key);
+	bool getInputAnyStateButton(KeyCode key);
 
 	/* Devuelve verdadero si alguna tecla, sin importal cual, se ha pulsado */
 	bool isAnyButtonPressed();
@@ -63,10 +63,15 @@ public:
 	/* Obtiene qué tecla se ha pulsado y almaneca los distintos estasdos de la tecla (pulsado, soltado, etc..) */
 	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+	/* Obtiene qué tecla se ha pulsado y almaneca los distintos estasdos de la tecla (pulsado, soltado, etc..) */
+	void key_callback(GLFWwindow* window);
+
 	static InputManager* getInstance();
 private:
 	// Instancia singleton.
 	static InputManager* instance;
+
+	GLFWwindow* window; //Actual action of window
 
 	bool lag;
 	bool buttonUp;

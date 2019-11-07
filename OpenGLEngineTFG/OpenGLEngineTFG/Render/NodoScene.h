@@ -17,7 +17,7 @@ public:
 	void addObj(SceneObj* obj);
 
 	void InitObjs();
-	void UpdateObjs();
+	void UpdateObjs(float deltaTime);
 	void DrawObjs(PagShaderProgram* shader, glm::mat4 matrixVP);
 
 private:
@@ -26,6 +26,6 @@ private:
 
 	/* Private functions */
 	void InitObjsRecursive(NodoScene* nodo);
-	void UpdateObjsRecursive(NodoScene* nodo);
+	void UpdateObjsRecursive(NodoScene* nodo, float deltaTime);
 	void DrawObjsRecursive(PagShaderProgram* shader, NodoScene* nodo, glm::mat4& modelMatrix);
 };

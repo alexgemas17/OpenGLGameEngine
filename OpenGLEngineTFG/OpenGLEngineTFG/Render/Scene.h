@@ -20,7 +20,7 @@ public:
 
 	void InitObjs();
 	void InitCamara(float fov, int width, int height, float zNear, float zFar);
-	void UpdateObjs();
+	void UpdateObjs(float deltaTime);
 	void DrawObjs(PagShaderProgram* shader);
 
 	/* Funciones callbacks */

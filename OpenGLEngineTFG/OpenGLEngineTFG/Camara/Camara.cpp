@@ -26,36 +26,43 @@ Camara::Camara(float fov, int width, int height, float zNear, float zFar):
 Camara::~Camara() {}
 
 /* Comprueba si se ha pulsado las teclas para actualizar su estado*/
-void Camara::UpdateCamera()
+void Camara::UpdateCamera(float deltaTime)
 {
-	//float velocidadDeltaTime = velocidadCamara * deltaTime; --> Usar esa velocidad en vez de la que tenemos ahora.
-	if (InputManager::getInstance()->isAnyButtonPressed()) {
+	bool teclaPulsada = false;
+	float velocidadDeltaTime = velocidadCamara * deltaTime;
+	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
+		teclaPulsada = true;
+		this->vecPositionCamera -= this->u * velocidadDeltaTime;
+	}
 
-		if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
-			this->vecPositionCamera -= this->u * velocidadCamara * 0.02f;
-		}
+	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
+		teclaPulsada = true;
+		this->vecPositionCamera += this->u * velocidadDeltaTime;
+	}
 
-		if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
-			this->vecPositionCamera += this->u * velocidadCamara * 0.02f;
-		}
+	if (InputManager::getInstance()->getInputButtonDown(Key_W)) {
+		teclaPulsada = true;
+		this->vecPositionCamera += this->n * velocidadDeltaTime;
+	}
 
-		if (InputManager::getInstance()->getInputButtonDown(Key_W)) {
-			this->vecPositionCamera += this->n * velocidadCamara * 0.02f;
-		}
+	if (InputManager::getInstance()->getInputButtonDown(Key_S)) {
+		teclaPulsada = true;
+		this->vecPositionCamera -= this->n * velocidadDeltaTime;
+	}
 
-		if (InputManager::getInstance()->getInputButtonDown(Key_S)) {
-			this->vecPositionCamera -= this->n * velocidadCamara * 0.02f;
-		}
+	if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_CONTROL)) {
+		teclaPulsada = true;
+		//this->boom_crane(0.2f);
+	}
 
-		if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_CONTROL)) {
-			//this->boom_crane(0.2f);
-		}
+	if (InputManager::getInstance()->getInputButtonDown(Key_SPACE)) {
+		teclaPulsada = true;
+		//this->boom_crane(-0.2f);
+	}
 
-		if (InputManager::getInstance()->getInputButtonDown(Key_SPACE)) {
-			//this->boom_crane(-0.2f);
-		}
-
+	if (teclaPulsada) {
 		this->mView = glm::lookAt(vecPositionCamera, vecPositionCamera + n, v);
+		this->mVP = this->mProjection * this->mView;
 	}
 }
 
@@ -75,6 +82,7 @@ void Camara::updateCamaraData()
 	this->v = glm::normalize(glm::cross(this->u, this->n));
 
 	this->mView = glm::lookAt(vecPositionCamera, vecPositionCamera + n, v);
+	this->mVP = this->mProjection * this->mView;
 }
 
 void Camara::moveCamara(float xPosition, float yPosition, GLboolean constrainPitch)
@@ -112,7 +120,7 @@ void Camara::moveCamara(float xPosition, float yPosition, GLboolean constrainPit
 }
 
 /* Cambia la matriz de proyeccion según el nuevo alto y ancho que tenga la ventana */
-void Camara::SetProjection(float newWidth, float newHeight)
+void Camara::SetProjection(int newWidth, int newHeight)
 {
 	this->mProjection = glm::perspective( glm::radians( this->fov), newWidth / float(newHeight), this->zNear, this->zFar );
 }
@@ -130,5 +138,5 @@ glm::mat4 Camara::getProjection()
 
 glm::mat4 Camara::getMatrixViewProjection()
 {
-	return this->mProjection * this->mView;
+	return this->mVP;
 }

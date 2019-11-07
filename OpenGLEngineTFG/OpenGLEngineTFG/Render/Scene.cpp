@@ -2,7 +2,7 @@
 
 #include "../Input/InputManager.h"
 
-Scene::Scene()
+Scene::Scene(): camara(nullptr)
 {
 	glPrimitiveRestartIndex(0xFFFFFFFF);
 	glEnable(GL_PRIMITIVE_RESTART);
@@ -113,9 +113,9 @@ void Scene::InitCamara(float fov, int width, int height, float zNear, float zFar
 }
 
 /* Recorremos los objetos que necesiten actualizar su estado */
-void Scene::UpdateObjs()
+void Scene::UpdateObjs(float deltaTime)
 {
-	camara->UpdateCamera();
+	camara->UpdateCamera(deltaTime);
 
 	//Inputs de prueba
 	/*if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
@@ -126,7 +126,9 @@ void Scene::UpdateObjs()
 		nodo->Translate(-0.5f,0.0f,0.0f);
 	}*/
 
-	//nodo->Rotate((float)glfwGetTime() * 0.2f, glm::vec3(0.0f, 1.0f, 0.0f));
+	//nodo->UpdateObjs(deltaTime);
+
+	nodo->Rotate((float)glfwGetTime() * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)

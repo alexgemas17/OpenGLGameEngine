@@ -8,6 +8,11 @@ SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std
 
 SceneObj::~SceneObj() {}
 
+void SceneObj::UpdateObj(float deltaTime)
+{
+	//Actualiza el objeto según nuestra intención.
+}
+
 void SceneObj::DrawObj(PagShaderProgram* shader)
 {
 	//Especificamos que vamos a usar el shader que nos han pasado.

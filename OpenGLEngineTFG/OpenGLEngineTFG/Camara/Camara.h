@@ -11,8 +11,8 @@ public:
 	~Camara();
 
 	/* Funciones públicas */
-	void UpdateCamera(); // Comprueba si se ha pulsado las teclas para actualizar su estado
-	void SetProjection(float newWidth, float newHeight);
+	void UpdateCamera(float deltaTime); // Comprueba si se ha pulsado las teclas para actualizar su estado
+	void SetProjection(int newWidth, int newHeight);
 	void moveCamara(float xPosition, float yPosition, GLboolean constrainPitch = true);
 
 	/* Getters */
@@ -24,6 +24,7 @@ private:
 	// Matrices para el render
 	glm::mat4 mView;
 	glm::mat4 mProjection;
+	glm::mat4 mVP;
 
 	//Sistema Coordenadas nuv
 	glm::vec3 n;				// Vector delante
