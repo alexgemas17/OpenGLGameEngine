@@ -126,7 +126,7 @@ void Scene::UpdateObjs()
 		nodo->Translate(-0.5f,0.0f,0.0f);
 	}*/
 
-	nodo->Rotate((float)glfwGetTime() * 0.2f, glm::vec3(0.0f, 1.0f, 0.0f));
+	//nodo->Rotate((float)glfwGetTime() * 0.2f, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)

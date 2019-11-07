@@ -58,6 +58,4 @@ private:
 	void InitIBO();
 	void InitCoordTextura();
 	void InitTextura();
-
-	void algo();
 };

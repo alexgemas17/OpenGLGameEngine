@@ -2,129 +2,113 @@
 
 #include <gtc/matrix_transform.hpp>
 
-Camara::Camara(float fov, int width, int height, float zNear, float zFar): mView(glm::mat4(1.0f)), fov(fov), zNear(zNear), zFar(zFar) {
+Camara::Camara(float fov, int width, int height, float zNear, float zFar): 
+	mView(glm::mat4(1.0f)), fov(fov), zNear(zNear), zFar(zFar), primerMovRaton(true),
+	u(glm::vec3(0.0f, 0.0f, -1.0f)), sensibilidad(0.1f), velocidadCamara(2.5f),
+	yaw(-90.0f), pitch(0.0f)
+{
 
 	//Datos para el ratón
 	this->lastX = 400;
 	this->lastY = 300;
 
-	this->yaw = -15.0;
-	this->pitch = -70.0;
-
+	//Matriz de proyección
 	this->mProjection = glm::perspective( glm::radians(fov), float(width) / float(height), zNear, zFar);
 
 	// Parsear desde Data/Config??
-	this->vecPositionCamera = glm::vec3(0.0f, 0.0f, -3.0f);
+	this->vecPositionCamera = glm::vec3(0.0f, 0.0f, 3.0f);
 	this->vecLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->vecUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, vecUp);
+	updateCamaraData();
 }
 
 Camara::~Camara() {}
 
-/* Movimiento de la cámara */
-void Camara::truck(float value)
-{
-	this->n = normalize(vecPositionCamera - vecLookAt);
-	n *= value;
-
-	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
-	this->v = normalize(cross(u, n));
-
-	vecPositionCamera += n;
-	vecLookAt += n;
-
-	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, v);
-}
-
-void Camara::dolly(float value)
-{
-	this->n = normalize(vecPositionCamera - vecLookAt);
-	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
-	this->v = normalize(cross(u, n));
-
-	u *= value;
-
-	vecPositionCamera += u;
-	vecLookAt += u;
-
-	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, v);
-}
-
-void Camara::boom_crane(float value)
-{
-	this->n = normalize(vecPositionCamera - vecLookAt);
-	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
-	this->v = normalize(cross(u, n));
-
-	v *= value;
-
-	vecPositionCamera += v;
-	vecLookAt += v;
-
-	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, vecUp);
-}
-
-
-void Camara::moveCamara(float xPosition, float yPosition)
-{
-	//Actualizamos las posiciones para la proxima iteración
-	this->lastX = xPosition;
-	this->lastY = yPosition;
-
-	// Obtenemos el yaw y pitch. (Rotación en 'x' e 'y' respectivamente)
-	this->yaw += (xPosition - this->lastX) * 0.05f;
-	this->pitch += (this->lastY - yPosition) * 0.05f;
-
-	// Para que no se de la vuelta si superas dicho parámetros.
-	if (pitch > 89.0f)
-		pitch = 89.0f;
-	if (pitch < -89.0f)
-		pitch = -89.0f;
-
-	// Spherical coordinates (r=1).
-	this->n.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-	this->n.y = sin(glm::radians(pitch));
-	this->n.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-
-	this->n = normalize(n);
-	this->u = normalize(cross(n, glm::vec3(0, 1, 0)));
-	this->v = normalize(cross(u, n));
-	this->vecLookAt = this->vecPositionCamera + this->n;
-
-	this->mView = glm::lookAt(vecPositionCamera, vecLookAt, v);
-}
-
 /* Comprueba si se ha pulsado las teclas para actualizar su estado*/
 void Camara::UpdateCamera()
 {
+	//float velocidadDeltaTime = velocidadCamara * deltaTime; --> Usar esa velocidad en vez de la que tenemos ahora.
 	if (InputManager::getInstance()->isAnyButtonPressed()) {
 
 		if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
-			this->dolly(0.2f);
+			this->vecPositionCamera -= this->u * velocidadCamara * 0.02f;
 		}
 
 		if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
-			this->dolly(-0.2f);
+			this->vecPositionCamera += this->u * velocidadCamara * 0.02f;
 		}
 
 		if (InputManager::getInstance()->getInputButtonDown(Key_W)) {
-			this->truck(-0.2f);
+			this->vecPositionCamera += this->n * velocidadCamara * 0.02f;
 		}
 
 		if (InputManager::getInstance()->getInputButtonDown(Key_S)) {
-			this->truck(0.2f);
+			this->vecPositionCamera -= this->n * velocidadCamara * 0.02f;
 		}
 
 		if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_CONTROL)) {
-			this->boom_crane(0.2f);
+			//this->boom_crane(0.2f);
 		}
 
 		if (InputManager::getInstance()->getInputButtonDown(Key_SPACE)) {
-			this->boom_crane(-0.2f);
+			//this->boom_crane(-0.2f);
 		}
+
+		this->mView = glm::lookAt(vecPositionCamera, vecPositionCamera + n, v);
 	}
+}
+
+void Camara::updateCamaraData()
+{
+	// Calculamos el vector adelante
+	glm::vec3 front;
+	front.x = cos(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+	front.y = sin(glm::radians(this->pitch));
+	front.z = sin(glm::radians(this->yaw)) * cos(glm::radians(this->pitch));
+
+	// Y lo normalizamos 
+	this->n = glm::normalize(front);
+
+	// Como hemos actualizado n, actualizamos u y v.
+	this->u = glm::normalize(glm::cross(this->n, vecUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+	this->v = glm::normalize(glm::cross(this->u, this->n));
+
+	this->mView = glm::lookAt(vecPositionCamera, vecPositionCamera + n, v);
+}
+
+void Camara::moveCamara(float xPosition, float yPosition, GLboolean constrainPitch)
+{
+	if (primerMovRaton)
+	{
+		lastX = xPosition;
+		lastY = yPosition;
+		primerMovRaton = false;
+	}
+
+	float xoffset = xPosition - lastX;
+	float yoffset = lastY - yPosition;
+
+	lastX = xPosition;
+	lastY = yPosition;
+
+	xoffset *= sensibilidad;
+	yoffset *= sensibilidad;
+
+	this->yaw += xoffset;
+	this->pitch += yoffset;
+
+	// Make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (constrainPitch)
+	{
+		if (this->pitch > 89.0f)
+			this->pitch = 89.0f;
+		if (this->pitch < -89.0f)
+			this->pitch = -89.0f;
+	}
+
+	//Actualizar valores
+	updateCamaraData();
 }
 
 /* Cambia la matriz de proyeccion según el nuevo alto y ancho que tenga la ventana */

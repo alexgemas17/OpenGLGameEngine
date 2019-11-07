@@ -13,12 +13,7 @@ public:
 	/* Funciones públicas */
 	void UpdateCamera(); // Comprueba si se ha pulsado las teclas para actualizar su estado
 	void SetProjection(float newWidth, float newHeight);
-	void moveCamara(float xPosition, float yPosition);
-
-	/* Movimiento de la cámara */
-	void truck(float value);					//Hacia delante/atrás
-	void dolly(float value);					//Hacia delante/atrás
-	void boom_crane(float value);				//Hacia arriba/abajo
+	void moveCamara(float xPosition, float yPosition, GLboolean constrainPitch = true);
 
 	/* Getters */
 	glm::mat4 getView();
@@ -31,14 +26,19 @@ private:
 	glm::mat4 mProjection;
 
 	//Sistema Coordenadas nuv
-	glm::vec3 n;
-	glm::vec3 u;
-	glm::vec3 v;
+	glm::vec3 n;				// Vector delante
+	glm::vec3 u;				// Vector derecha
+	glm::vec3 v;				// Vector arriba
 
 	//Datos de la cámara (Posición, a donde mira y vector de arriba)
 	glm::vec3 vecPositionCamera;
 	glm::vec3 vecLookAt;
 	glm::vec3 vecUp;
+
+	float sensibilidad;
+	float velocidadCamara;
+	float yaw;
+	float pitch;
 
 	float fov;
 	float zNear;
@@ -49,6 +49,7 @@ private:
 	float lastX;
 	float lastY;
 
-	float yaw;
-	float pitch;
+
+	/* Funciones privadas */
+	void updateCamaraData();
 };

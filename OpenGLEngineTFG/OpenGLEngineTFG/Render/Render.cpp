@@ -89,27 +89,6 @@ ImageData Render::loadImage(std::string url) {
 }
 
 //------------------------------- PRIVATE -------------------------------
-void Render::algo()
-{
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	// Generamos el VBO
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec3), ((GLubyte*)NULL + (0)));
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * this->model.puntos.size(), this->model.puntos.data(), GL_STATIC_DRAW);
-
-	//Generamos el IBO
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->model.index.size(), this->model.index.data(), GL_STATIC_DRAW);
-}
-
 void Render::InitVAO() 
 {
 	glGenVertexArrays(1, &VAO);
