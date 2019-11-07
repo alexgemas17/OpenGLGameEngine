@@ -76,12 +76,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\lib\glfw-3.3.bin.WIN32\include;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\lib\glfw-3.3.bin.WIN32\include;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>..\lib\glfw-3.3.bin.WIN32\lib-vc2019;..\lib\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib\glfw-3.3.bin.WIN32\lib-vc2019;..\lib\glew-2.1.0\lib\Release\Win32;..\lib\assimp-5.0.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,14 +103,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\lib\glfw-3.3.bin.WIN32\include;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\lib\glfw-3.3.bin.WIN32\include;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\lib\glfw-3.3.bin.WIN32\lib-vc2019;..\lib\glew-2.1.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\lib\glfw-3.3.bin.WIN32\lib-vc2019;..\lib\glew-2.1.0\lib\Release\Win32;..\lib\assimp-5.0.0\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc141-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Camara\Camara.cpp" />
     <ClCompile Include="Input\InputManager.cpp" />
+    <ClCompile Include="Loaders\AssimpLoader.cpp" />
     <ClCompile Include="Loaders\lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PagShaderProgram.cpp" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Camara\Camara.h" />
     <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="Interface\ISceneClass.h" />
+    <ClInclude Include="Loaders\AssimpLoader.h" />
     <ClInclude Include="Loaders\lodepng.h" />
     <ClInclude Include="PagShaderProgram.h" />
     <ClInclude Include="Render\Model.h" />

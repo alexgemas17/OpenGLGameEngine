@@ -75,6 +75,9 @@
     <ClCompile Include="Loaders\lodepng.cpp">
       <Filter>Archivos de origen\Loaders</Filter>
     </ClCompile>
+    <ClCompile Include="Loaders\AssimpLoader.cpp">
+      <Filter>Archivos de origen\Loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
@@ -105,6 +108,9 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Loaders\lodepng.h">
+      <Filter>Archivos de encabezado\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Loaders\AssimpLoader.h">
       <Filter>Archivos de encabezado\Loaders</Filter>
     </ClInclude>
   </ItemGroup>

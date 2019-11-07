@@ -79,25 +79,31 @@ Scene::Scene(): camara(nullptr)
 	};
 
 	// ----- Objeto 1 ----- 
-	SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
-	triangulo1->Scale(0.5f, 0.5f, 0.5f);
-	triangulo1->Rotate(45.0f, glm::vec3(0,1,0));
-	triangulo1->Rotate(25.0f, glm::vec3(1, 0, 0));
+	//SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
+	//triangulo1->Scale(0.5f, 0.5f, 0.5f);
+	//triangulo1->Rotate(45.0f, glm::vec3(0,1,0));
+	//triangulo1->Rotate(25.0f, glm::vec3(1, 0, 0));
 
-	// ----- Objeto 2 ----- 
-	SceneObj *triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
-	triangulo2->Scale(0.5f, 0.5f, 0.5f);
-	triangulo2->Rotate(45.0f, glm::vec3(0, 0, 1));
+	//// ----- Objeto 2 ----- 
+	//SceneObj *triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
+	//triangulo2->Scale(0.5f, 0.5f, 0.5f);
+	//triangulo2->Rotate(45.0f, glm::vec3(0, 0, 1));
 
-	// ----- Nodo nivel 1 ----- 
-	NodoScene *level1 = new NodoScene();
-	level1->Translate(0.6f, -0.5f, 0.0f);
-	level1->addObj(triangulo2);
+	//// ----- Nodo nivel 1 ----- 
+	//NodoScene *level1 = new NodoScene();
+	//level1->Translate(0.6f, -0.5f, 0.0f);
+	//level1->addObj(triangulo2);
 
-	// ----- Nodo Raiz ----- 
-	this->nodo = new NodoScene();
-	nodo->addObj(triangulo1);
-	nodo->addNodo(level1);
+	//// ----- Nodo Raiz ----- 
+	//this->nodo = new NodoScene();
+	//nodo->addObj(triangulo1);
+	//nodo->addNodo(level1);
+	AssimpLoader* loader = new AssimpLoader();
+
+	this->nodo = loader->loadModelAssimp("D:\\Proyectos\\MODELOS_TFG\\10-japanese_temple_model\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	this->nodo->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	delete loader;
 }
 
 Scene::~Scene() {}
@@ -128,7 +134,7 @@ void Scene::UpdateObjs(float deltaTime)
 
 	//nodo->UpdateObjs(deltaTime);
 
-	nodo->Rotate((float)glfwGetTime() * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+	//nodo->Rotate(10.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)

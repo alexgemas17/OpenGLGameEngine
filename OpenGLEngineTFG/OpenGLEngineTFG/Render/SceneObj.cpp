@@ -2,8 +2,8 @@
 
 SceneObj::SceneObj(): Render(), Model() {}
 
-SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> color, std::vector<glm::vec2> coordenada_textura, std::string urlImg): 
-	puntos(puntos), index(index), color(color), coordenada_textura(coordenada_textura), urlImg(urlImg), Model(), Render(puntos, index, color, coordenada_textura, urlImg)
+SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg): 
+	Model(), Render(puntos, index, normales, coordenada_textura, urlImg)
 {}
 
 SceneObj::~SceneObj() {}

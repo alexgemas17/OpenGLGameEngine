@@ -11,7 +11,7 @@ class SceneObj : public Render, public Model
 {
 public:
 	SceneObj();
-	SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> color, std::vector<glm::vec2> coordenada_textura, std::string urlImg);
+	SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg);
 
 	~SceneObj();
 
@@ -20,9 +20,4 @@ public:
 	void DrawObj(PagShaderProgram* shader, glm::mat4 &modelMatrix);
 
 private:
-	std::vector<glm::vec3> puntos;
-	std::vector<GLuint> index;
-	std::vector<glm::vec3> color;
-	std::vector<glm::vec2> coordenada_textura;
-	std::string urlImg;
 };

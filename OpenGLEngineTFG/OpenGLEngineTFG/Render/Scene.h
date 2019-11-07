@@ -4,6 +4,7 @@
 #include <glm.hpp>
 #include <GL\glew.h>
 
+#include "../Loaders/AssimpLoader.h"
 #include "../PagShaderProgram.h"
 #include "../Camara/Camara.h"
 #include "SceneObj.h"

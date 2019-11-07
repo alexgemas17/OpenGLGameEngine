@@ -14,9 +14,10 @@ Render::Render(float _vertices[], unsigned int _indices[], std::string imgUrl) :
 	typeRender(PuntosTextura), urlImg(imgUrl)
 {}
 
-Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> color, std::vector<glm::vec2> coordenada_textura, std::string urlImg)
+Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg)
 {
 	this->model.puntos = puntos;
+	this->model.normales = normales;
 	this->model.index = index;
 	this->model.coordenada_textura = coordenada_textura;
 	this->model.urlImg = urlImg;

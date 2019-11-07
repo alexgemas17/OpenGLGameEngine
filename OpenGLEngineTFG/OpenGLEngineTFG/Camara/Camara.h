@@ -1,7 +1,10 @@
 #pragma once
 
-#include <glm.hpp>
+/*
+	Más info: https://learnopengl.com/Getting-started/Camera
+*/
 
+#include <glm.hpp>
 #include "../Input/InputManager.h"
 
 class Camara
