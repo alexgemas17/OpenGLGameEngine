@@ -48,8 +48,8 @@ void Render::Draw(PagShaderProgram* shader)
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
 
-	//glDrawElements(GL_TRIANGLE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
-	glDrawElements(GL_LINE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
+	//glDrawElements(GL_LINE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -66,25 +66,25 @@ ImageData Render::loadImage(std::string url) {
 	}
 
 	// La textura se carga del revés, así que vamos a darle la vuelta
-	unsigned char* imgPtr = &data.image[0];
-	int numColorComponents = 4;
-	int wInc = data.width * 4; //width in char
-	unsigned char* top = nullptr;
-	unsigned char* bot = nullptr;
-	unsigned char temp = 0;
-	for (int i = 0; i < data.height / 2; i++)
-	{
-		top = imgPtr + i * wInc;
-		bot = imgPtr + (data.height - i - 1) * wInc;
-		for (int j = 0; j < wInc; j++)
-		{
-			temp = *top;
-			*top = *bot;
-			*bot = temp;
-			++top;
-			++bot;
-		}
-	}
+	//unsigned char* imgPtr = &data.image[0];
+	//int numColorComponents = 4;
+	//int wInc = data.width * 4; //width in char
+	//unsigned char* top = nullptr;
+	//unsigned char* bot = nullptr;
+	//unsigned char temp = 0;
+	//for (int i = 0; i < data.height / 2; i++)
+	//{
+	//	top = imgPtr + i * wInc;
+	//	bot = imgPtr + (data.height - i - 1) * wInc;
+	//	for (int j = 0; j < wInc; j++)
+	//	{
+	//		temp = *top;
+	//		*top = *bot;
+	//		*bot = temp;
+	//		++top;
+	//		++bot;
+	//	}
+	//}
 
 	return data;
 }
@@ -156,9 +156,13 @@ void Render::InitTextura()
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	//Opciones para las texturas
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	//Obtenemos los datos de la imagen

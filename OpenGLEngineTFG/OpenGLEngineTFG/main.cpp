@@ -79,8 +79,8 @@ int main() {
 
 	// -------------------- Creamos los shaders -------------------- 
 	basicShader = new PagShaderProgram();
-	//basicShader->createShaderProgram("Shaders/BasicShaderTexture");
-	basicShader->createShaderProgram("Shaders/BasicShader");
+	basicShader->createShaderProgram("Shaders/BasicShaderTexture");
+	//basicShader->createShaderProgram("Shaders/BasicShader");
 
 	// -------------------- Creamos la escena --------------------  
 	world = new Scene();
