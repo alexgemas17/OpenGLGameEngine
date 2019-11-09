@@ -17,6 +17,7 @@ struct AssimpData {
 	std::vector<glm::vec3> normales;
 	std::vector<GLuint> indices;
 	std::vector<glm::vec2> coord_textura;
+	std::vector<glm::vec3> coord_textura_3;
 };
 
 class AssimpLoader

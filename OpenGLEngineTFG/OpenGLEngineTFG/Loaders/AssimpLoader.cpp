@@ -67,6 +67,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene)
 			// A vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't
 			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
 			data.coord_textura.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+			data.coord_textura_3.push_back(glm::vec3(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y, mesh->mTextureCoords[0][i].z));
 		}
 		else
 		{
@@ -84,6 +85,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene)
 				data.indices.push_back(face.mIndices[j]);
 			}
 		}
+		data.indices.push_back(0xFFFFFFFF);
 	}
 
 	// Procesamos su material
