@@ -100,8 +100,22 @@ Scene::Scene(): camara(nullptr)
 	//nodo->addNodo(level1);
 	AssimpLoader* loader = new AssimpLoader();
 
-	this->nodo = loader->loadModelAssimp("D:\\Proyectos\\MODELOS_TFG\\10-japanese_temple_model\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
-	this->nodo->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	this->nodo = new NodoScene();
+	
+	NodoScene *nodo1 = loader->loadModelAssimp("C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	nodo1->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	nodo1->Translate(-30, 0, 0);
+
+	NodoScene* nodo2 = loader->loadModelAssimp("C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	nodo2->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	NodoScene* nodo3 = loader->loadModelAssimp("C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	nodo3->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	nodo3->Translate(30, 0, 0);
+
+	nodo->addNodo(nodo1);
+	nodo->addNodo(nodo2);
+	nodo->addNodo(nodo3);
 
 	delete loader;
 }
@@ -133,8 +147,9 @@ void Scene::UpdateObjs(float deltaTime)
 	}*/
 
 	//nodo->UpdateObjs(deltaTime);
+	
 
-	//nodo->Rotate(10.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+	nodo->Rotate(10.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 void Scene::DrawObjs(PagShaderProgram* shader)

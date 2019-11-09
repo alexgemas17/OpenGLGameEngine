@@ -34,21 +34,23 @@ void NodoScene::UpdateObjs(float deltaTime)
 /* --------------------- PRIVATE FUNCIONS ---------------------*/
 void NodoScene::InitObjsRecursive(NodoScene* nodo)
 {
-	if (nodo->nodos.empty()) {
-		if (!nodo->objs.empty()) {
-			for (int i = 0; i < nodo->objs.size(); i++) {
-				nodo->objs[i]->Init();
+	if (nodo) {
+		if (nodo->nodos.empty()) {
+			if (!nodo->objs.empty()) {
+				for (int i = 0; i < nodo->objs.size(); i++) {
+					nodo->objs[i]->Init();
+				}
 			}
 		}
-	}
-	else {
-		for (int i = 0; i < nodo->nodos.size(); i++) {
-			InitObjsRecursive(this->nodos[i]);
-		}
+		else {
+			for (int i = 0; i < nodo->nodos.size(); i++) {
+				InitObjsRecursive(nodo->nodos[i]);
+			}
 
-		if (!nodo->objs.empty()) {
-			for (int i = 0; i < nodo->objs.size(); i++) {
-				nodo->objs[i]->Init();
+			if (!nodo->objs.empty()) {
+				for (int i = 0; i < nodo->objs.size(); i++) {
+					nodo->objs[i]->Init();
+				}
 			}
 		}
 	}
