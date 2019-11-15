@@ -108,7 +108,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene)
 	//	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	//}
 
-	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, "C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png");
+	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, "D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png");
 
 	return obj;
 }

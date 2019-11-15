@@ -102,14 +102,14 @@ Scene::Scene(): camara(nullptr)
 
 	this->nodo = new NodoScene();
 	
-	NodoScene *nodo1 = loader->loadModelAssimp("C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	NodoScene *nodo1 = loader->loadModelAssimp("D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
 	nodo1->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	nodo1->Translate(-30, 0, 0);
 
-	NodoScene* nodo2 = loader->loadModelAssimp("C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	NodoScene* nodo2 = loader->loadModelAssimp("D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
 	nodo2->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	NodoScene* nodo3 = loader->loadModelAssimp("C:\\Users\\Alex\\Desktop\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	NodoScene* nodo3 = loader->loadModelAssimp("D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
 	nodo3->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 	nodo3->Translate(30, 0, 0);
 

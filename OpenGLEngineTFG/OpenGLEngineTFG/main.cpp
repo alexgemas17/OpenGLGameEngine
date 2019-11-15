@@ -33,11 +33,6 @@ int main() {
 		return -1;
 	}
 
-	//  -------------------- Configuramos GLFW -------------------- 
-	glfwWindowHint(GLFW_SAMPLES, 4); // Activa antialiasing con 4 muestras.
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
 	//  -------------------- Creamos la ventana de la app -------------------- 
 	GLFWwindow* window = glfwCreateWindow(WIDHT, HEIGHT, "TFG UJA ENGINE", nullptr, nullptr);
@@ -48,7 +43,15 @@ int main() {
 		glfwTerminate();
 		return -2;
 	}
+
 	glfwMakeContextCurrent(window);
+
+	//  -------------------- Configuramos GLFW -------------------- 
+	glfwWindowHint(GLFW_SAMPLES, 4); // Activa antialiasing con 4 muestras.
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwSwapInterval(0); //VSync off
 
 	//  -------------------- Iniciamos GLEW -------------------- 
 	glewExperimental = true;
