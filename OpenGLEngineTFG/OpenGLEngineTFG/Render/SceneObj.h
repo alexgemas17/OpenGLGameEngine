@@ -5,7 +5,7 @@
 #include "Model.h"
 #include "Render.h"
 
-#include "../PagShaderProgram.h"
+#include "../Managers/ShaderManager.h"
 
 class SceneObj : public Render, public Model
 {
@@ -16,8 +16,7 @@ public:
 	~SceneObj();
 
 	void UpdateObj(float deltaTime);
-	void DrawObj(PagShaderProgram* shader);
-	void DrawObj(PagShaderProgram* shader, glm::mat4 &modelMatrix);
+	void DrawObj(glm::mat4 &modelMatrix);
 
 private:
 };

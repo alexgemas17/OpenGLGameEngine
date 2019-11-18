@@ -5,7 +5,6 @@
 #include <GL\glew.h>
 
 #include "../Loaders/AssimpLoader.h"
-#include "../PagShaderProgram.h"
 #include "../Camara/Camara.h"
 #include "SceneObj.h"
 #include "NodoScene.h"
@@ -22,7 +21,7 @@ public:
 	void InitObjs();
 	void InitCamara(float fov, int width, int height, float zNear, float zFar);
 	void UpdateObjs(float deltaTime);
-	void DrawObjs(PagShaderProgram* shader);
+	void DrawObjs();
 
 	/* Funciones callbacks */
 	void framebuffer_size_callback(int width, int height); 

@@ -88,27 +88,42 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene)
 		data.indices.push_back(0xFFFFFFFF);
 	}
 
-	// Procesamos su material
-	//if (mesh->mMaterialIndex >= 0)
-	//{
-	//	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	//	// We assume a convention for sampler names in the shaders. Each diffuse texture should be named
-	//	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER.
-	//	// Same applies to other texture as the following list summarizes:
-	//	// Diffuse: texture_diffuseN
-	//	// Specular: texture_specularN
-	//	// Normal: texture_normalN
+	//Procesamos su material
+	if (mesh->mMaterialIndex >= 0)
+	{
+		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+		// We assume a convention for sampler names in the shaders. Each diffuse texture should be named
+		// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER.
+		// Same applies to other texture as the following list summarizes:
+		// Diffuse: texture_diffuseN
+		// Specular: texture_specularN
+		// Normal: texture_normalN
 
-	//	// 1. Diffuse maps
-	//	vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-	//	textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+		// 1. Diffuse maps
+		std::vector<std::string> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-	//	// 2. Specular maps
-	//	vector<Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-	//	textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	//}
+		// 2. Specular maps
+		std::vector<std::string> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+	}
 
 	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, "D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png");
 
 	return obj;
+}
+
+std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+{
+	std::vector<std::string> texturesURL;
+
+	for (GLuint i = 0; i < mat->GetTextureCount(type); i++)
+	{
+		aiString str;
+		mat->GetTexture(type, i, &str);
+
+		texturesURL.push_back(str.C_Str());
+	}
+
+	return texturesURL;
 }

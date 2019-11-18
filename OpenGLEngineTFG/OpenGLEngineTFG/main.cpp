@@ -8,6 +8,7 @@
 #include "PagShaderProgram.h"
 #include "Render/Scene.h"
 #include "Input/InputManager.h"
+#include "Managers/ShaderManager.h"
 
 const float FOV = 45.0f;
 const int WIDHT = 1024;
@@ -32,7 +33,6 @@ int main() {
 		std::cout << "ERROR al inicializar GLFW" << std::endl;
 		return -1;
 	}
-
 
 	//  -------------------- Creamos la ventana de la app -------------------- 
 	GLFWwindow* window = glfwCreateWindow(WIDHT, HEIGHT, "TFG UJA ENGINE", nullptr, nullptr);
@@ -81,9 +81,10 @@ int main() {
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	// -------------------- Creamos los shaders -------------------- 
-	basicShader = new PagShaderProgram();
-	basicShader->createShaderProgram("Shaders/BasicShaderTexture");
+	//basicShader = new PagShaderProgram();
+	//basicShader->createShaderProgram("Shaders/BasicShaderTexture");
 	//basicShader->createShaderProgram("Shaders/BasicShader");
+	ShaderManager::getInstance();
 
 	// -------------------- Creamos la escena --------------------  
 	world = new Scene();
@@ -105,16 +106,16 @@ int main() {
 		lastFrame = currentFrame;
 
 		// ----------------------------- FPS ----------------------
-		double currentTime = glfwGetTime();
-		nbFrames++;
-		if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
-			// printf and reset timer
-			printf("---------------\n");
-			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-			printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
-			nbFrames = 0;
-			lastTime += 1.0;
-		}
+		//double currentTime = glfwGetTime();
+		//nbFrames++;
+		//if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+		//	// printf and reset timer
+		//	printf("---------------\n");
+		//	printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+		//	printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
+		//	nbFrames = 0;
+		//	lastTime += 1.0;
+		//}
 		// ---------------------------------------------------
 
 		//Inputs
@@ -125,7 +126,7 @@ int main() {
 		world->UpdateObjs(deltaTime);
 		
 		//Render
-		world->DrawObjs(basicShader);
+		world->DrawObjs();
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -139,7 +140,7 @@ int main() {
 // --------------------------- FUNCIONES ----------------------------
 void window_refresh_callback(GLFWwindow* window) {
 	//Llamamos a la función correspodiente a las acciones al refrescar la ventana.
-	world->DrawObjs(basicShader);
+	world->DrawObjs();
 
 	glfwSwapBuffers(window);
 }

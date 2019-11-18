@@ -13,26 +13,16 @@ void SceneObj::UpdateObj(float deltaTime)
 	//Actualiza el objeto según nuestra intención.
 }
 
-void SceneObj::DrawObj(PagShaderProgram* shader)
+void SceneObj::DrawObj(glm::mat4 &modelMatrix)
 {
 	//Especificamos que vamos a usar el shader que nos han pasado.
-	shader->use();
+	//shader->use();
+	ShaderManager::getInstance()->getTextureShader()->use();
 
 	//Metemos los Uniform correspondientes
-	shader->setUniform("ModelMatrix", this->getModelMatrix());
+	//shader->setUniform("MatrixMVP", modelMatrix);
+	ShaderManager::getInstance()->getTextureShader()->setUniform("MatrixMVP", modelMatrix);
 
 	//Dibujamos
-	this->Draw(shader);
-}
-
-void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4 &modelMatrix)
-{
-	//Especificamos que vamos a usar el shader que nos han pasado.
-	shader->use();
-
-	//Metemos los Uniform correspondientes
-	shader->setUniform("MatrixMVP", modelMatrix);
-
-	//Dibujamos
-	this->Draw(shader);
+	this->Draw();
 }

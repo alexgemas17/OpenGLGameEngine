@@ -1,10 +1,9 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <glm.hpp>
 #include <GL\glew.h>
-
-#include "../PagShaderProgram.h"
 
 struct ImageData {
 	std::vector<unsigned char> image;
@@ -31,8 +30,7 @@ public:
 	~Render();
 
 	void Init();
-
-	void Draw(PagShaderProgram* shader);
+	void Draw();
 
 private:
 

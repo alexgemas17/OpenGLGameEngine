@@ -39,7 +39,7 @@ void Render::Init()
 	InitTextura();
 }
 
-void Render::Draw(PagShaderProgram* shader)
+void Render::Draw()
 {
 	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.
 

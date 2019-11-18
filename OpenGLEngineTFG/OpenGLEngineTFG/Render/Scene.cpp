@@ -147,19 +147,18 @@ void Scene::UpdateObjs(float deltaTime)
 	}*/
 
 	//nodo->UpdateObjs(deltaTime);
-	
 
 	nodo->Rotate(10.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-void Scene::DrawObjs(PagShaderProgram* shader)
+void Scene::DrawObjs()
 {
 	//"Limpiamos" los buffers
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Dibujamos los objetos
-	this->nodo->DrawObjs(shader, camara->getMatrixViewProjection());
+	this->nodo->DrawObjs(camara->getMatrixViewProjection());
 }
 
 /* Funciones callbacks */

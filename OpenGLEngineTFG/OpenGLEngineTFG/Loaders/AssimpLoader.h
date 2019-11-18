@@ -32,4 +32,7 @@ private:
 
 	/* Nos devuelve el AssimpData que contiene esa mesh */
 	SceneObj* processMeshAssimp(aiMesh* mesh, const aiScene* scene);
+
+	/* Nos devuelve las textuas asociadas al objeto*/
+	std::vector<std::string> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 };

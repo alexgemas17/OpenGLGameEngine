@@ -43,6 +43,12 @@
     <Filter Include="Archivos de origen\Loaders">
       <UniqueIdentifier>{03db9263-a1e7-4c5e-9de0-b3a0c43d93ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Managers">
+      <UniqueIdentifier>{f7f2d8d3-6029-448f-9cd8-b331c377f37a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Managers">
+      <UniqueIdentifier>{9f07f86b-cbc7-430d-b926-60fd9e112ab3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +84,9 @@
     <ClCompile Include="Loaders\AssimpLoader.cpp">
       <Filter>Archivos de origen\Loaders</Filter>
     </ClCompile>
+    <ClCompile Include="Managers\ShaderManager.cpp">
+      <Filter>Archivos de origen\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
@@ -112,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="Loaders\AssimpLoader.h">
       <Filter>Archivos de encabezado\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\ShaderManager.h">
+      <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
