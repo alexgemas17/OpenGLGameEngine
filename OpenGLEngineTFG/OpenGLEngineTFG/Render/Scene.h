@@ -9,6 +9,8 @@
 #include "SceneObj.h"
 #include "NodoScene.h"
 
+#include "../BasicElement/Cube.h"
+
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
 
@@ -31,7 +33,9 @@ public:
 
 private:
 	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
-	NodoScene* nodo;
+	NodoScene* nodoWorld; 
+	NodoScene* nodoLight;
+	glm::vec3 lightPosition;
 
 	Camara* camara;
 };

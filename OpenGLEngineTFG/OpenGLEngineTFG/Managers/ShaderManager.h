@@ -15,6 +15,7 @@ public:
 	PagShaderProgram* getBasicShader();
 	PagShaderProgram* getWireframeShader();
 	PagShaderProgram* getTextureShader();
+	PagShaderProgram* getBasicLightShader();
 
 	PagShaderProgram* getShaderType();
 
@@ -26,6 +27,7 @@ private:
 
 	PagShaderProgram* basicShader;
 	PagShaderProgram* textureShader;
+	PagShaderProgram* basicLightShader;
 
 	TypeShader typeShader;
 };

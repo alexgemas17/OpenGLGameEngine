@@ -49,6 +49,12 @@
     <Filter Include="Archivos de origen\Managers">
       <UniqueIdentifier>{9f07f86b-cbc7-430d-b926-60fd9e112ab3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\BasicElement">
+      <UniqueIdentifier>{4f896ab5-efd9-454f-b996-7dcc98c2d0c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\BasicElement">
+      <UniqueIdentifier>{64febc7c-4447-4483-8a99-3e0d5e992846}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -86,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="Managers\ShaderManager.cpp">
       <Filter>Archivos de origen\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicElement\Cube.cpp">
+      <Filter>Archivos de origen\BasicElement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +134,9 @@
     <ClInclude Include="Managers\ShaderManager.h">
       <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="BasicElement\Cube.h">
+      <Filter>Archivos de encabezado\BasicElement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicShader-frag.glsl">
@@ -137,6 +149,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\BasicShaderTexture-vert.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BasicLightShader-frag.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\BasicLightShader-vert.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

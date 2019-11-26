@@ -16,7 +16,7 @@ public:
 
 	void InitObjs();
 	void UpdateObjs(float deltaTime);
-	void DrawObjs(glm::mat4 matrixVP);
+	void DrawObjs(glm::mat4 mViewProjection);
 
 private:
 	std::vector<NodoScene*> nodos;
@@ -25,5 +25,5 @@ private:
 	/* Private functions */
 	void InitObjsRecursive(NodoScene* nodo);
 	void UpdateObjsRecursive(NodoScene* nodo, float deltaTime);
-	void DrawObjsRecursive(NodoScene* nodo, glm::mat4& modelMatrix);
+	void DrawObjsRecursive(NodoScene* nodo, glm::mat4& modelMatrix, glm::mat4 mViewProjection);
 };

@@ -16,7 +16,7 @@ Camara::Camara(float fov, int width, int height, float zNear, float zFar):
 	this->mProjection = glm::perspective( glm::radians(fov), float(width) / float(height), zNear, zFar);
 
 	// Parsear desde Data/Config??
-	this->vecPositionCamera = glm::vec3(0.0f, 10.0f, 30.0f);
+	this->vecPositionCamera = glm::vec3(0.0f, 0.0f, 6.0f);
 	this->vecLookAt = glm::vec3(0.0f, 0.0f, 0.0f);
 	this->vecUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -126,6 +126,12 @@ void Camara::SetProjection(int newWidth, int newHeight)
 }
 
 /* Getters */
+glm::vec3 Camara::getPosition()
+{
+	return this->vecPositionCamera;
+}
+
+
 glm::mat4 Camara::getView()
 {
 	return this->mView;

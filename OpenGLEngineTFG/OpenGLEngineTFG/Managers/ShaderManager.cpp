@@ -13,10 +13,11 @@ ShaderManager* ShaderManager::getInstance()
 
 ShaderManager::ShaderManager(): 
 	basicShader(new PagShaderProgram()), textureShader(new PagShaderProgram()),
-	typeShader(TYPE_TEXTURE)
+	basicLightShader(new PagShaderProgram()), typeShader(TYPE_TEXTURE)
 {
 	this->basicShader->createShaderProgram("Shaders/BasicShader");
 	this->textureShader->createShaderProgram("Shaders/BasicShaderTexture");
+	this->basicLightShader->createShaderProgram("Shaders/BasicLightShader");
 }
 
 ShaderManager::~ShaderManager()
@@ -39,6 +40,12 @@ PagShaderProgram* ShaderManager::getWireframeShader()
 PagShaderProgram* ShaderManager::getTextureShader()
 {
 	return this->textureShader;
+}
+
+
+PagShaderProgram* ShaderManager::getBasicLightShader()
+{
+	return this->basicLightShader;
 }
 
 PagShaderProgram* ShaderManager::getShaderType()

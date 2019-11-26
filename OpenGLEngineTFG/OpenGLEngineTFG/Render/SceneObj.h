@@ -2,6 +2,7 @@
 
 #include <glm.hpp>
 #include <vector>
+#include <string>
 #include "Model.h"
 #include "Render.h"
 
@@ -16,7 +17,8 @@ public:
 	~SceneObj();
 
 	void UpdateObj(float deltaTime);
-	void DrawObj(glm::mat4 &modelMatrix);
+	void DrawObj(glm::mat4 &modelMatrix, glm::mat4 mViewProjection);
 
 private:
+	std::string urlImg;
 };

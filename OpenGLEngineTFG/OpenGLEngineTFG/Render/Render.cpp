@@ -36,14 +36,16 @@ void Render::Init()
 	InitVBO();
 	InitIBO();
 	InitCoordTextura();
-	InitTextura();
+	if(this->model.urlImg != "")
+		InitTextura();
 }
 
 void Render::Draw()
 {
 	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.
 
-	glBindTexture(GL_TEXTURE_2D, texture);
+	if (this->model.urlImg != "")
+		glBindTexture(GL_TEXTURE_2D, texture);
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
@@ -64,27 +66,6 @@ ImageData Render::loadImage(std::string url) {
 		std::cout << url << " cannot be loaded" << std::endl;
 		return data;
 	}
-
-	// La textura se carga del revés, así que vamos a darle la vuelta
-	//unsigned char* imgPtr = &data.image[0];
-	//int numColorComponents = 4;
-	//int wInc = data.width * 4; //width in char
-	//unsigned char* top = nullptr;
-	//unsigned char* bot = nullptr;
-	//unsigned char temp = 0;
-	//for (int i = 0; i < data.height / 2; i++)
-	//{
-	//	top = imgPtr + i * wInc;
-	//	bot = imgPtr + (data.height - i - 1) * wInc;
-	//	for (int j = 0; j < wInc; j++)
-	//	{
-	//		temp = *top;
-	//		*top = *bot;
-	//		*bot = temp;
-	//		++top;
-	//		++bot;
-	//	}
-	//}
 
 	return data;
 }

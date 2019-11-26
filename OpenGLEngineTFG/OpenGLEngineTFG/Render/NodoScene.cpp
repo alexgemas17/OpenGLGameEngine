@@ -14,11 +14,10 @@ void NodoScene::addObj(SceneObj* obj)
 	this->objs.push_back(obj);
 }
 
-void NodoScene::DrawObjs(glm::mat4 matrixVP)
+void NodoScene::DrawObjs(glm::mat4 mViewProjection)
 {
 	glm::mat4 model = this->getModelMatrix();
-	model = matrixVP * model;
-	DrawObjsRecursive(this, model);
+	DrawObjsRecursive(this, model, mViewProjection);
 }
 
 void NodoScene::InitObjs()
@@ -78,26 +77,26 @@ void NodoScene::UpdateObjsRecursive(NodoScene* nodo, float deltaTime)
 	}
 }
 
-void NodoScene::DrawObjsRecursive(NodoScene* nodo, glm::mat4 &modelMatrix)
+void NodoScene::DrawObjsRecursive(NodoScene* nodo, glm::mat4 &modelMatrix, glm::mat4 mViewProjection)
 {
 	if (nodo->nodos.empty()) {
 		if (!nodo->objs.empty()) {
 			for (int i = 0; i < nodo->objs.size(); i++) {
 				glm::mat4 model = modelMatrix * nodo->objs[i]->getModelMatrix();
-				nodo->objs[i]->DrawObj(model);
+				nodo->objs[i]->DrawObj(model, mViewProjection);
 			}
 		}
 	}
 	else {
 		for (int i = 0; i < nodo->nodos.size(); i++) {
 			glm::mat4 model = modelMatrix * nodo->nodos[i]->getModelMatrix();
-			DrawObjsRecursive(nodo->nodos[i], model);
+			DrawObjsRecursive(nodo->nodos[i], model, mViewProjection);
 		}
 
 		if (!nodo->objs.empty()) {
 			for (int i = 0; i < nodo->objs.size(); i++) {
 				glm::mat4 model = modelMatrix * nodo->objs[i]->getModelMatrix();
-				nodo->objs[i]->DrawObj(model);
+				nodo->objs[i]->DrawObj(model, mViewProjection);
 			}
 		}
 	}

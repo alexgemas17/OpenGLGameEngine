@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BasicElement\Cube.cpp" />
     <ClCompile Include="Camara\Camara.cpp" />
     <ClCompile Include="Input\InputManager.cpp" />
     <ClCompile Include="Loaders\AssimpLoader.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="Render\SceneObj.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicElement\Cube.h" />
     <ClInclude Include="Camara\Camara.h" />
     <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="Interface\ISceneClass.h" />
@@ -157,6 +159,8 @@
     <ClInclude Include="Render\SceneObj.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\BasicLightShader-frag.glsl" />
+    <None Include="Shaders\BasicLightShader-vert.glsl" />
     <None Include="Shaders\BasicShader-frag.glsl" />
     <None Include="Shaders\BasicShader-vert.glsl" />
     <None Include="Shaders\BasicShaderTexture-frag.glsl" />
