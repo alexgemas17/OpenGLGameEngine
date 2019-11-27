@@ -109,15 +109,23 @@ Scene::Scene(): camara(nullptr)
 	//nodo->addNodo(nodo1);
 
 	//Cubo
-	Cube* cubo = new Cube(0.5f);
-	cubo->getSceneObj()->Translate(0.0f, 0.0f, 0.0f);
-	nodoWorld->addObj(cubo->getSceneObj());
+	//Cube* cubo = new Cube(0.5f);
+	//cubo->getSceneObj()->Translate(0.0f, 0.0f, 0.0f);
+	//nodoWorld->addObj(cubo->getSceneObj());
+	NodoScene* nodo1 = loader->loadModelAssimp("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
+	nodo1->Scale(0.3f, 0.3f, 0.3f);
 
-	lightPosition = glm::vec3(1.5f, 0.0f, 0.0f);
+	nodoWorld->addNodo(nodo1);
 
-	Cube* cuboLuz = new Cube(0.1f);
-	cuboLuz->getSceneObj()->Translate(1.5f, 0.0f, 0.0f);
-	nodoLight->addObj(cuboLuz->getSceneObj());
+	lightPosition = glm::vec3(4.0f, 0.0f, 0.0f);
+
+	//Cube* cuboLuz = new Cube(0.1f);
+	//cuboLuz->getSceneObj()->Translate(1.5f, 0.0f, 0.0f);
+	//nodoLight->addObj(cuboLuz->getSceneObj());
+	NodoScene* nodo2 = loader->loadModelAssimp("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
+	nodo2->Scale(0.1f, 0.1f, 0.1f);
+	nodo2->Translate(4.0f, 0.0f, 0.0f);
+	nodoLight->addNodo(nodo2);
 
 	delete loader;
 }
@@ -152,14 +160,11 @@ void Scene::UpdateObjs(float deltaTime)
 	//nodo->UpdateObjs(deltaTime);
 
 	//nodo->Rotate(10.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
-	nodoLight->Rotate(glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+	//nodoLight->Rotate(glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	lightPosition.x = 1.5 * sin(glfwGetTime());
-	lightPosition.z = 0.0f;
-	lightPosition.z = 0.0f * cos(glfwGetTime());
-
-	ShaderManager::getInstance()->getBasicLightShader()->use();
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("lightPosition", lightPosition);
+	//lightPosition.x = 1.5 * sin(glfwGetTime());
+	//lightPosition.z = 0.0f;
+	//lightPosition.z = 0.0f * cos(glfwGetTime());
 }
 
 void Scene::DrawObjs()
@@ -172,6 +177,7 @@ void Scene::DrawObjs()
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("viewPosition", camara->getPosition());
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("lightPosition", lightPosition);
 
 	//Dibujamos los objetos
 	this->nodoWorld->DrawObjs(camara->getMatrixViewProjection());
