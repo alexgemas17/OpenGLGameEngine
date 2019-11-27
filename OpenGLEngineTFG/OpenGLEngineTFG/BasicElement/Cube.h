@@ -2,6 +2,7 @@
 
 #include <glm.hpp>
 #include <vector>
+#include <string>
 
 #include "../Render/SceneObj.h"
 
@@ -22,5 +23,8 @@ private:
 
 	//Obj
 	SceneObj* obj;
+
+	// Funciones
+	std::string ExePath();
 };
 

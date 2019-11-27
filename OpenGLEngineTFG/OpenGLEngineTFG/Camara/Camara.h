@@ -20,9 +20,9 @@ public:
 
 	/* Getters */
 	glm::vec3 getPosition();
-	glm::mat4 getView();
-	glm::mat4 getProjection();
-	glm::mat4 getMatrixViewProjection();
+	glm::mat4 getView() const;
+	glm::mat4 getProjection() const;
+	glm::mat4 getMatrixViewProjection() const;
 
 
 private:

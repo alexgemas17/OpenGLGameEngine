@@ -1,6 +1,6 @@
 #include "AssimpLoader.h"
 
-NodoScene* AssimpLoader::loadModelAssimp(std::string modelURL)
+NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL)
 {
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
@@ -17,6 +17,25 @@ NodoScene* AssimpLoader::loadModelAssimp(std::string modelURL)
 	loadRecursivo(scene->mRootNode, scene, root);
 
 	return root;
+}
+
+SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL)
+{
+	// Leemmos los datos del archivo mediante el importer de assimp
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(modelURL, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+		return nullptr;
+	}
+
+	std::cout << "ASSIMP::Loaded successfully" << std::endl;
+	NodoScene* root = new NodoScene();
+	loadRecursivo(scene->mRootNode, scene, root);
+
+	return root->getNode(0)->getObj(0);
 }
 
 //Recorre los distintos nodos que contiene la escena. O lo que es lo mismo, nuestro NodeScene

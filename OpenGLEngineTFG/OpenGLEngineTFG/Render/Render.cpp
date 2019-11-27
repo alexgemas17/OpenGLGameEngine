@@ -6,15 +6,16 @@ Render::Render(): VAO(0), VBO(0), IBO(0), texture(0) {}
 
 Render::Render(float _vertices[], unsigned int _indices[]):
 	VAO(0), VBO(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
-	typeRender(Puntos)
+	typeRender(Points)
 {}
 
 Render::Render(float _vertices[], unsigned int _indices[], std::string imgUrl) :
 	VAO(0), VBO(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
-	typeRender(PuntosTextura), urlImg(imgUrl)
+	typeRender(TextureLight), urlImg(imgUrl)
 {}
 
-Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg)
+Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg):
+	typeRender(TextureLight), urlImg(urlImg)
 {
 	this->model.puntos = puntos;
 	this->model.normales = normales;
@@ -38,6 +39,16 @@ void Render::Init()
 	InitCoordTextura();
 	if(this->model.urlImg != "")
 		InitTextura();
+}
+
+void Render::setTypeRender(TypeRender type)
+{
+	this->typeRender = type;
+}
+
+TypeRender Render::getTypeRender()
+{
+	return this->typeRender;
 }
 
 void Render::Draw()

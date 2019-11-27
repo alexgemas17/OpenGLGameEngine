@@ -55,6 +55,9 @@
     <Filter Include="Archivos de origen\BasicElement">
       <UniqueIdentifier>{64febc7c-4447-4483-8a99-3e0d5e992846}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Luces">
+      <UniqueIdentifier>{d8ed7532-3637-4bb5-aba4-2330d3ee7a50}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -152,10 +155,10 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\BasicLightShader-frag.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Luces</Filter>
     </None>
     <None Include="Shaders\BasicLightShader-vert.glsl">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\Luces</Filter>
     </None>
   </ItemGroup>
 </Project>

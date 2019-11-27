@@ -13,30 +13,74 @@ void SceneObj::UpdateObj(float deltaTime)
 	//Actualiza el objeto según nuestra intención.
 }
 
-void SceneObj::DrawObj(glm::mat4 &modelMatrix, glm::mat4 mViewProjection)
+void SceneObj::DrawObj(glm::mat4 &_modelMatrix, glm::mat4& _mView, glm::mat4& _mViewProjection)
 {
-	//Modo textura
-	if (this->urlImg != "") {
-		//Especificamos que vamos a usar el shader que nos han pasado.
-		ShaderManager::getInstance()->getTextureShader()->use();
+	switch (getTypeRender())
+	{
+	case Points:
+		setShaderToPoints(_modelMatrix, _mViewProjection);
+		break;
 
-		//Metemos los Uniform correspondientes
-		ShaderManager::getInstance()->getTextureShader()->setUniform("MatrixMVP", modelMatrix);
-	}
-	//Modo plano
-	else {
-		//ShaderManager::getInstance()->getBasicShader()->use();
+	case Wireframe:
+		setShaderToWireFrame(_modelMatrix, _mViewProjection);
+		break;
 
-		////Metemos los Uniform correspondientes
-		//ShaderManager::getInstance()->getBasicShader()->setUniform("MatrixMVP", modelMatrix);
+	case Texture:
+		setShaderToTexture(_modelMatrix, _mViewProjection);
+		break;
 
+	case BasicColor:
+		setShaderToBasicColor(_modelMatrix, _mViewProjection);
+		break;
 
-		ShaderManager::getInstance()->getBasicLightShader()->use();
-
-		ShaderManager::getInstance()->getBasicLightShader()->setUniform("mModel", modelMatrix);
-		ShaderManager::getInstance()->getBasicLightShader()->setUniform("mMVP", mViewProjection * modelMatrix);
+	case TextureLight:
+		setShaderToTextureLight(_modelMatrix, _mView, _mViewProjection);
+		break;
 	}
 
 	//Dibujamos
 	this->Draw();
+}
+
+void SceneObj::setShaderToPoints(glm::mat4& modelMatrix, glm::mat4& mViewProjection)
+{
+	ShaderManager::getInstance()->getBasicShader()->use();
+
+	//Metemos los Uniform correspondientes
+	ShaderManager::getInstance()->getBasicShader()->setUniform("MatrixMVP", mViewProjection * modelMatrix);
+}
+
+void SceneObj::setShaderToWireFrame(glm::mat4& modelMatrix, glm::mat4& mViewProjection)
+{
+	ShaderManager::getInstance()->getBasicShader()->use();
+
+	//Metemos los Uniform correspondientes
+	ShaderManager::getInstance()->getBasicShader()->setUniform("MatrixMVP", mViewProjection * modelMatrix);
+}
+
+void SceneObj::setShaderToBasicColor(glm::mat4& modelMatrix, glm::mat4& mViewProjection)
+{
+	ShaderManager::getInstance()->getBasicShader()->use();
+
+	//Metemos los Uniform correspondientes
+	ShaderManager::getInstance()->getBasicShader()->setUniform("MatrixMVP", mViewProjection * modelMatrix);
+}
+
+// Usa el shader de textura para renderizar el objeto
+void SceneObj::setShaderToTexture(glm::mat4& modelMatrix, glm::mat4& mViewProjection)
+{
+	//Especificamos que vamos a usar el shader que nos han pasado.
+	ShaderManager::getInstance()->getTextureShader()->use();
+
+	//Metemos los Uniform correspondientes
+	ShaderManager::getInstance()->getTextureShader()->setUniform("MatrixMVP", modelMatrix);
+}
+
+// Usa el shader de luces para renderizar el objeto
+void SceneObj::setShaderToTextureLight(glm::mat4& _modelMatrix, glm::mat4& _mView, glm::mat4& _mViewProjection)
+{
+	ShaderManager::getInstance()->getBasicLightShader()->use();
+
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mModel", _modelMatrix);
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mMVP", _mViewProjection * _modelMatrix);
 }

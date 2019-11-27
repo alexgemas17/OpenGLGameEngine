@@ -24,7 +24,10 @@ class AssimpLoader
 {
 public:
 	// Devuelve el nodo root del modelo
-	NodoScene* loadModelAssimp(std::string modelURL);
+	NodoScene* loadModelAssimpNode(std::string modelURL);
+
+	// Devuelve el nodo root del modelo
+	SceneObj* loadModelAssimpObj(std::string modelURL);
 
 private:
 	/* Recorremos recursivamente los nodos que compone la escena (el modelo) */

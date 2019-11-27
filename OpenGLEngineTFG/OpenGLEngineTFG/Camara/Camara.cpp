@@ -132,17 +132,17 @@ glm::vec3 Camara::getPosition()
 }
 
 
-glm::mat4 Camara::getView()
+glm::mat4 Camara::getView() const
 {
 	return this->mView;
 }
 
-glm::mat4 Camara::getProjection()
+glm::mat4 Camara::getProjection() const
 {
 	return this->mProjection;
 }
 
-glm::mat4 Camara::getMatrixViewProjection()
+glm::mat4 Camara::getMatrixViewProjection() const 
 {
 	return this->mVP;
 }

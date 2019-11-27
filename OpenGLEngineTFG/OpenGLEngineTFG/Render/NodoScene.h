@@ -16,7 +16,10 @@ public:
 
 	void InitObjs();
 	void UpdateObjs(float deltaTime);
-	void DrawObjs(glm::mat4 mViewProjection);
+	void DrawObjs(glm::mat4& mView, glm::mat4& mViewProjection);
+
+	SceneObj* getObj(int index) { return this->objs[index]; }
+	NodoScene* getNode(int index) { return this->nodos[index]; }
 
 private:
 	std::vector<NodoScene*> nodos;
@@ -25,5 +28,5 @@ private:
 	/* Private functions */
 	void InitObjsRecursive(NodoScene* nodo);
 	void UpdateObjsRecursive(NodoScene* nodo, float deltaTime);
-	void DrawObjsRecursive(NodoScene* nodo, glm::mat4& modelMatrix, glm::mat4 mViewProjection);
+	void DrawObjsRecursive(NodoScene* nodo, glm::mat4& modelMatrix, glm::mat4& mView, glm::mat4& mViewProjection);
 };

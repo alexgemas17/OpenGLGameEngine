@@ -18,7 +18,7 @@ struct ModelData {
 	std::string urlImg;
 };
 
-enum TypeRender { Puntos, PuntosTextura, PuntosNormalesTextura, PuntosNormalesTexturaBump};
+enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight};
 
 class Render {
 public:
@@ -31,6 +31,9 @@ public:
 
 	void Init();
 	void Draw();
+
+	void setTypeRender(TypeRender type);
+	TypeRender getTypeRender();
 
 private:
 

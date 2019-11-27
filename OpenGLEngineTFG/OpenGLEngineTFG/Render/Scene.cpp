@@ -13,86 +13,12 @@ Scene::Scene(): camara(nullptr)
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 
-	//std::vector<glm::vec3> puntos_plano = {
-	//	glm::vec3(0.5f,  0.5f, 0.0f),
-	//	glm::vec3(0.5f, -0.5f, 0.0f),
-	//	glm::vec3(-0.5f, -0.5f, 0.0f),
-	//	glm::vec3(-0.5f, 0.5f, 0.0f)
-	//};
-
-	//std::vector<GLuint> index_plano = {
-	//	0,2,1,3,2,0,0xFFFFFFFF
-	//};
-
-	////No se usa ahora mismo
-	//std::vector<glm::vec3> color = {
-	//	glm::vec3(1.0f, 0.0f, 0.0f),
-	//	glm::vec3(0.0f, 1.0f, 0.0f),
-	//	glm::vec3(0.0f, 0.0f, 1.0f),
-	//	glm::vec3(1.0f, 1.0f, 0.0f)
-	//};
-
-	//std::vector<glm::vec2> coordenada_textura_plano = {
-	//	glm::vec2(1.0f, 1.0f),
-	//	glm::vec2(1.0f, 0.0f),
-	//	glm::vec2(0.0f, 0.0f),
-	//	glm::vec2(0.0f, 1.0f)
-	//};
-
-	////-------------- CUBO ------------------
-	//std::vector<glm::vec3> puntos = {
-	//	glm::vec3( -0.5f,  0.5f,  0.5f ),
-	//	glm::vec3(  0.5f,  0.5f,  0.5f ),
-	//	glm::vec3( -0.5f, -0.5f,  0.5f ),
-	//	glm::vec3(  0.5f, -0.5f,  0.5f ),
-	//	glm::vec3( -0.5f,  0.5f, -0.5f ),
-	//	glm::vec3(  0.5f,  0.5f, -0.5f ),
-	//	glm::vec3( -0.5f, -0.5f, -0.5f ),
-	//	glm::vec3(  0.5f, -0.5f, -0.5f ),
-	//};
-
-	//std::vector<GLuint> index = {
-	//	4,0,5,4, 0xFFFFFFFF,
-	//	5,0,1,5, 0xFFFFFFFF,
-
-	//	0,2,1,0, 0xFFFFFFFF,
-	//	1,2,3,1, 0xFFFFFFFF,
-
-	//	5,7,4,5, 0xFFFFFFFF,
-	//	4,7,6,4, 0xFFFFFFFF,
-
-	//	4,6,0,4, 0xFFFFFFFF,
-	//	0,6,2,0, 0xFFFFFFFF,
-
-	//	1,3,5,1, 0xFFFFFFFF,
-	//	5,3,7,5, 0xFFFFFFFF,
-
-	//	2,6,3,2, 0xFFFFFFFF,
-	//	3,6,7,3, 0xFFFFFFFF
-	//};
-
-	//std::vector<glm::vec2> coordenada_textura = {
-	//	glm::vec2(1.0f, 1.0f),
-	//	glm::vec2(1.0f, 0.0f),
-	//	glm::vec2(0.0f, 0.0f),
-	//	glm::vec2(0.0f, 1.0f)
-	//};
 
 	// ----- Objeto 1 ----- 
 	//SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
 	//triangulo1->Scale(0.5f, 0.5f, 0.5f);
 	//triangulo1->Rotate(45.0f, glm::vec3(0,1,0));
 	//triangulo1->Rotate(25.0f, glm::vec3(1, 0, 0));
-
-	//// ----- Objeto 2 ----- 
-	//SceneObj *triangulo2 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
-	//triangulo2->Scale(0.5f, 0.5f, 0.5f);
-	//triangulo2->Rotate(45.0f, glm::vec3(0, 0, 1));
-
-	//// ----- Nodo nivel 1 ----- 
-	//NodoScene *level1 = new NodoScene();
-	//level1->Translate(0.6f, -0.5f, 0.0f);
-	//level1->addObj(triangulo2);
 
 	//// ----- Nodo Raiz ----- 
 	//this->nodo = new NodoScene();
@@ -108,24 +34,19 @@ Scene::Scene(): camara(nullptr)
 
 	//nodo->addNodo(nodo1);
 
-	//Cubo
-	//Cube* cubo = new Cube(0.5f);
-	//cubo->getSceneObj()->Translate(0.0f, 0.0f, 0.0f);
-	//nodoWorld->addObj(cubo->getSceneObj());
-	NodoScene* nodo1 = loader->loadModelAssimp("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
-	nodo1->Scale(0.3f, 0.3f, 0.3f);
+	//Cubo 1 
+	Cube* cubo = new Cube(0.5f);
+	cubo->getSceneObj()->Translate(0.0f, 0.0f, 0.0f);
+	nodoWorld->addObj(cubo->getSceneObj());
 
-	nodoWorld->addNodo(nodo1);
 
 	lightPosition = glm::vec3(4.0f, 0.0f, 0.0f);
 
-	//Cube* cuboLuz = new Cube(0.1f);
-	//cuboLuz->getSceneObj()->Translate(1.5f, 0.0f, 0.0f);
-	//nodoLight->addObj(cuboLuz->getSceneObj());
-	NodoScene* nodo2 = loader->loadModelAssimp("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
-	nodo2->Scale(0.1f, 0.1f, 0.1f);
-	nodo2->Translate(4.0f, 0.0f, 0.0f);
-	nodoLight->addNodo(nodo2);
+	//Cubo Luz 
+	Cube* cubo2 = new Cube(0.1f);
+	cubo2->getSceneObj()->Scale(0.1f, 0.1f, 0.1f);
+	cubo2->getSceneObj()->Translate(4.0f, 0.0f, 0.0f);
+	nodoLight->addObj(cubo2->getSceneObj());
 
 	delete loader;
 }
@@ -156,15 +77,6 @@ void Scene::UpdateObjs(float deltaTime)
 	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
 		nodo->Translate(-0.5f,0.0f,0.0f);
 	}*/
-
-	//nodo->UpdateObjs(deltaTime);
-
-	//nodo->Rotate(10.0f * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
-	//nodoLight->Rotate(glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
-
-	//lightPosition.x = 1.5 * sin(glfwGetTime());
-	//lightPosition.z = 0.0f;
-	//lightPosition.z = 0.0f * cos(glfwGetTime());
 }
 
 void Scene::DrawObjs()
@@ -174,14 +86,30 @@ void Scene::DrawObjs()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ShaderManager::getInstance()->getBasicLightShader()->use();
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("viewPosition", camara->getPosition());
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("lightPosition", lightPosition);
 
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", lightPosition);
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("viewPos", camara->getPosition());
+
+	glm::vec3 lightColor;
+	lightColor.x = sin(glfwGetTime() * 2.0f);
+	lightColor.y = sin(glfwGetTime() * 0.7f);
+	lightColor.z = sin(glfwGetTime() * 1.3f);
+	glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // decrease the influence
+	glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.ambient", ambientColor);
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.diffuse", diffuseColor);
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.shininess", 32.0f);
+	
 	//Dibujamos los objetos
-	this->nodoWorld->DrawObjs(camara->getMatrixViewProjection());
-	this->nodoLight->DrawObjs(camara->getMatrixViewProjection());
+	glm::mat4 mView = camara->getView();
+	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
+	this->nodoWorld->DrawObjs(mView, mViewProjection);
+	this->nodoLight->DrawObjs(mView, mViewProjection);
 }
 
 /* Funciones callbacks */
