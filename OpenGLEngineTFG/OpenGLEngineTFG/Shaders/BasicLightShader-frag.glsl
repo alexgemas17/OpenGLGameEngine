@@ -23,25 +23,21 @@ in vec3 FragPos;
 uniform Material material;
 uniform Light light;
 
-uniform vec3 viewPos; 
-
 void main()
 {
 	// Ambient
-    vec3 ambient = light.ambient * material.ambient;
 
-    // diff
-	vec3 n = (gl_FrontFacing) ? normalize(Normal) : normalize(-Normal);
-    vec3 lightDir = normalize(light.position - FragPos);
-    vec3 diffuse = light.diffuse * (material.diffuse * max(dot(n, lightDir), 0.0));
- 
- 	// specular
- 	vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir  = reflect( -viewDir, n );
-    
-    //vec3 specular = (dot(lightDir, n) < 0.0) ? vec3(0.0) : (specularStrength * lightColor * pow(max(dot(r, v), 0.0), 32));
-    vec3 specular = light.specular * (material.specular * pow(max(dot(viewDir, reflectDir), 0.0), material.shininess));
+	//vec3 n = (gl_FrontFacing) ? normalize(Normal) : normalize(-Normal);
+	vec3 n = normalize( Normal );
+
+	vec3 l = normalize( light.position - FragPos );
+	vec3 v = normalize( -FragPos );
+	vec3 r = reflect( -l, n );
+
+    vec3 ambient = light.ambient * material.ambient;
+    vec3 diffuse = light.diffuse * material.diffuse * max(dot(l,n), 0.0);
+    vec3 specular = (dot(l, n) < 0.0) ? vec3(0.0) : (light.specular * material.specular * pow(max(dot(r, v), 0.0), material.shininess));
         
     //Resultado
-    FragColor = vec4(ambient + diffuse + specular, 1.0);
-} 
+    FragColor = vec4((ambient + diffuse + specular), 1.0);
+}

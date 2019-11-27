@@ -35,17 +35,19 @@ Scene::Scene(): camara(nullptr)
 	//nodo->addNodo(nodo1);
 
 	//Cubo 1 
-	Cube* cubo = new Cube(0.5f);
-	cubo->getSceneObj()->Translate(0.0f, 0.0f, 0.0f);
+	Cube* cubo = new Cube(0.2f);
+	cubo->getSceneObj()->Scale(0.7f, 0.7f, 0.7f);
+	cubo->getSceneObj()->Rotate(15, glm::vec3(1.0f, 0.0f, 0.0f));
 	nodoWorld->addObj(cubo->getSceneObj());
 
 
-	lightPosition = glm::vec3(4.0f, 0.0f, 0.0f);
+	lightPosition = glm::vec3(2.2f, 5.0f, 3.0f);
 
 	//Cubo Luz 
 	Cube* cubo2 = new Cube(0.1f);
-	cubo2->getSceneObj()->Scale(0.1f, 0.1f, 0.1f);
-	cubo2->getSceneObj()->Translate(4.0f, 0.0f, 0.0f);
+	cubo2->getSceneObj()->setTypeRender(BasicColor);
+	cubo2->getSceneObj()->Scale(0.8f, 0.8f, 0.8f);
+	cubo2->getSceneObj()->Translate(lightPosition.x, lightPosition.y, lightPosition.z);
 	nodoLight->addObj(cubo2->getSceneObj());
 
 	delete loader;
@@ -87,22 +89,16 @@ void Scene::DrawObjs()
 
 	ShaderManager::getInstance()->getBasicLightShader()->use();
 
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", lightPosition);
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("viewPos", camara->getPosition());
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", normalize(glm::vec3(camara->getView() * glm::vec4(lightPosition, 0.0))));
+	//ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", lightPosition);
 
-	glm::vec3 lightColor;
-	lightColor.x = sin(glfwGetTime() * 2.0f);
-	lightColor.y = sin(glfwGetTime() * 0.7f);
-	lightColor.z = sin(glfwGetTime() * 1.3f);
-	glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f); // decrease the influence
-	glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // low influence
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.ambient", ambientColor);
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.diffuse", diffuseColor);
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.specular", glm::vec3(0.4f, 0.4f, 0.4f));
 
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.ambient", glm::vec3(1.0f, 0.5f, 0.31f));
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.diffuse", glm::vec3(1.0f, 0.5f, 0.31f));
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.diffuse", glm::vec3(0.5f, 0.0f, 0.0f));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.specular", glm::vec3(0.7f, 0.6f, 0.6f));
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.shininess", 32.0f);
 	
 	//Dibujamos los objetos

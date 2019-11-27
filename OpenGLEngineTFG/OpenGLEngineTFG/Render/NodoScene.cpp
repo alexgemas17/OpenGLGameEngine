@@ -17,7 +17,7 @@ void NodoScene::addObj(SceneObj* obj)
 void NodoScene::DrawObjs(glm::mat4& mView, glm::mat4& mViewProjection)
 {
 	glm::mat4 model = this->getModelMatrix();
-	DrawObjsRecursive(this, model, mViewProjection, mView);
+	DrawObjsRecursive(this, model, mView, mViewProjection);
 }
 
 void NodoScene::InitObjs()

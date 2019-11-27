@@ -81,6 +81,6 @@ void SceneObj::setShaderToTextureLight(glm::mat4& _modelMatrix, glm::mat4& _mVie
 {
 	ShaderManager::getInstance()->getBasicLightShader()->use();
 
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mModel", _modelMatrix);
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mModel", _mView *_modelMatrix);
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mMVP", _mViewProjection * _modelMatrix);
 }

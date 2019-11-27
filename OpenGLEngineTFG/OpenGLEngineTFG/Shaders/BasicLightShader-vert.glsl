@@ -12,8 +12,7 @@ uniform mat4 mMVP;
 void main()
 {
     FragPos = vec3(mModel * vec4(vPosition, 1.0));
-    //Normal = vec3(mModel * vec4(vNormal, 0.0));
-    Normal = mat3(transpose(inverse(mModel))) * vNormal;
+    Normal = vec3(mModel * vec4(vNormal, 0.0));
     
     gl_Position = mMVP * vec4(vPosition, 1.0);
 }
