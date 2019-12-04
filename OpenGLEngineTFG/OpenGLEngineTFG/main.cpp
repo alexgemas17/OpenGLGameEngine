@@ -81,9 +81,6 @@ int main() {
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 
 	// -------------------- Creamos los shaders -------------------- 
-	//basicShader = new PagShaderProgram();
-	//basicShader->createShaderProgram("Shaders/BasicShaderTexture");
-	//basicShader->createShaderProgram("Shaders/BasicShader");
 	ShaderManager::getInstance();
 
 	// -------------------- Creamos la escena --------------------  
@@ -168,9 +165,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	//world->cursor_position_callback(xpos, ypos);
+	world->cursor_position_callback(xpos, ypos);
 
 	window_refresh_callback(window);
 }

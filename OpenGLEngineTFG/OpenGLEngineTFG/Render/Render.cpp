@@ -2,15 +2,15 @@
 
 #include "../Loaders/lodepng.h"
 
-Render::Render(): VAO(0), VBO(0), IBO(0), texture(0) {}
+Render::Render(): VAO(0), VBO_Puntos(0), VBO_Normales(0), IBO(0), texture(0) {}
 
 Render::Render(float _vertices[], unsigned int _indices[]):
-	VAO(0), VBO(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
+	VAO(0), VBO_Puntos(0), VBO_Normales(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
 	typeRender(Points)
 {}
 
 Render::Render(float _vertices[], unsigned int _indices[], std::string imgUrl) :
-	VAO(0), VBO(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
+	VAO(0), VBO_Puntos(0), VBO_Normales(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
 	typeRender(TextureLight), urlImg(imgUrl)
 {}
 
@@ -27,7 +27,8 @@ Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::ve
 Render::~Render()
 {
 	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &VBO_Puntos);
+	glDeleteBuffers(1, &VBO_Normales);
 }
 
 //------------------------------- PUBLIC -------------------------------
@@ -85,7 +86,8 @@ ImageData Render::loadImage(std::string url) {
 void Render::InitVAO() 
 {
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &VBO_Puntos);
+	glGenBuffers(1, &VBO_Normales);
 	glGenBuffers(1, &CoordTexturaBuffer);
 	glGenBuffers(1, &IBO);
 }
@@ -95,13 +97,25 @@ void Render::InitVBO()
 	//Enlazamos las siguientes funciones al VAO
 	glBindVertexArray(VAO);
 
-	// Enlazamos el VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	// Enlazamos el VBO puntos
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Puntos);
 
+	// Puntos
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec3), ((GLubyte*)NULL + (0)));
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * this->model.puntos.size(), this->model.puntos.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// Enlazamos el VBO normales
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Normales);
+
+	// Normales
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, sizeof(glm::vec3) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec3), ((GLubyte*)NULL + (0)));
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * this->model.normales.size(), this->model.normales.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -129,8 +143,8 @@ void Render::InitCoordTextura()
 	// Enlazamos el CoordTexturaBuffer
 	glBindBuffer(GL_ARRAY_BUFFER, CoordTexturaBuffer);
 
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec2), ((GLubyte*)NULL + (0)));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec2), ((GLubyte*)NULL + (0)));
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * this->model.coordenada_textura.size(), this->model.coordenada_textura.data(), GL_STATIC_DRAW);
 

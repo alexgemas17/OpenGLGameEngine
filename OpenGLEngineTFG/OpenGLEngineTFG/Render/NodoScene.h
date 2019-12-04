@@ -18,10 +18,14 @@ public:
 	void UpdateObjs(float deltaTime);
 	void DrawObjs(glm::mat4& mView, glm::mat4& mViewProjection);
 
+	void setTypeRenderNode(TypeRender type) { this->typeRender = type; };
+
 	SceneObj* getObj(int index) { return this->objs[index]; }
 	NodoScene* getNode(int index) { return this->nodos[index]; }
 
+
 private:
+	TypeRender typeRender;
 	std::vector<NodoScene*> nodos;
 	std::vector<SceneObj*> objs;
 

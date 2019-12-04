@@ -118,16 +118,14 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene)
 		// Specular: texture_specularN
 		// Normal: texture_normalN
 
-		// 1. Diffuse maps
-		//std::vector<std::string> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+		std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		// 2. Specular maps
-		//std::vector<std::string> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 
-	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, "");
+	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, "D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png");
 
 	return obj;
 }

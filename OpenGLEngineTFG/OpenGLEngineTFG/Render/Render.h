@@ -18,7 +18,7 @@ struct ModelData {
 	std::string urlImg;
 };
 
-enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight};
+enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight };
 
 class Render {
 public:
@@ -38,7 +38,8 @@ public:
 private:
 
 	unsigned int VAO;
-	unsigned int VBO;
+	unsigned int VBO_Puntos;
+	unsigned int VBO_Normales;
 	unsigned int IBO;
 	unsigned int texture;
 

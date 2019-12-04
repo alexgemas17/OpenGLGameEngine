@@ -13,7 +13,6 @@ Scene::Scene(): camara(nullptr)
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 
-
 	// ----- Objeto 1 ----- 
 	//SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
 	//triangulo1->Scale(0.5f, 0.5f, 0.5f);
@@ -35,20 +34,26 @@ Scene::Scene(): camara(nullptr)
 	//nodo->addNodo(nodo1);
 
 	//Cubo 1 
-	Cube* cubo = new Cube(0.2f);
+	/*Cube* cubo = new Cube(0.2f);
 	cubo->getSceneObj()->Scale(0.7f, 0.7f, 0.7f);
 	cubo->getSceneObj()->Rotate(15, glm::vec3(1.0f, 0.0f, 0.0f));
-	nodoWorld->addObj(cubo->getSceneObj());
+	nodoWorld->addObj(cubo->getSceneObj());*/
 
+	//NodoScene* nodo1 = loader->loadModelAssimpNode("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
+	NodoScene* nodo1 = loader->loadModelAssimpNode("D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
+	nodo1->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	nodoWorld->addNodo(nodo1);
+	nodoWorld->Scale(0.5f, 0.5f, 0.5f);
+	nodoWorld->Translate(0.0f, -2.0f, 0.0f);
 
-	lightPosition = glm::vec3(2.2f, 5.0f, 3.0f);
+	lightPosition = glm::vec3(10.2f, 10.0f, 10.0f);
 
 	//Cubo Luz 
-	Cube* cubo2 = new Cube(0.1f);
-	cubo2->getSceneObj()->setTypeRender(BasicColor);
-	cubo2->getSceneObj()->Scale(0.8f, 0.8f, 0.8f);
-	cubo2->getSceneObj()->Translate(lightPosition.x, lightPosition.y, lightPosition.z);
-	nodoLight->addObj(cubo2->getSceneObj());
+	NodoScene* nodo2 = loader->loadModelAssimpNode("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
+	nodoLight->addNodo(nodo2);
+	nodoLight->Scale(0.7f, 0.7f, 0.7f);
+	nodoLight->Translate(lightPosition.x, lightPosition.y, lightPosition.z);
+	nodoLight->setTypeRenderNode(BasicColor);
 
 	delete loader;
 }
@@ -72,13 +77,13 @@ void Scene::UpdateObjs(float deltaTime)
 	camara->UpdateCamera(deltaTime);
 
 	//Inputs de prueba
-	/*if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
-		nodo->Translate(0.5f, 0.0f, 0.0f);
+	if (InputManager::getInstance()->getInputButtonDown(Key_C)) {
+		nodoWorld->Translate(0.0f, 0.5f, 0.0f);
 	}
 
-	if (InputManager::getInstance()->getInputButtonDown(Key_D)) {
-		nodo->Translate(-0.5f,0.0f,0.0f);
-	}*/
+	if (InputManager::getInstance()->getInputButtonDown(Key_V)) {
+		nodoWorld->Translate(0.0f,-0.5f,0.0f);
+	}
 }
 
 void Scene::DrawObjs()
@@ -89,21 +94,22 @@ void Scene::DrawObjs()
 
 	ShaderManager::getInstance()->getBasicLightShader()->use();
 
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", normalize(glm::vec3(camara->getView() * glm::vec4(lightPosition, 0.0))));
-	//ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", lightPosition);
+	//ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", normalize(glm::vec3(camara->getView() * glm::vec4(lightPosition, 0.0))));
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.position", lightPosition);
 
+	// light properties
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("light.specular", glm::vec3(0.4f, 0.4f, 0.4f));
-
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
-	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.diffuse", glm::vec3(0.5f, 0.0f, 0.0f));
+	
+	// material properties
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.specular", glm::vec3(0.7f, 0.6f, 0.6f));
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.shininess", 32.0f);
 	
 	//Dibujamos los objetos
 	glm::mat4 mView = camara->getView();
 	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
+
 	this->nodoWorld->DrawObjs(mView, mViewProjection);
 	this->nodoLight->DrawObjs(mView, mViewProjection);
 }

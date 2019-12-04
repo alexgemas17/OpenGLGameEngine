@@ -1,7 +1,7 @@
 #include "NodoScene.h"
 #include <gtc/matrix_transform.hpp>
 
-NodoScene::NodoScene(): Model() {}
+NodoScene::NodoScene(): Model(), typeRender(TextureLight) {}
 NodoScene::~NodoScene() {}
 
 void NodoScene::addNodo(NodoScene* nodo)
@@ -14,10 +14,10 @@ void NodoScene::addObj(SceneObj* obj)
 	this->objs.push_back(obj);
 }
 
-void NodoScene::DrawObjs(glm::mat4& mView, glm::mat4& mViewProjection)
+void NodoScene::DrawObjs(glm::mat4& _mView, glm::mat4& _mViewProjection)
 {
 	glm::mat4 model = this->getModelMatrix();
-	DrawObjsRecursive(this, model, mView, mViewProjection);
+	DrawObjsRecursive(this, model, _mView, _mViewProjection);
 }
 
 void NodoScene::InitObjs()
@@ -37,6 +37,7 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 		if (nodo->nodos.empty()) {
 			if (!nodo->objs.empty()) {
 				for (int i = 0; i < nodo->objs.size(); i++) {
+					nodo->objs[i]->setTypeRender(this->typeRender);
 					nodo->objs[i]->Init();
 				}
 			}
@@ -48,6 +49,7 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 
 			if (!nodo->objs.empty()) {
 				for (int i = 0; i < nodo->objs.size(); i++) {
+					nodo->objs[i]->setTypeRender(this->typeRender);
 					nodo->objs[i]->Init();
 				}
 			}
@@ -77,26 +79,26 @@ void NodoScene::UpdateObjsRecursive(NodoScene* nodo, float deltaTime)
 	}
 }
 
-void NodoScene::DrawObjsRecursive(NodoScene* nodo, glm::mat4 &modelMatrix, glm::mat4& mView, glm::mat4& mViewProjection)
+void NodoScene::DrawObjsRecursive(NodoScene* nodo, glm::mat4& _modelMatrix, glm::mat4& _mView, glm::mat4& _mViewProjection)
 {
 	if (nodo->nodos.empty()) {
 		if (!nodo->objs.empty()) {
 			for (int i = 0; i < nodo->objs.size(); i++) {
-				glm::mat4 model = modelMatrix * nodo->objs[i]->getModelMatrix();
-				nodo->objs[i]->DrawObj(model, mView, mViewProjection);
+				glm::mat4 model = _modelMatrix * nodo->objs[i]->getModelMatrix();
+				nodo->objs[i]->DrawObj(model, _mView, _mViewProjection);
 			}
 		}
 	}
 	else {
 		for (int i = 0; i < nodo->nodos.size(); i++) {
-			glm::mat4 model = modelMatrix * nodo->nodos[i]->getModelMatrix();
-			DrawObjsRecursive(nodo->nodos[i], model, mView, mViewProjection);
+			glm::mat4 model = _modelMatrix * nodo->nodos[i]->getModelMatrix();
+			DrawObjsRecursive(nodo->nodos[i], model, _mView, _mViewProjection);
 		}
 
 		if (!nodo->objs.empty()) {
 			for (int i = 0; i < nodo->objs.size(); i++) {
-				glm::mat4 model = modelMatrix * nodo->objs[i]->getModelMatrix();
-				nodo->objs[i]->DrawObj(model, mView, mViewProjection);
+				glm::mat4 model = _modelMatrix * nodo->objs[i]->getModelMatrix();
+				nodo->objs[i]->DrawObj(model, _mView, _mViewProjection);
 			}
 		}
 	}
