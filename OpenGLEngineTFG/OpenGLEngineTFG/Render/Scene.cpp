@@ -1,6 +1,10 @@
 #include "Scene.h"
 
 #include "../Input/InputManager.h"
+#include "../Loaders/FileLoader.h"
+
+//Para el Path
+#include <windows.h>
 
 Scene::Scene(): camara(nullptr)
 {
@@ -39,17 +43,26 @@ Scene::Scene(): camara(nullptr)
 	cubo->getSceneObj()->Rotate(15, glm::vec3(1.0f, 0.0f, 0.0f));
 	nodoWorld->addObj(cubo->getSceneObj());*/
 
-	//NodoScene* nodo1 = loader->loadModelAssimpNode("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
-	NodoScene* nodo1 = loader->loadModelAssimpNode("D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
-	nodo1->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-	nodoWorld->addNodo(nodo1);
-	nodoWorld->Scale(0.5f, 0.5f, 0.5f);
-	nodoWorld->Translate(0.0f, -2.0f, 0.0f);
+	FileLoader fileLoader;
+	fileLoader.readFromFile(ExePath() + "Data\\Objs.txt");
 
+	// OBJS
+	std::vector<ObjFile> mainObjs = fileLoader.getMainScene();
+	for (int i = 0; i < mainObjs.size(); i++) {
+
+		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i].obj);
+		nodo->Rotate(mainObjs[i].angleRotation, mainObjs[i].rotationDirection);
+		nodo->Scale(mainObjs[i].scale.x, mainObjs[i].scale.y, mainObjs[i].scale.z);
+		nodo->Translate(mainObjs[i].position.x, mainObjs[i].position.y, mainObjs[i].position.z);
+
+		nodoWorld->addNodo(nodo);
+	}
+
+	//LIGHTS
 	lightPosition = glm::vec3(10.2f, 10.0f, 10.0f);
 
 	//Cubo Luz 
-	NodoScene* nodo2 = loader->loadModelAssimpNode("C:\\Users\\Alex\\source\\repos\\AlexTFG\\OpenGLEngineTFG\\OpenGLEngineTFG\\BasicElement\\cube.obj");
+	NodoScene* nodo2 = loader->loadModelAssimpNode(ExePath() + "OpenGLEngineTFG\\BasicElement\\cube.obj");
 	nodoLight->addNodo(nodo2);
 	nodoLight->Scale(0.7f, 0.7f, 0.7f);
 	nodoLight->Translate(lightPosition.x, lightPosition.y, lightPosition.z);
@@ -135,3 +148,14 @@ void Scene::scroll_callback(double xoffset, double yoffset)
 {
 	//TODO
 }
+
+// -------------- PATH -------------------
+std::string Scene::ExePath() {
+	char buffer[MAX_PATH];
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+
+	//pos - 5 --> Para quitar Debug de la ruta.
+	return std::string(buffer).substr(0, pos - 5);
+}
+

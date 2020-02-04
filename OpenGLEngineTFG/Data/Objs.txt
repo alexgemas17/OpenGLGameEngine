@@ -1,0 +1,26 @@
+1.0f,-2.0f,0.0f;  //    Position
+0.5f,0.5f,0.5f;   //      Scale
+-90.0f			  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_Normal.png
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_MetallicSmoothness.png
+
+-25.0f,-2.0f,0.0f;
+0.5f,0.5f,0.5f;
+-90.0f
+1.0f,0.0f,0.0f;
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_Normal.png
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_MetallicSmoothness.png
+
+25.0f,-2.0f,0.0f;
+0.5f,0.5f,0.5f;
+-90.0f
+1.0f,0.0f,0.0f;
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_Normal.png
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_MetallicSmoothness.png

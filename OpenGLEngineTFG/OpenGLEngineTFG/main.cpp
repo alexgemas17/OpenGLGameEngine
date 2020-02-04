@@ -5,21 +5,12 @@
 #include <GLFW\glfw3.h>
 #include <glm.hpp>
 
-#include "PagShaderProgram.h"
-#include "Render/Scene.h"
 #include "Input/InputManager.h"
 #include "Managers/ShaderManager.h"
+#include "Application.h"
 
-const float FOV = 45.0f;
-const int WIDHT = 1024;
-const int HEIGHT = 576;
-const float ZNEAR = 0.1f;
-const float ZFAR = 100.0f;
-
-// Eliminar???
-Scene* world; 
-PagShaderProgram* basicShader;
-
+void showFPSCounter();
+void setFunctionsCallbacks(GLFWwindow* window);
 void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
@@ -63,33 +54,18 @@ int main() {
 
 	glViewport(0, 0, WIDHT, HEIGHT);
 
-	//  -------------------- Info de la gráfica  -------------------- 
-	std::cout << glGetString(GL_RENDERER) << std::endl;
-	std::cout << glGetString(GL_VENDOR) << std::endl;
-	std::cout << glGetString(GL_VERSION) << std::endl;
-	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
 	// -------------------- Registramos los callbacks -------------------- 
-	glfwSetWindowRefreshCallback(window, window_refresh_callback);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	//glfwSetKeyCallback(window, key_callback); --> Se hace en el render loop
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetCursorPosCallback(window, cursor_position_callback);
-
-	//Hace que mientras se pulse una tecla, ésta devolverá GL_PRESS todo el rato.
-	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+	setFunctionsCallbacks(window);
 
 	// -------------------- Creamos los shaders -------------------- 
 	ShaderManager::getInstance();
 
 	// -------------------- Creamos la escena --------------------  
-	world = new Scene();
-	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
-	world->InitObjs();
+	Application::getInstance()->InitMainScene();
 
-	double lastTime = glfwGetTime();
-	int nbFrames = 0;
+	//Para el FPS Counter
+	/*double lastTime = glfwGetTime();
+	int nbFrames = 0;*/
 
 	// Para poder establecer el DeltaTime
 	float deltaTime = 0.0f;	// Tiempo entre dos frames
@@ -101,8 +77,29 @@ int main() {
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		
+		// ----------------------------- INPUTS ----------------------
+		//processInput(window);
+		InputManager::getInstance()->key_callback(window);
 
-		// ----------------------------- FPS ----------------------
+		// ----------------------------- UPDATE ----------------------
+		Application::getInstance()->UpdateMainScene(deltaTime);
+		
+		// ----------------------------- RENDER ----------------------
+		Application::getInstance()->DrawMainScene();
+		
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+	}
+
+	// Liberamos recursos
+	Application::getInstance()->DestroyInstance();
+}
+
+// --------------------------- FUNCIONES ----------------------------
+void showFPSCounter() 
+{
+	// ----------------------------- FPS ----------------------
 		//double currentTime = glfwGetTime();
 		//nbFrames++;
 		//if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
@@ -113,37 +110,30 @@ int main() {
 		//	nbFrames = 0;
 		//	lastTime += 1.0;
 		//}
-		// ---------------------------------------------------
-
-		//Inputs
-		//processInput(window);
-		InputManager::getInstance()->key_callback(window);
-
-		//Update
-		world->UpdateObjs(deltaTime);
-		
-		//Render
-		world->DrawObjs();
-		
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	}
-
-	// -------------------- Liberamos recursos --------------------  
-	delete world;
-	delete basicShader;
 }
 
-// --------------------------- FUNCIONES ----------------------------
+void setFunctionsCallbacks(GLFWwindow* window)
+{
+	glfwSetWindowRefreshCallback(window, window_refresh_callback);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	//glfwSetKeyCallback(window, key_callback); --> Se hace en el render loop
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
+
+	//Hace que mientras se pulse una tecla, ésta devolverá GL_PRESS todo el rato.
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+}
+
 void window_refresh_callback(GLFWwindow* window) {
 	//Llamamos a la función correspodiente a las acciones al refrescar la ventana.
-	world->DrawObjs();
+	Application::getInstance()->DrawMainScene();
 
 	glfwSwapBuffers(window);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-	world->framebuffer_size_callback(width, height);
+	Application::getInstance()->getMainScene()->framebuffer_size_callback(width, height);
 
 	window_refresh_callback(window);
 }
@@ -158,7 +148,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	world->scroll_callback(xoffset, yoffset);
+	Application::getInstance()->getMainScene()->scroll_callback(xoffset, yoffset);
 	window_refresh_callback(window);
 }
 
@@ -167,7 +157,7 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	world->cursor_position_callback(xpos, ypos);
+	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
 
 	window_refresh_callback(window);
 }

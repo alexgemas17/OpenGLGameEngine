@@ -99,6 +99,12 @@
     <ClCompile Include="BasicElement\Cube.cpp">
       <Filter>Archivos de origen\BasicElement</Filter>
     </ClCompile>
+    <ClCompile Include="Loaders\FileLoader.cpp">
+      <Filter>Archivos de origen\Loaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
@@ -139,6 +145,12 @@
     </ClInclude>
     <ClInclude Include="BasicElement\Cube.h">
       <Filter>Archivos de encabezado\BasicElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Loaders\FileLoader.h">
+      <Filter>Archivos de encabezado\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Application.h">
+      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

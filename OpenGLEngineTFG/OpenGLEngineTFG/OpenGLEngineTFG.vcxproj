@@ -129,10 +129,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="BasicElement\Cube.cpp" />
     <ClCompile Include="Camara\Camara.cpp" />
     <ClCompile Include="Input\InputManager.cpp" />
     <ClCompile Include="Loaders\AssimpLoader.cpp" />
+    <ClCompile Include="Loaders\FileLoader.cpp" />
     <ClCompile Include="Loaders\lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Managers\ShaderManager.cpp" />
@@ -144,11 +146,13 @@
     <ClCompile Include="Render\SceneObj.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Application.h" />
     <ClInclude Include="BasicElement\Cube.h" />
     <ClInclude Include="Camara\Camara.h" />
     <ClInclude Include="Input\InputManager.h" />
     <ClInclude Include="Interface\ISceneClass.h" />
     <ClInclude Include="Loaders\AssimpLoader.h" />
+    <ClInclude Include="Loaders\FileLoader.h" />
     <ClInclude Include="Loaders\lodepng.h" />
     <ClInclude Include="Managers\ShaderManager.h" />
     <ClInclude Include="PagShaderProgram.h" />
