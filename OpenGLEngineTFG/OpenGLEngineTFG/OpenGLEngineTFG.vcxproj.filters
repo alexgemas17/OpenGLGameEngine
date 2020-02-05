@@ -105,6 +105,9 @@
     <ClCompile Include="Application.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
@@ -150,6 +153,9 @@
       <Filter>Archivos de encabezado\Loaders</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

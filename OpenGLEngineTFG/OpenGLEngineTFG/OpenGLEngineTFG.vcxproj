@@ -144,6 +144,7 @@
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Render\Scene.cpp" />
     <ClCompile Include="Render\SceneObj.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Render\Scene.h" />
     <ClInclude Include="Render\SceneObj.h" />
+    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicLightShader-frag.glsl" />
