@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "../Application.h"
 #include "../Render/SceneObj.h"
 
 class Cube
@@ -23,8 +24,5 @@ private:
 
 	//Obj
 	SceneObj* obj;
-
-	// Funciones
-	std::string ExePath();
 };
 
