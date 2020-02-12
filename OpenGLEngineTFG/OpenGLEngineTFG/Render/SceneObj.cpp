@@ -1,9 +1,10 @@
 #include "SceneObj.h"
 
-SceneObj::SceneObj(): Render(), Model(), urlImg("") {}
+SceneObj::SceneObj(): Render(), Model(){}
 
-SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg): 
-	urlImg(urlImg), Model(), Render(puntos, index, normales, coordenada_textura, urlImg)
+SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, 
+	std::string albedoURL, std::string normalURL, std::string materialURL):
+	Model(), Render(puntos, index, normales, coordenada_textura, albedoURL, normalURL, materialURL)
 {}
 
 SceneObj::~SceneObj() {}

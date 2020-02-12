@@ -38,8 +38,5 @@ private:
 	glm::vec3 lightPosition;
 
 	Camara* camara;
-
-	// Funciones
-	std::string ExePath();
 };
 

@@ -61,7 +61,10 @@ int main() {
 	ShaderManager::getInstance();
 
 	// -------------------- Creamos la escena --------------------  
+	std::cout << "Inicializamos la escena..." << std::endl;
 	Application::getInstance()->InitMainScene();
+	std::cout << "Inicializamos las texturas..." << std::endl;
+	Application::getInstance()->InitTextures();
 
 	//Para el FPS Counter
 	/*double lastTime = glfwGetTime();

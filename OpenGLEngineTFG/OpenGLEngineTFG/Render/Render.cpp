@@ -1,6 +1,7 @@
 #include "Render.h"
 
 #include "../Loaders/lodepng.h"
+#include "../Application.h"
 
 Render::Render(): VAO(0), VBO_Puntos(0), VBO_Normales(0), IBO(0), texture(0) {}
 
@@ -11,17 +12,26 @@ Render::Render(float _vertices[], unsigned int _indices[]):
 
 Render::Render(float _vertices[], unsigned int _indices[], std::string imgUrl) :
 	VAO(0), VBO_Puntos(0), VBO_Normales(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
-	typeRender(TextureLight), urlImg(imgUrl)
-{}
+	typeRender(TextureLight), albedoURL(imgUrl)
+{
+	Application::getInstance()->getTextureManager()->addIDTexture(albedoURL);
+}
 
-Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, std::string urlImg):
-	typeRender(TextureLight), urlImg(urlImg)
+Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, 
+	std::string albedoURL, std::string normalURL, std::string materialURL):
+	typeRender(TextureLight), albedoURL(albedoURL), normalURL(normalURL), materialURL(materialURL)
 {
 	this->model.puntos = puntos;
 	this->model.normales = normales;
 	this->model.index = index;
 	this->model.coordenada_textura = coordenada_textura;
-	this->model.urlImg = urlImg;
+	this->model.urlImg = albedoURL;
+
+	if(albedoURL != "") Application::getInstance()->getTextureManager()->addIDTexture(albedoURL);
+
+	if (normalURL != "") Application::getInstance()->getTextureManager()->addIDTexture(normalURL);
+	
+	if (materialURL != "") Application::getInstance()->getTextureManager()->addIDTexture(materialURL);
 }
 
 Render::~Render()
@@ -38,8 +48,6 @@ void Render::Init()
 	InitVBO();
 	InitIBO();
 	InitCoordTextura();
-	if(this->model.urlImg != "")
-		InitTextura();
 }
 
 void Render::setTypeRender(TypeRender type)
@@ -56,8 +64,8 @@ void Render::Draw()
 {
 	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.
 
-	if (this->model.urlImg != "")
-		glBindTexture(GL_TEXTURE_2D, texture);
+	if (this->albedoURL != "")
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(this->albedoURL));
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
@@ -152,6 +160,7 @@ void Render::InitCoordTextura()
 	glBindVertexArray(0);
 }
 
+// OBSOLETO --> Se hace desde TextureManager
 void Render::InitTextura() 
 {
 	//Enlazamos las siguientes funciones al VAO

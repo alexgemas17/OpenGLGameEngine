@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include <Windows.h>
+
 Application* Application::instance = nullptr;
 
 // Acceder al singleton.
@@ -16,12 +18,17 @@ void Application::DestroyInstance() {
 	instance = 0;
 }
 
-Application::Application(): world(nullptr) {}
+Application::Application(): world(nullptr)
+{
+	ExePath();
+	this->textureManager = new TextureManager();
+	this->world = new Scene();
+}
 
 Application::~Application()
 {
-	mainObjs.clear();
 	delete world;
+	delete textureManager;
 }
 
 void Application::getInfoHardware()
@@ -33,9 +40,19 @@ void Application::getInfoHardware()
 	std::cout << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 }
 
+std::string Application::getPath()
+{
+	return this->url_Path;
+}
+
 Scene* Application::getMainScene()
 {
 	return this->world;
+}
+
+TextureManager* Application::getTextureManager()
+{
+	return this->textureManager;
 }
 
 void Application::InitMainScene()
@@ -43,6 +60,11 @@ void Application::InitMainScene()
 	world = new Scene();
 	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
 	world->InitObjs();
+}
+
+void Application::InitTextures()
+{
+	this->textureManager->LoadTextures();
 }
 
 void Application::UpdateMainScene(float deltaTime)
@@ -53,4 +75,13 @@ void Application::UpdateMainScene(float deltaTime)
 void Application::DrawMainScene()
 {
 	world->DrawObjs();
+}
+
+void Application::ExePath() {
+	char buffer[MAX_PATH];
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+
+	//pos - 5 --> Para quitar Debug de la ruta.
+	this->url_Path = std::string(buffer).substr(0, pos - 5);
 }

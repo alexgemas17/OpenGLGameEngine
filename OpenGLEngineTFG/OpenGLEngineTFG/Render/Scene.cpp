@@ -2,9 +2,7 @@
 
 #include "../Input/InputManager.h"
 #include "../Loaders/FileLoader.h"
-
-//Para el Path
-#include <windows.h>
+#include "../Application.h"
 
 Scene::Scene(): camara(nullptr)
 {
@@ -16,41 +14,25 @@ Scene::Scene(): camara(nullptr)
 	glDepthFunc(GL_LEQUAL);
 	//glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
+}
 
-	// ----- Objeto 1 ----- 
-	//SceneObj *triangulo1 = new SceneObj(puntos, index, color, coordenada_textura, "..\\Data\\Texturas\\wall.png");
-	//triangulo1->Scale(0.5f, 0.5f, 0.5f);
-	//triangulo1->Rotate(45.0f, glm::vec3(0,1,0));
-	//triangulo1->Rotate(25.0f, glm::vec3(1, 0, 0));
+Scene::~Scene() {}
 
-	//// ----- Nodo Raiz ----- 
-	//this->nodo = new NodoScene();
-	//nodo->addObj(triangulo1);
-	//nodo->addNodo(level1);
+void Scene::InitObjs()
+{
+	//Cargamos los objetos
 	AssimpLoader* loader = new AssimpLoader();
 
 	this->nodoWorld = new NodoScene();
 	this->nodoLight = new NodoScene();
-	
-	//NodoScene *nodo1 = loader->loadModelAssimp("D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx");
-	//nodo1->Rotate(-90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-
-	//nodo->addNodo(nodo1);
-
-	//Cubo 1 
-	/*Cube* cubo = new Cube(0.2f);
-	cubo->getSceneObj()->Scale(0.7f, 0.7f, 0.7f);
-	cubo->getSceneObj()->Rotate(15, glm::vec3(1.0f, 0.0f, 0.0f));
-	nodoWorld->addObj(cubo->getSceneObj());*/
 
 	FileLoader fileLoader;
-	fileLoader.readFromFile(ExePath() + "Data\\Objs.txt");
+	fileLoader.readFromFile(Application::getInstance()->getPath() + "Data\\Objs.txt");
 
 	// OBJS
 	std::vector<ObjFile> mainObjs = fileLoader.getMainScene();
 	for (int i = 0; i < mainObjs.size(); i++) {
-
-		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i].obj);
+		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i].obj, mainObjs[i].albedo, mainObjs[i].normal_mapping, mainObjs[i].material);
 		nodo->Rotate(mainObjs[i].angleRotation, mainObjs[i].rotationDirection);
 		nodo->Scale(mainObjs[i].scale.x, mainObjs[i].scale.y, mainObjs[i].scale.z);
 		nodo->Translate(mainObjs[i].position.x, mainObjs[i].position.y, mainObjs[i].position.z);
@@ -62,19 +44,15 @@ Scene::Scene(): camara(nullptr)
 	lightPosition = glm::vec3(10.2f, 10.0f, 10.0f);
 
 	//Cubo Luz 
-	NodoScene* nodo2 = loader->loadModelAssimpNode(ExePath() + "OpenGLEngineTFG\\BasicElement\\cube.obj");
+	NodoScene* nodo2 = loader->loadModelAssimpNode(Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "", "", "");
 	nodoLight->addNodo(nodo2);
 	nodoLight->Scale(0.7f, 0.7f, 0.7f);
 	nodoLight->Translate(lightPosition.x, lightPosition.y, lightPosition.z);
 	nodoLight->setTypeRenderNode(BasicColor);
 
 	delete loader;
-}
 
-Scene::~Scene() {}
-
-void Scene::InitObjs()
-{
+	// Los inicializamos
 	this->nodoWorld->InitObjs();
 	this->nodoLight->InitObjs();
 }
@@ -148,14 +126,3 @@ void Scene::scroll_callback(double xoffset, double yoffset)
 {
 	//TODO
 }
-
-// -------------- PATH -------------------
-std::string Scene::ExePath() {
-	char buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
-	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-
-	//pos - 5 --> Para quitar Debug de la ruta.
-	return std::string(buffer).substr(0, pos - 5);
-}
-

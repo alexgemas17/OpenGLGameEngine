@@ -24,17 +24,17 @@ class AssimpLoader
 {
 public:
 	// Devuelve el nodo root del modelo
-	NodoScene* loadModelAssimpNode(std::string modelURL);
+	NodoScene* loadModelAssimpNode(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL);
 
 	// Devuelve el nodo root del modelo
-	SceneObj* loadModelAssimpObj(std::string modelURL);
+	SceneObj* loadModelAssimpObj(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL);
 
 private:
 	/* Recorremos recursivamente los nodos que compone la escena (el modelo) */
-	void loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo);
+	void loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string albedoURL, std::string normalURL, std::string materialURL);
 
 	/* Nos devuelve el AssimpData que contiene esa mesh */
-	SceneObj* processMeshAssimp(aiMesh* mesh, const aiScene* scene);
+	SceneObj* processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string albedoURL, std::string normalURL, std::string materialURL);
 
 	/* Nos devuelve las textuas asociadas al objeto*/
 	std::vector<std::string> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);

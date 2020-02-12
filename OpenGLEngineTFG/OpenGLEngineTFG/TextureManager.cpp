@@ -13,11 +13,15 @@ unsigned int TextureManager::getIDTexture(std::string urlImage)
 
 void TextureManager::addIDTexture(std::string urlImage)
 {
-	if (this->hashmap_IDTexture.find(urlImage) == this->hashmap_IDTexture.end()) {
+	std::unordered_map<std::string, unsigned int>::const_iterator it = this->hashmap_IDTexture.find(urlImage);
+	if (it == this->hashmap_IDTexture.end()) {
 		TextureInfo textInf;
+		textInf.IDTexture = -1;
 		textInf.urlImg = urlImage;
 		
 		this->textures.push_back(textInf);
+		
+		InitTextura(textInf);
 	}
 }
 
@@ -29,7 +33,7 @@ void TextureManager::LoadTextures()
 	}
 }
 
-void TextureManager::InitTextura(TextureInfo textInf)
+void TextureManager::InitTextura(TextureInfo &textInf)
 {
 	//Generamos la texturaID
 	unsigned int idTexture = 0;
