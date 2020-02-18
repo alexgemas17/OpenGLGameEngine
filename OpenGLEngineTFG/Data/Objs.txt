@@ -12,7 +12,7 @@ D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Pai
 -90.0f
 1.0f,0.0f,0.0f;
 D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
-D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png
+
 D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_Normal.png
 D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_MetallicSmoothness.png
 
@@ -21,6 +21,6 @@ D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Pai
 -90.0f
 1.0f,0.0f,0.0f;
 D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
-D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png
+
 D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_Normal.png
 D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_MetallicSmoothness.png

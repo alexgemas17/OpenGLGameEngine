@@ -28,6 +28,7 @@ Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::ve
 	this->model.urlImg = albedoURL;
 
 	if(albedoURL != "") Application::getInstance()->getTextureManager()->addIDTexture(albedoURL);
+	else Application::getInstance()->getTextureManager()->addIDTexture(Application::getInstance()->getPath() + no_texture);
 
 	if (normalURL != "") Application::getInstance()->getTextureManager()->addIDTexture(normalURL);
 	
@@ -64,8 +65,8 @@ void Render::Draw()
 {
 	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.
 
-	if (this->albedoURL != "")
-		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(this->albedoURL));
+	if (this->albedoURL != "") glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(this->albedoURL));
+	else glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(Application::getInstance()->getPath() + no_texture));
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 

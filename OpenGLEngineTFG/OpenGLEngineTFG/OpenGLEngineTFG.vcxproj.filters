@@ -105,8 +105,8 @@
     <ClCompile Include="Application.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Archivos de origen</Filter>
+    <ClCompile Include="Managers\TextureManager.cpp">
+      <Filter>Archivos de origen\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,8 +155,8 @@
     <ClInclude Include="Application.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Archivos de encabezado</Filter>
+    <ClInclude Include="Managers\TextureManager.h">
+      <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

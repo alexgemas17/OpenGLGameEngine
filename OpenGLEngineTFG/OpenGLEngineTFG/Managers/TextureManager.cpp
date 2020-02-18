@@ -1,6 +1,6 @@
 #include "TextureManager.h"
 
-#include "Loaders/lodepng.h"
+#include "../Loaders/lodepng.h"
 #include <iostream>
 
 unsigned int TextureManager::getIDTexture(std::string urlImage)

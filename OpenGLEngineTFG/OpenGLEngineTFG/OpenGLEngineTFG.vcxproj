@@ -138,13 +138,13 @@
     <ClCompile Include="Loaders\lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Managers\ShaderManager.cpp" />
+    <ClCompile Include="Managers\TextureManager.cpp" />
     <ClCompile Include="PagShaderProgram.cpp" />
     <ClCompile Include="Render\Model.cpp" />
     <ClCompile Include="Render\NodoScene.cpp" />
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Render\Scene.cpp" />
     <ClCompile Include="Render\SceneObj.cpp" />
-    <ClCompile Include="TextureManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -156,13 +156,13 @@
     <ClInclude Include="Loaders\FileLoader.h" />
     <ClInclude Include="Loaders\lodepng.h" />
     <ClInclude Include="Managers\ShaderManager.h" />
+    <ClInclude Include="Managers\TextureManager.h" />
     <ClInclude Include="PagShaderProgram.h" />
     <ClInclude Include="Render\Model.h" />
     <ClInclude Include="Render\NodoScene.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Render\Scene.h" />
     <ClInclude Include="Render\SceneObj.h" />
-    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicLightShader-frag.glsl" />
