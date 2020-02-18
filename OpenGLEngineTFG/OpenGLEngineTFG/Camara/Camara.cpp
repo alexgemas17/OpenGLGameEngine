@@ -126,11 +126,20 @@ void Camara::SetProjection(int newWidth, int newHeight)
 }
 
 /* Getters */
-glm::vec3 Camara::getPosition()
+glm::vec3 Camara::getPosition() const
 {
 	return this->vecPositionCamera;
 }
 
+glm::vec3 Camara::getLookAt() const
+{
+	return this->vecLookAt;
+}
+
+glm::vec3 Camara::getUP() const
+{
+	return this->vecUp;
+}
 
 glm::mat4 Camara::getView() const
 {

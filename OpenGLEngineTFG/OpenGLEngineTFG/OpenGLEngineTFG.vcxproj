@@ -165,12 +165,14 @@
     <ClInclude Include="Render\SceneObj.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\BasicLightShader-frag.glsl" />
-    <None Include="Shaders\BasicLightShader-vert.glsl" />
     <None Include="Shaders\BasicShader-frag.glsl" />
     <None Include="Shaders\BasicShader-vert.glsl" />
     <None Include="Shaders\BasicShaderTexture-frag.glsl" />
     <None Include="Shaders\BasicShaderTexture-vert.glsl" />
+    <None Include="Shaders\Lights\BasicLight-frag.glsl" />
+    <None Include="Shaders\Lights\BasicLight-vert.glsl" />
+    <None Include="Shaders\Lights\Light-frag.glsl" />
+    <None Include="Shaders\Lights\Light-vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

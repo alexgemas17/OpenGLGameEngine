@@ -17,7 +17,7 @@ ShaderManager::ShaderManager():
 {
 	this->basicShader->createShaderProgram("Shaders/BasicShader");
 	this->textureShader->createShaderProgram("Shaders/BasicShaderTexture");
-	this->basicLightShader->createShaderProgram("Shaders/BasicLightShader");
+	this->basicLightShader->createShaderProgram("Shaders/Lights/Light"); //CAMBIAR!
 }
 
 ShaderManager::~ShaderManager()

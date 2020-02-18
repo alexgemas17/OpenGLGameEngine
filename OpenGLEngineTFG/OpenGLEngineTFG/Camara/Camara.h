@@ -19,7 +19,9 @@ public:
 	void moveCamara(float xPosition, float yPosition, GLboolean constrainPitch = true);
 
 	/* Getters */
-	glm::vec3 getPosition();
+	glm::vec3 getPosition() const;
+	glm::vec3 getLookAt() const;
+	glm::vec3 getUP() const;
 	glm::mat4 getView() const;
 	glm::mat4 getProjection() const;
 	glm::mat4 getMatrixViewProjection() const;
