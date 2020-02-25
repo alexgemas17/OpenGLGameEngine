@@ -29,7 +29,7 @@ void Scene::InitObjs()
 	FileLoader fileLoader;
 	fileLoader.readFromFile(Application::getInstance()->getPath() + "Data\\Objs.txt");
 
-	// OBJS
+	// -------- OBJS --------
 	std::vector<ObjFile> mainObjs = fileLoader.getMainScene();
 	for (int i = 0; i < mainObjs.size(); i++) {
 		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i].obj, mainObjs[i].albedo, mainObjs[i].normal_mapping, mainObjs[i].material);
@@ -40,7 +40,7 @@ void Scene::InitObjs()
 		nodoWorld->addNodo(nodo);
 	}
 
-	//LIGHTS
+	//-------- LIGHTS --------
 	// positions of the point lights
 	glm::vec3 pointLightPositions[] = {
 		glm::vec3(0.7f,  0.2f,  2.0f),
@@ -130,6 +130,7 @@ void Scene::DrawObjs()
 	};
 
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("material.shininess", 32.0f);
+	ShaderManager::getInstance()->getBasicLightShader()->setUniform("viewPos", this->camara->getPosition());
 
 	 /*
 		   Here we set all the uniforms for the 5/6 types of lights we have. We have to set them manually and index
