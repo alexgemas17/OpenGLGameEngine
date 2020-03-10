@@ -12,18 +12,27 @@ ShaderManager* ShaderManager::getInstance()
 }
 
 ShaderManager::ShaderManager(): 
-	basicShader(new PagShaderProgram()), textureShader(new PagShaderProgram()),
-	basicLightShader(new PagShaderProgram()), typeShader(TYPE_TEXTURE)
+	basicShader(new PagShaderProgram()), 
+	textureShader(new PagShaderProgram()),
+	basicLightShader(new PagShaderProgram()), 
+	gBuffer(new PagShaderProgram()),
+	deferredShading(new PagShaderProgram()),
+	typeShader(TYPE_TEXTURE)
 {
 	this->basicShader->createShaderProgram("Shaders/BasicShader");
 	this->textureShader->createShaderProgram("Shaders/BasicShaderTexture");
 	this->basicLightShader->createShaderProgram("Shaders/Lights/Light"); //CAMBIAR!
+
+	this->gBuffer->createShaderProgram("Shaders/Lights/Deferred_Rendering/g_buffer");
+	this->deferredShading->createShaderProgram("Shaders/Lights/Deferred_Rendering/deferred_shading");
 }
 
 ShaderManager::~ShaderManager()
 {
 	delete basicShader;
 	delete textureShader;
+	delete gBuffer;
+	delete deferredShading;
 	delete instance;
 }
 
@@ -42,6 +51,15 @@ PagShaderProgram* ShaderManager::getTextureShader()
 	return this->textureShader;
 }
 
+PagShaderProgram* ShaderManager::getGBuffer()
+{
+	return this->gBuffer;
+}
+
+PagShaderProgram* ShaderManager::getDeferredShading()
+{
+	return this->deferredShading;
+}
 
 PagShaderProgram* ShaderManager::getBasicLightShader()
 {

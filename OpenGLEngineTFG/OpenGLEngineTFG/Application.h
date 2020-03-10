@@ -37,6 +37,9 @@ public:
 	Scene* getMainScene();
 	TextureManager* getTextureManager();
 
+	int getWIDHT() { return WIDHT; }
+	int getHEIGHT() { return HEIGHT; }
+
 	static Application* getInstance();
 	void DestroyInstance();
 

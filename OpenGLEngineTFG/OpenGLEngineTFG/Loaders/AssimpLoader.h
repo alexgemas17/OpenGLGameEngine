@@ -37,5 +37,5 @@ private:
 	SceneObj* processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string albedoURL, std::string normalURL, std::string materialURL);
 
 	/* Nos devuelve las textuas asociadas al objeto*/
-	std::vector<std::string> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+	std::vector<std::string> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string path);
 };

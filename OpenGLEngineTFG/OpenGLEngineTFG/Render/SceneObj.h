@@ -18,6 +18,16 @@ public:
 		std::vector<glm::vec3> normales,
 		std::vector<glm::vec2> coordenada_textura, 
 		std::string albedoURL, std::string normalURL, std::string materialURL);
+	
+	SceneObj(
+		std::vector<glm::vec3> puntos, 
+		std::vector<GLuint> index, 
+		std::vector<glm::vec3> normales, 
+		std::vector<glm::vec2> coordenada_textura,
+		std::vector<std::string> AlbedoTextures,
+		std::vector<std::string> specularTextures, 
+		std::vector<std::string> normalMapTextures);
+
 	~SceneObj();
 
 	void UpdateObj(float deltaTime);
@@ -29,4 +39,5 @@ private:
 	void setShaderToBasicColor(glm::mat4& modelMatrix, glm::mat4& mViewProjection);
 	void setShaderToTexture(glm::mat4& modelMatrix, glm::mat4& mViewProjection);
 	void setShaderToTextureLight(glm::mat4& modelMatrix, glm::mat4& mView, glm::mat4& mViewProjection);
+	void setShaderDeferredRendering(glm::mat4& _modelMatrix, glm::mat4& _mView, glm::mat4& _mViewProjection);
 };

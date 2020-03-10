@@ -1,7 +1,7 @@
 #include "NodoScene.h"
 #include <gtc/matrix_transform.hpp>
 
-NodoScene::NodoScene(): Model(), typeRender(TextureLight) {}
+NodoScene::NodoScene(): Model(), typeRender(DeferredRendering) {}
 NodoScene::~NodoScene() {}
 
 void NodoScene::addNodo(NodoScene* nodo)

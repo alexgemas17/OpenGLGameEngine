@@ -59,7 +59,7 @@ void Application::InitMainScene()
 {
 	world = new Scene();
 	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
-	world->InitObjs();
+	world->InitScene();
 }
 
 void Application::InitTextures()

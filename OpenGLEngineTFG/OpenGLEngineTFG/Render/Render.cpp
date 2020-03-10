@@ -12,14 +12,25 @@ Render::Render(float _vertices[], unsigned int _indices[]):
 
 Render::Render(float _vertices[], unsigned int _indices[], std::string imgUrl) :
 	VAO(0), VBO_Puntos(0), VBO_Normales(0), IBO(0), texture(0), vertices(_vertices), indices(_indices),
-	typeRender(TextureLight), albedoURL(imgUrl)
+	typeRender(DeferredRendering), albedoURL(imgUrl)
 {
 	Application::getInstance()->getTextureManager()->addIDTexture(albedoURL);
 }
 
 Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, 
 	std::string albedoURL, std::string normalURL, std::string materialURL):
-	typeRender(TextureLight), albedoURL(albedoURL), normalURL(normalURL), materialURL(materialURL)
+	typeRender(DeferredRendering), albedoURL(albedoURL), normalURL(normalURL), materialURL(materialURL)
+{
+	this->model.puntos = puntos;
+	this->model.normales = normales;
+	this->model.index = index;
+	this->model.coordenada_textura = coordenada_textura;
+	this->model.urlImg = albedoURL;
+}
+
+Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura,
+	std::vector<std::string> AlbedoTextures, std::vector<std::string> specularTextures, std::vector<std::string> normalMapTextures) :
+	typeRender(DeferredRendering), albedoURL(albedoURL), normalURL(normalURL), materialURL(materialURL)
 {
 	this->model.puntos = puntos;
 	this->model.normales = normales;
@@ -27,12 +38,9 @@ Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::ve
 	this->model.coordenada_textura = coordenada_textura;
 	this->model.urlImg = albedoURL;
 
-	if(albedoURL != "") Application::getInstance()->getTextureManager()->addIDTexture(albedoURL);
-	else Application::getInstance()->getTextureManager()->addIDTexture(Application::getInstance()->getPath() + no_texture);
-
-	if (normalURL != "") Application::getInstance()->getTextureManager()->addIDTexture(normalURL);
-	
-	if (materialURL != "") Application::getInstance()->getTextureManager()->addIDTexture(materialURL);
+	this->AlbedoTextures = AlbedoTextures;
+	this->specularTextures = specularTextures;
+	this->normalMapTextures = normalMapTextures;
 }
 
 Render::~Render()
@@ -65,30 +73,35 @@ void Render::Draw()
 {
 	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.
 
-	if (this->albedoURL != "") glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(this->albedoURL));
-	else glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(Application::getInstance()->getPath() + no_texture));
+	//if (this->albedoURL != "") glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(this->albedoURL));
+	//else glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(Application::getInstance()->getPath() + no_texture));
+
+	// Albedo Texture
+	if (!AlbedoTextures.empty()) {
+		glActiveTexture(GL_TEXTURE0); 
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_diffuse", 0);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
+	}
+
+	// Specular Texture
+	if (!specularTextures.empty()) {
+		glActiveTexture(GL_TEXTURE1); 
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_specular", 1);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(specularTextures[0]));
+	}
+
+	// Normal Texture
+	//glActiveTexture(GL_TEXTURE2);
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("texture_normal", 2);
+	//glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
 
+	// Lines: GL_LINE_STRIP
 	glDrawElements(GL_TRIANGLE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
-	//glDrawElements(GL_LINE_STRIP, this->model.index.size(), GL_UNSIGNED_INT, nullptr);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-}
-
-ImageData Render::loadImage(std::string url) {
-	ImageData data;
-
-	unsigned error = lodepng::decode(data.image, data.width, data.height, url);
-	if (error)
-	{
-		std::cout << url << " cannot be loaded" << std::endl;
-		return data;
-	}
-
-	return data;
+	glActiveTexture(GL_TEXTURE0);
 }
 
 //------------------------------- PRIVATE -------------------------------
@@ -156,37 +169,6 @@ void Render::InitCoordTextura()
 	glVertexAttribPointer(2, sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec2), ((GLubyte*)NULL + (0)));
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * this->model.coordenada_textura.size(), this->model.coordenada_textura.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-// OBSOLETO --> Se hace desde TextureManager
-void Render::InitTextura() 
-{
-	//Enlazamos las siguientes funciones al VAO
-	glBindVertexArray(VAO);
-
-	//Generamos la texturaID
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	//Opciones para las texturas
-	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	//Obtenemos los datos de la imagen
-	this->data = loadImage(this->model.urlImg);
-
-	//Generamos la imagen
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->data.width, this->data.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->data.image.data());
-	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

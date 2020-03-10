@@ -17,6 +17,10 @@ public:
 	PagShaderProgram* getTextureShader();
 	PagShaderProgram* getBasicLightShader();
 
+	/* DEFERRED RENDERING */
+	PagShaderProgram* getGBuffer();
+	PagShaderProgram* getDeferredShading();
+
 	PagShaderProgram* getShaderType();
 
 	static ShaderManager* getInstance();
@@ -28,6 +32,10 @@ private:
 	PagShaderProgram* basicShader;
 	PagShaderProgram* textureShader;
 	PagShaderProgram* basicLightShader;
+
+	/* DEFERRED RENDERING */
+	PagShaderProgram* gBuffer;
+	PagShaderProgram* deferredShading;
 
 	TypeShader typeShader;
 };

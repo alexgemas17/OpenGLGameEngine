@@ -9,7 +9,7 @@
 #include "Managers/ShaderManager.h"
 #include "Application.h"
 
-void showFPSCounter();
+void showFPSCounter(int& nbFrames, double& lastTime);
 void setFunctionsCallbacks(GLFWwindow* window);
 void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -67,8 +67,8 @@ int main() {
 	Application::getInstance()->InitTextures();
 
 	//Para el FPS Counter
-	/*double lastTime = glfwGetTime();
-	int nbFrames = 0;*/
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
 
 	// Para poder establecer el DeltaTime
 	float deltaTime = 0.0f;	// Tiempo entre dos frames
@@ -81,6 +81,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		
+		//showFPSCounter(nbFrames, lastTime);
 		// ----------------------------- INPUTS ----------------------
 		//processInput(window);
 		InputManager::getInstance()->key_callback(window);
@@ -100,19 +101,19 @@ int main() {
 }
 
 // --------------------------- FUNCIONES ----------------------------
-void showFPSCounter() 
+void showFPSCounter(int &nbFrames, double &lastTime)
 {
 	// ----------------------------- FPS ----------------------
-		//double currentTime = glfwGetTime();
-		//nbFrames++;
-		//if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
-		//	// printf and reset timer
-		//	printf("---------------\n");
-		//	printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-		//	printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
-		//	nbFrames = 0;
-		//	lastTime += 1.0;
-		//}
+	double currentTime = glfwGetTime();
+	nbFrames++;
+	if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+		// printf and reset timer
+		printf("---------------\n");
+		printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+		printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
+		nbFrames = 0;
+		lastTime += 1.0;
+	}
 }
 
 void setFunctionsCallbacks(GLFWwindow* window)

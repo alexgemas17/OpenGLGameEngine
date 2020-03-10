@@ -18,7 +18,7 @@ struct ModelData {
 	std::string urlImg;
 };
 
-enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight };
+enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight, DeferredRendering};
 
 class Render {
 public:
@@ -31,6 +31,15 @@ public:
 		std::vector<glm::vec3> normales, 
 		std::vector<glm::vec2> coordenada_textura, 
 		std::string albedoURL, std::string normalURL, std::string materialURL);
+
+	Render(
+		std::vector<glm::vec3> puntos, 
+		std::vector<GLuint> index, 
+		std::vector<glm::vec3> normales, 
+		std::vector<glm::vec2> coordenada_textura,
+		std::vector<std::string> AlbedoTextures, 
+		std::vector<std::string> specularTextures, 
+		std::vector<std::string> normalMapTextures);
 
 	~Render();
 
@@ -61,12 +70,13 @@ private:
 	std::string normalURL;
 	std::string materialURL;
 
-	ImageData loadImage(std::string url);
+	std::vector<std::string> AlbedoTextures;
+	std::vector<std::string> specularTextures;
+	std::vector<std::string> normalMapTextures;
 
 	//Inits según el tipo que se haya especificado
 	void InitVAO();
 	void InitVBO();
 	void InitIBO();
 	void InitCoordTextura();
-	void InitTextura();
 };

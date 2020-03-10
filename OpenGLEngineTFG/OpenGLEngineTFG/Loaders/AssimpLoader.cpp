@@ -1,5 +1,7 @@
 #include "AssimpLoader.h"
 
+#include "../Application.h"
+
 NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL)
 {
 	// Leemmos los datos del archivo mediante el importer de assimp
@@ -91,6 +93,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 		else
 		{
 			data.coord_textura.push_back(glm::vec2(0.0f, 0.0f));
+			data.coord_textura_3.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 		}
 	}
 
@@ -107,39 +110,65 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 		data.indices.push_back(0xFFFFFFFF);
 	}
 
-	//Procesamos su material --> En principio se lo pasamos a pelo desde el inicio de la aplicación
-	//if (mesh->mMaterialIndex >= 0)
-	//{
-	//	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	//	// We assume a convention for sampler names in the shaders. Each diffuse texture should be named
-	//	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER.
-	//	// Same applies to other texture as the following list summarizes:
-	//	// Diffuse: texture_diffuseN
-	//	// Specular: texture_specularN
-	//	// Normal: texture_normalN
+	// process materials
+	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+	// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
+	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
+	// Same applies to other texture as the following list summarizes:
+	// diffuse: texture_diffuseN
+	// specular: texture_specularN
+	// normal: texture_normalN
 
-	//	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-	//	//textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+	// 1. diffuse maps
+	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", albedoURL);
 
-	//	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-	//	//textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-	//}
+	// 2. specular maps
+	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", albedoURL);
 
-	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, albedoURL, normalURL, materialURL);
+	// 3. normal maps
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", albedoURL);
+
+	// 4. height maps
+	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", albedoURL);
+
+	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, albedoURL, normalURL, materialURL);
+	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, diffuseMaps, specularMaps, normalMaps);
 
 	return obj;
 }
 
-std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string path)
 {
 	std::vector<std::string> texturesURL;
 
-	for (GLuint i = 0; i < mat->GetTextureCount(type); i++)
+	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
 	{
 		aiString str;
 		mat->GetTexture(type, i, &str);
+		// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
+		bool skip = false;
+		std::string filename = std::string(str.C_Str());
+		std::string ID_Texture = filename.substr(filename.find_last_of('\\') + 1, filename.size() - 1);
+		ID_Texture = path + ID_Texture;
 
-		texturesURL.push_back(str.C_Str());
+		if (Application::getInstance()->getTextureManager()->getIDTexture(ID_Texture) != -1)
+		{
+			skip = true; // a texture with the same filepath has already been loaded, continue to next one. (optimization)
+			break;
+		}
+
+		if (!skip)
+		{   // if texture hasn't been loaded already, load it
+
+			Application::getInstance()->getTextureManager()->addIDTexture(ID_Texture);
+			texturesURL.push_back(ID_Texture);
+			//Texture texture;
+			//texture.id = TextureFromFile(, this->directory);
+			//texture.type = typeName;
+			//texture.path = str.C_Str();
+			//textures.push_back(texture);
+			//textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+		}
 	}
 
 	return texturesURL;

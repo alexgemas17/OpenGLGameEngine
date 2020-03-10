@@ -1,6 +1,7 @@
 #include "TextureManager.h"
 
 #include "../Loaders/lodepng.h"
+#include "../Application.h"
 #include <iostream>
 
 unsigned int TextureManager::getIDTexture(std::string urlImage)
@@ -44,10 +45,6 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	textInf.IDTexture = idTexture;
 
 	//Opciones para las texturas
-	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);*/
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -60,7 +57,10 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	if (error)
 	{
 		std::cout << textInf.urlImg << " cannot be loaded" << std::endl;
-		return ;
+
+		// Si no carga la textura, cargamos una textura genérica.
+		lodepng::decode(image, width, height, Application::getInstance()->getPath() + no_texture);
+		//return ;
 	}
 
 	//Generamos la imagen

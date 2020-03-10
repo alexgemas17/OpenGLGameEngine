@@ -20,7 +20,7 @@ public:
 	Scene();
 	~Scene();
 
-	void InitObjs();
+	void InitScene();
 	void InitCamara(float fov, int width, int height, float zNear, float zFar);
 	void UpdateObjs(float deltaTime);
 	void DrawObjs();
@@ -38,5 +38,17 @@ private:
 	glm::vec3 lightPosition;
 
 	Camara* camara;
+
+	unsigned int gBuffer;
+	unsigned int gPosition, gNormal, gAlbedoSpec;
+
+	/*TESTING*/
+	std::vector<glm::vec3> lightPositions;
+	std::vector<glm::vec3> lightColors;
+
+	// -------- PRIVATE FUNC ------------
+	void LoadObjs();
+	void InitGBuffer();
+	void InitLights();
 };
 

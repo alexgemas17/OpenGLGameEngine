@@ -1,17 +1,80 @@
-1.0f,-2.0f,0.0f;  //    Position
-0.2f,0.2f,0.2f;   //      Scale
--90.0f			  //  AngleRotation
-1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
-D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_AlbedoTransparency.png
-D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_Normal.png
-D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\Japanese_Temple_Paint2_Japanese_Shrine_Mat_MetallicSmoothness.png
-
-20.0f,0.0f,0.0f;  //    Position
-1.0f,1.0f,1.0f;   //      Scale
-0.0f			  //  AngleRotation
+-10.0f,-3.0f,-10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
 1.0f,0.0f,0.0f;   //  AngleRDirection
 D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+0.0f,-3.0f,-10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+10.0f,-3.0f,-10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+-10.0f,-3.0f,0.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+0.0f,-3.0f,0.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+10.0f,-3.0f,0.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
 D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+
+-10.0f,-3.0f,10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+
+0.0f,-3.0f,10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+
+10.0f,-3.0f,10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
 D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
 D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png

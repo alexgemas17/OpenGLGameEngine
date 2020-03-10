@@ -7,6 +7,11 @@ SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std
 	Model(), Render(puntos, index, normales, coordenada_textura, albedoURL, normalURL, materialURL)
 {}
 
+SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura,
+	std::vector<std::string> AlbedoTextures, std::vector<std::string> specularTextures, std::vector<std::string> normalMapTextures) :
+	Model(), Render(puntos, index, normales, coordenada_textura, AlbedoTextures, specularTextures, normalMapTextures)
+{}
+
 SceneObj::~SceneObj() {}
 
 void SceneObj::UpdateObj(float deltaTime)
@@ -36,6 +41,9 @@ void SceneObj::DrawObj(glm::mat4 &_modelMatrix, glm::mat4& _mView, glm::mat4& _m
 
 	case TextureLight:
 		setShaderToTextureLight(_modelMatrix, _mView, _mViewProjection);
+		break;
+	case DeferredRendering:
+		setShaderDeferredRendering(_modelMatrix, _mView, _mViewProjection);
 		break;
 	}
 
@@ -84,4 +92,13 @@ void SceneObj::setShaderToTextureLight(glm::mat4& _modelMatrix, glm::mat4& _mVie
 
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mModelView", _mView * _modelMatrix);
 	ShaderManager::getInstance()->getBasicLightShader()->setUniform("mMVP", _mViewProjection * _modelMatrix);
+} 
+
+// Usa el shader de luces para renderizar el objeto
+void SceneObj::setShaderDeferredRendering(glm::mat4& _modelMatrix, glm::mat4& _mView, glm::mat4& _mViewProjection)
+{
+	ShaderManager::getInstance()->getGBuffer()->use();
+
+	ShaderManager::getInstance()->getGBuffer()->setUniform("mModel", _modelMatrix);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("mMVP", _mViewProjection * _modelMatrix);
 }
