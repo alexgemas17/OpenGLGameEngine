@@ -1,5 +1,8 @@
 #include "TextureManager.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../Loaders/stb_imagen.h"
+
 #include "../Loaders/lodepng.h"
 #include "../Application.h"
 #include <iostream>
@@ -40,9 +43,32 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	unsigned int idTexture = 0;
 
 	glGenTextures(1, &idTexture);
-	glBindTexture(GL_TEXTURE_2D, idTexture);
-
 	textInf.IDTexture = idTexture;
+
+	int width, height, nrComponents; 
+	GLenum format;
+	unsigned char* data = stbi_load(textInf.urlImg.c_str(), &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+	}
+	else {
+		std::cout << textInf.urlImg << " cannot be loaded" << std::endl;
+		
+		// Si no carga la textura, cargamos una textura genérica.
+		std::string url = Application::getInstance()->getPath() + no_texture;
+		data = stbi_load(url.c_str(), &width, &height, &nrComponents, 0);
+	}
+
+	//Generamos la imagen 
+	glBindTexture(GL_TEXTURE_2D, idTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	//Opciones para las texturas
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -50,24 +76,7 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	//Obtenemos los datos de la imagen
-	std::vector<unsigned char> image;
-	unsigned width, height;
-	unsigned error = lodepng::decode(image, width, height, textInf.urlImg);
-	if (error)
-	{
-		std::cout << textInf.urlImg << " cannot be loaded" << std::endl;
-
-		// Si no carga la textura, cargamos una textura genérica.
-		lodepng::decode(image, width, height, Application::getInstance()->getPath() + no_texture);
-		//return ;
-	}
-
-	//Generamos la imagen
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image.data());
-	glGenerateMipmap(GL_TEXTURE_2D);
-
 	this->hashmap_IDTexture.insert(make_pair(textInf.urlImg, textInf.IDTexture));
 
-	image.clear();
+	stbi_image_free(data);
 }

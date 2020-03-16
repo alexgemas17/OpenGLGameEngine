@@ -12,6 +12,9 @@ public:
 
 	/* Devuelve la ModelMatrix del objeto*/
 	glm::mat4 getModelMatrix();
+	glm::vec3 getPosition();
+	glm::vec3 getRotation();
+	glm::vec3 getScale();
 
 	void Scale(float x, float y, float z);
 	void Rotate(float angle, glm::vec3 axesRotation);

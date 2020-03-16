@@ -58,6 +58,12 @@
     <Filter Include="Shaders\Luces">
       <UniqueIdentifier>{d8ed7532-3637-4bb5-aba4-2330d3ee7a50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Gui">
+      <UniqueIdentifier>{f2dfa109-5ce6-45da-9073-f08e02e599b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Gui">
+      <UniqueIdentifier>{0fc6d47b-4e9d-44bc-901e-cb37dc5ea04d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,9 +90,6 @@
     <ClCompile Include="Render\SceneObj.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
-    <ClCompile Include="PagShaderProgram.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
     <ClCompile Include="Loaders\lodepng.cpp">
       <Filter>Archivos de origen\Loaders</Filter>
     </ClCompile>
@@ -106,6 +109,30 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="Managers\TextureManager.cpp">
+      <Filter>Archivos de origen\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_impl_glfw.cpp">
+      <Filter>Archivos de origen\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui.cpp">
+      <Filter>Archivos de origen\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_impl_opengl3.cpp">
+      <Filter>Archivos de origen\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_draw.cpp">
+      <Filter>Archivos de origen\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_widgets.cpp">
+      <Filter>Archivos de origen\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui\imgui_demo.cpp">
+      <Filter>Archivos de origen\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="PagShaderProgram.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Managers\GuiManager.cpp">
       <Filter>Archivos de origen\Managers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -134,9 +161,6 @@
     <ClInclude Include="Render\SceneObj.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
-    <ClInclude Include="PagShaderProgram.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="Loaders\lodepng.h">
       <Filter>Archivos de encabezado\Loaders</Filter>
     </ClInclude>
@@ -157,6 +181,39 @@
     </ClInclude>
     <ClInclude Include="Managers\TextureManager.h">
       <Filter>Archivos de encabezado\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="Loaders\stb_imagen.h">
+      <Filter>Archivos de encabezado\Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui_impl_glfw.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui_impl_opengl3.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imconfig.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imgui_internal.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imstb_rectpack.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imstb_textedit.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui\imstb_truetype.h">
+      <Filter>Archivos de encabezado\Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\GuiManager.h">
+      <Filter>Archivos de encabezado\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="PagShaderProgram.h">
+      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

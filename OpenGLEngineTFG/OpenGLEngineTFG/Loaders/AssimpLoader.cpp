@@ -147,8 +147,16 @@ std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiT
 		mat->GetTexture(type, i, &str);
 		// check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
 		bool skip = false;
+
+		//Extraemos el nombre del archivo.
 		std::string filename = std::string(str.C_Str());
 		std::string ID_Texture = filename.substr(filename.find_last_of('\\') + 1, filename.size() - 1);
+
+		//Si es igual, es porque usa el sistema de asdf/asdf.asdf.
+		if (ID_Texture == filename) {
+			ID_Texture = filename.substr(filename.find_last_of('/') + 1, filename.size() - 1);
+		}
+
 		ID_Texture = path + ID_Texture;
 
 		if (Application::getInstance()->getTextureManager()->getIDTexture(ID_Texture) != -1)

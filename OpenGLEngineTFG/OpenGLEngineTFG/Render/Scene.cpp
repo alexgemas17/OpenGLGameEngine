@@ -12,7 +12,7 @@ Scene::Scene(): camara(nullptr)
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 	//glDepthFunc(GL_LEQUAL);
-	//glDepthFunc(GL_LESS);
+	glDepthFunc(GL_LESS);
 	//glEnable(GL_BLEND);
 	glDisable(GL_BLEND); //Activar despues del Deferred rendering si se quiere usar
 }
@@ -60,6 +60,13 @@ void Scene::LoadObjs()
 	delete loader;
 }
 
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
 void Scene::InitLights()
 {
 	//Cargamos los objetos
@@ -74,9 +81,9 @@ void Scene::InitLights()
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
-		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
+		float xPos = RandomFloat(-50, 50);
+		float yPos = RandomFloat(-50, 50);
+		float zPos = RandomFloat(-50, 50);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
 		// also calculate random color

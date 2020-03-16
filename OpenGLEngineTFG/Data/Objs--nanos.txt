@@ -1,0 +1,80 @@
+-10.0f,-3.0f,-10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+0.0f,-3.0f,-10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+10.0f,-3.0f,-10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+-10.0f,-3.0f,0.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+0.0f,-3.0f,0.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+
+10.0f,-3.0f,0.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+
+-10.0f,-3.0f,10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+
+0.0f,-3.0f,10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+
+10.0f,-3.0f,10.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
+0.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\body_dif.png

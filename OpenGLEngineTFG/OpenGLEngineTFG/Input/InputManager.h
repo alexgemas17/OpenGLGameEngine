@@ -31,6 +31,7 @@ enum KeyCode : int {
 	Key_X = 88,
 	Key_Y = 89,
 	Key_Z = 90,
+	Key_F1 = 290,
 	Key_SPACE = 32,
 	Key_LEFT_CONTROL = 341,
 	Key_RIGHT_CONTROL = 345,

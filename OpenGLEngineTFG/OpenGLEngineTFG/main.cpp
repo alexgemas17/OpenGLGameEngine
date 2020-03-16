@@ -5,6 +5,10 @@
 #include <GLFW\glfw3.h>
 #include <glm.hpp>
 
+#include "Gui/imgui.h"
+#include "Gui/imgui_impl_glfw.h"
+#include "Gui/imgui_impl_opengl3.h"
+
 #include "Input/InputManager.h"
 #include "Managers/ShaderManager.h"
 #include "Application.h"
@@ -54,6 +58,9 @@ int main() {
 
 	glViewport(0, 0, WIDHT, HEIGHT);
 
+	// -------------------- Creamos la GUI -------------------- 
+	Application::getInstance()->getGuiManager()->InitGUI(window);
+
 	// -------------------- Registramos los callbacks -------------------- 
 	setFunctionsCallbacks(window);
 
@@ -61,42 +68,22 @@ int main() {
 	ShaderManager::getInstance();
 
 	// -------------------- Creamos la escena --------------------  
-	std::cout << "Inicializamos la escena..." << std::endl;
+	std::cout << "Inicializando la escena..." << std::endl;
 	Application::getInstance()->InitMainScene();
-	std::cout << "Inicializamos las texturas..." << std::endl;
+	std::cout << "Inicializando las texturas..." << std::endl;
 	Application::getInstance()->InitTextures();
 
-	//Para el FPS Counter
-	double lastTime = glfwGetTime();
-	int nbFrames = 0;
-
-	// Para poder establecer el DeltaTime
-	float deltaTime = 0.0f;	// Tiempo entre dos frames
-	float lastFrame = 0.0f;
 	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
 
-		// ----------------------------- DELTA TIME ----------------------
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-		
-		//showFPSCounter(nbFrames, lastTime);
-		// ----------------------------- INPUTS ----------------------
-		//processInput(window);
-		InputManager::getInstance()->key_callback(window);
-
-		// ----------------------------- UPDATE ----------------------
-		Application::getInstance()->UpdateMainScene(deltaTime);
-		
-		// ----------------------------- RENDER ----------------------
-		Application::getInstance()->DrawMainScene();
+		Application::getInstance()->MainLoop(window);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	// Liberamos recursos
+	Application::getInstance()->getGuiManager()->DestroyGUI();
 	Application::getInstance()->DestroyInstance();
 }
 
@@ -131,7 +118,7 @@ void setFunctionsCallbacks(GLFWwindow* window)
 
 void window_refresh_callback(GLFWwindow* window) {
 	//Llamamos a la función correspodiente a las acciones al refrescar la ventana.
-	Application::getInstance()->DrawMainScene();
+	Application::getInstance()->MainLoop(window);
 
 	glfwSwapBuffers(window);
 }
@@ -158,10 +145,15 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	if (Application::getInstance()->getWrappRaton()) {
+		//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
+		Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
 
-	window_refresh_callback(window);
+		window_refresh_callback(window);
+	}
+	else {
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
 }

@@ -4,7 +4,7 @@
 
 Camara::Camara(float fov, int width, int height, float zNear, float zFar): 
 	mView(glm::mat4(1.0f)), fov(fov), zNear(zNear), zFar(zFar), primerMovRaton(true),
-	u(glm::vec3(0.0f, 0.0f, -1.0f)), sensibilidad(0.1f), velocidadCamara(2.5f),
+	u(glm::vec3(0.0f, 0.0f, -1.0f)), sensibilidad(0.1f), velocidadCamara(15.0f),
 	yaw(-90.0f), pitch(0.0f)
 {
 

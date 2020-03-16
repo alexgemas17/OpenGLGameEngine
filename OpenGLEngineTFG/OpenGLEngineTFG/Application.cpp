@@ -18,9 +18,12 @@ void Application::DestroyInstance() {
 	instance = 0;
 }
 
-Application::Application(): world(nullptr)
+Application::Application(): 
+	world(nullptr), wrappRaton(true), lastTime(glfwGetTime()),
+	deltaTime(0.0f), lastFrame(0.0f), nbFrames(0)
 {
 	ExePath();
+	this->guiManager = new GuiManager();
 	this->textureManager = new TextureManager();
 	this->world = new Scene();
 }
@@ -29,6 +32,71 @@ Application::~Application()
 {
 	delete world;
 	delete textureManager;
+}
+
+void Application::MainLoop(GLFWwindow* window)
+{
+	// ----------------------------- DELTA TIME ----------------------
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	// Comprobamos si debemos bloquear o no el ratón para el uso de la GUI.
+	if (InputManager::getInstance()->getInputButtonDown(Key_F1)) {
+		this->wrappRaton = !this->wrappRaton;
+	}
+
+	//--------------- GUI INIT -------------
+	guiManager->StartGUI();
+
+	//showFPSCounter(nbFrames, lastTime);
+
+	// ----------------------------- INPUTS ----------------------
+	//processInput(window);
+	InputManager::getInstance()->key_callback(window);
+
+	// ----------------------------- UPDATE ----------------------
+	UpdateMainScene(deltaTime);
+
+	// ----------------------------- RENDER ----------------------
+	DrawMainScene();
+
+	//--------------- GUI RENDER -------------
+	guiManager->showGUI();
+}
+
+void Application::InitMainScene()
+{
+	world = new Scene();
+	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
+	world->InitScene();
+
+	//Añadimos los objetos a la gui.
+
+}
+
+void Application::InitTextures()
+{
+	this->textureManager->LoadTextures();
+}
+
+void Application::UpdateMainScene(float deltaTime)
+{
+	world->UpdateObjs(deltaTime);
+}
+
+void Application::DrawMainScene()
+{
+	world->DrawObjs();
+}
+
+void Application::ExePath() {
+	char buffer[MAX_PATH];
+	GetModuleFileName(NULL, buffer, MAX_PATH);
+	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
+
+	//pos - 5 --> Para quitar Debug de la ruta.
+	this->url_Path = std::string(buffer).substr(0, pos - 5);
 }
 
 void Application::getInfoHardware()
@@ -55,33 +123,7 @@ TextureManager* Application::getTextureManager()
 	return this->textureManager;
 }
 
-void Application::InitMainScene()
+GuiManager* Application::getGuiManager()
 {
-	world = new Scene();
-	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
-	world->InitScene();
-}
-
-void Application::InitTextures()
-{
-	this->textureManager->LoadTextures();
-}
-
-void Application::UpdateMainScene(float deltaTime)
-{
-	world->UpdateObjs(deltaTime);
-}
-
-void Application::DrawMainScene()
-{
-	world->DrawObjs();
-}
-
-void Application::ExePath() {
-	char buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
-	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
-
-	//pos - 5 --> Para quitar Debug de la ruta.
-	this->url_Path = std::string(buffer).substr(0, pos - 5);
+	return this->guiManager;
 }
