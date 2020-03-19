@@ -6,7 +6,7 @@
 
 Scene::Scene(): camara(nullptr)
 {
-	glPrimitiveRestartIndex(0xFFFFFFFF);
+	glPrimitiveRestartIndex(0xFFFFFFFF); //Posible incompatibilidad con los modelos cargados desde Assimp.
 	glEnable(GL_PRIMITIVE_RESTART);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_MULTISAMPLE);

@@ -2,9 +2,15 @@
 
 #include <gtc/matrix_transform.hpp>
 
+/*
+	Sensibilidad: velocidad de movimiento de la cámara.
+	velocidadCamara: velocidad con la que se mueve la cámara normalmente.
+
+	TO-DO: Añadir también para poder ser manipurable la velocidad con shift.
+*/
 Camara::Camara(float fov, int width, int height, float zNear, float zFar): 
 	mView(glm::mat4(1.0f)), fov(fov), zNear(zNear), zFar(zFar), primerMovRaton(true),
-	u(glm::vec3(0.0f, 0.0f, -1.0f)), sensibilidad(0.1f), velocidadCamara(15.0f),
+	u(glm::vec3(0.0f, 0.0f, -1.0f)), sensibilidad(0.2f), velocidadCamara(15.0f),
 	yaw(-90.0f), pitch(0.0f)
 {
 
@@ -29,7 +35,16 @@ Camara::~Camara() {}
 void Camara::UpdateCamera(float deltaTime)
 {
 	bool teclaPulsada = false;
-	float velocidadDeltaTime = velocidadCamara * deltaTime;
+	float velocidadDeltaTime = 0.0f;
+
+	//Para ir más rápido
+	if (InputManager::getInstance()->getInputButtonDown(Key_LEFT_SHIFT)) {
+		velocidadDeltaTime = (velocidadCamara * 10.0f) * deltaTime;
+	}
+	else {
+		velocidadDeltaTime = velocidadCamara * deltaTime;
+	}
+
 	if (InputManager::getInstance()->getInputButtonDown(Key_A)) {
 		teclaPulsada = true;
 		this->vecPositionCamera -= this->u * velocidadDeltaTime;

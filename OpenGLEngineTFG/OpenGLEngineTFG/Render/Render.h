@@ -49,6 +49,10 @@ public:
 	void setTypeRender(TypeRender type);
 	TypeRender getTypeRender();
 
+	std::vector<std::string> getAlbedoTextures();
+	std::vector<std::string> getSpecularTextures();
+	std::vector<std::string> getNormalMapTextures();
+
 private:
 
 	unsigned int VAO;

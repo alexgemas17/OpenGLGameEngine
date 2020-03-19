@@ -47,6 +47,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwSwapInterval(0); //VSync off
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//  -------------------- Iniciamos GLEW -------------------- 
 	glewExperimental = true;
@@ -70,8 +71,12 @@ int main() {
 	// -------------------- Creamos la escena --------------------  
 	std::cout << "Inicializando la escena..." << std::endl;
 	Application::getInstance()->InitMainScene();
+
 	std::cout << "Inicializando las texturas..." << std::endl;
 	Application::getInstance()->InitTextures();
+
+	std::cout << "Inicializando la GUI..." << std::endl;
+	Application::getInstance()->InitGUI();
 
 	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
@@ -145,15 +150,21 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (Application::getInstance()->getWrappRaton()) {
-		//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//if (Application::getInstance()->getWrappRaton()) {
+	//	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
+	//	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-		Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
+	//	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
 
-		window_refresh_callback(window);
-	}
-	else {
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	}
+	//	window_refresh_callback(window);
+	//}
+	//else {
+	//	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	//}
+	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
+
+	window_refresh_callback(window);
 }

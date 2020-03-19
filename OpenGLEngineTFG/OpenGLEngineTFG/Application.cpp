@@ -42,12 +42,12 @@ void Application::MainLoop(GLFWwindow* window)
 	lastFrame = currentFrame;
 
 	// Comprobamos si debemos bloquear o no el ratón para el uso de la GUI.
-	if (InputManager::getInstance()->getInputButtonDown(Key_F1)) {
+	/*if (InputManager::getInstance()->getInputButtonDown(Key_F1)) {
 		this->wrappRaton = !this->wrappRaton;
-	}
+	}*/
 
 	//--------------- GUI INIT -------------
-	guiManager->StartGUI();
+	//guiManager->StartGUI();
 
 	//showFPSCounter(nbFrames, lastTime);
 
@@ -62,7 +62,7 @@ void Application::MainLoop(GLFWwindow* window)
 	DrawMainScene();
 
 	//--------------- GUI RENDER -------------
-	guiManager->showGUI();
+	//guiManager->showGUI(); TO-DO: ARREGLAR
 }
 
 void Application::InitMainScene()
@@ -70,14 +70,17 @@ void Application::InitMainScene()
 	world = new Scene();
 	world->InitCamara(FOV, WIDHT, HEIGHT, ZNEAR, ZFAR);
 	world->InitScene();
-
-	//Añadimos los objetos a la gui.
-
 }
 
 void Application::InitTextures()
 {
 	this->textureManager->LoadTextures();
+}
+
+void Application::InitGUI() 
+{
+	//Añadimos los objetos a la gui.
+	this->guiManager->addNodoSceneToGUI(world->getNodesScene(), "sponza");
 }
 
 void Application::UpdateMainScene(float deltaTime)

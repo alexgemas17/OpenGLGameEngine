@@ -21,7 +21,9 @@ public:
 	void setTypeRenderNode(TypeRender type) { this->typeRender = type; };
 
 	SceneObj* getObj(int index) { return this->objs[index]; }
+	std::vector<SceneObj*> getObjs() { return this->objs; }
 	NodoScene* getNode(int index) { return this->nodos[index]; }
+	std::vector<NodoScene*> getNodos() { return this->nodos; }
 
 
 private:

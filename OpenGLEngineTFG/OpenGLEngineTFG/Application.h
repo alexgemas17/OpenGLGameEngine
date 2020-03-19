@@ -31,6 +31,7 @@ public:
 
 	void InitMainScene();
 	void InitTextures();
+	void InitGUI();
 
 	void MainLoop(GLFWwindow* window);
 

@@ -25,7 +25,7 @@ void TextureManager::addIDTexture(std::string urlImage)
 		
 		this->textures.push_back(textInf);
 		
-		InitTextura(textInf);
+		//InitTextura(textInf);
 	}
 }
 

@@ -31,6 +31,8 @@ public:
 	void cursor_position_callback(double xpos, double ypos);
 	void scroll_callback(double xoffset, double yoffset);
 
+	NodoScene* getNodesScene() { return this->nodoWorld; }
+
 private:
 	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
 	NodoScene* nodoWorld; 

@@ -69,6 +69,21 @@ TypeRender Render::getTypeRender()
 	return this->typeRender;
 }
 
+std::vector<std::string> Render::getAlbedoTextures()
+{
+	return this->AlbedoTextures;
+}
+
+std::vector<std::string> Render::getSpecularTextures()
+{
+	return this->specularTextures;
+}
+
+std::vector<std::string> Render::getNormalMapTextures()
+{
+	return this->normalMapTextures;
+}
+
 void Render::Draw()
 {
 	//shader->use(); --> NOTA: Se llama antes en el DrawObj del SceneObj.

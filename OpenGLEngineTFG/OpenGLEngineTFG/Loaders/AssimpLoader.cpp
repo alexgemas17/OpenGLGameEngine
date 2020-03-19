@@ -107,6 +107,10 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 				data.indices.push_back(face.mIndices[j]);
 			}
 		}
+		//Añadimos el primer índice para realizar bien el mapeo de las IBOs.
+		if (face.mIndices) {
+			data.indices.push_back(face.mIndices[0]);
+		}
 		data.indices.push_back(0xFFFFFFFF);
 	}
 

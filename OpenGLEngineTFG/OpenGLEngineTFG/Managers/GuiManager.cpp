@@ -2,10 +2,12 @@
 
 #include <iostream>
 
+#include "../Application.h"
+
 GuiManager::GuiManager(): 
     show_demo_window(true), 
     show_another_window(true), 
-    clear_color(ImVec4(0.45f, 0.55f, 0.60f, 1.00f)) {}
+    clear_color(ImVec4(0.45f, 0.55f, 0.60f, 1.00f)){}
 
 void GuiManager::InitGUI(GLFWwindow* window)
 {
@@ -64,67 +66,90 @@ void GuiManager::showGUI()
 
     //TO-DO: HACER FUNCIONES DE LA UI
     // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+    //{
+    //	static float f = 0.0f;
+    //	static int counter = 0;
+
+    //	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+    //	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+    //	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+    //	ImGui::Checkbox("Another Window", &show_another_window);
+
+    //    static float translation[] = { 0.0, 0.0 };
+    //    static float translation2[] = { 0.0, 0.0 };
+    //    static float translation3[] = { 0.0, 0.0 };
+
+    //    if (ImGui::CollapsingHeader("Objetos??"))
+    //    {
+    //        ImGui::Text("Objetos del mundo:");
+    //        ImGui::Separator();
+
+    //        if (ImGui::CollapsingHeader("Nodo 1"))
+    //        {
+    //            if (ImGui::CollapsingHeader("Hijo"))
+    //            {
+    //                //ImGui::Image();
+    //            }
+    //        }
+
+    //        if (ImGui::CollapsingHeader("Nodo 2"))
+    //        {
+    //            if (ImGui::CollapsingHeader("Hijo 1"))
+    //            {
+    //                ImGui::Separator();
+    //                if (ImGui::SliderFloat2("position 2", translation2, -1.0, 1.0)) {
+    //                    std::cout << "Modificado 2" << std::endl;
+    //                }
+    //            }
+    //            if (ImGui::CollapsingHeader("Hijo 2"))
+    //            {
+    //                ImGui::Separator();
+    //                if (ImGui::SliderFloat2("position 3", translation3, -1.0, 1.0)) {
+    //                    std::cout << "Modificado 3" << std::endl;
+    //                }
+    //            }
+    //        }
+    //    }
+
+    //	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+    //	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+    //	if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+    //		counter++;
+    //	ImGui::SameLine();
+    //	ImGui::Text("counter = %d", counter);
+
+    //	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    //	ImGui::End();
+    //}
+
     {
-    	static float f = 0.0f;
-    	static int counter = 0;
+        ImGui::Begin("Objetos en escena"); 
+        ImGui::Text("Lista de los objetos que existen en escena:");
 
-    	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-    	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-    	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-    	ImGui::Checkbox("Another Window", &show_another_window);
-
-        static float translation[] = { 0.0, 0.0 };
-        static float translation2[] = { 0.0, 0.0 };
-        static float translation3[] = { 0.0, 0.0 };
-        
-
-        if (ImGui::CollapsingHeader("Objetos??"))
+        if (ImGui::CollapsingHeader("Sponza"))
         {
-            ImGui::Text("Objetos del mundo:");
-            ImGui::Separator();
-
-            if (ImGui::CollapsingHeader("Nodo 1"))
-            {
+            for (int i = 0; i < objsInfoGUI.size(); i++) {
+                const std::string name = objsInfoGUI[i].NameObj.append("" + i);
                 if (ImGui::CollapsingHeader("Hijo"))
                 {
-                    ImGui::Separator();
-                    if (ImGui::SliderFloat2("position", translation, -1.0, 1.0)) {
-                        std::cout << "Modificado 1" << std::endl;
+                    ImGui::Text(objsInfoGUI[i].NameObj.c_str());
+                    if (objsInfoGUI[i].NameTextureDiff != "") {
+                        if(ImGui::CollapsingHeader(objsInfoGUI[i].NameTextureDiff.c_str())) {
+                            ImGui::Text("Aqui va una imagen");
+                        }
                     }
-                }
-            }
-
-            if (ImGui::CollapsingHeader("Nodo 2"))
-            {
-                if (ImGui::CollapsingHeader("Hijo 1"))
-                {
-                    ImGui::Separator();
-                    if (ImGui::SliderFloat2("position", translation2, -1.0, 1.0)) {
-                        std::cout << "Modificado 2" << std::endl;
+                    else {
+                        ImGui::Text(objsInfoGUI[i].NameTextureDiff.c_str());
                     }
+                    ImGui::Text(objsInfoGUI[i].NameTextureSpec.c_str());
+                    ImGui::Text(objsInfoGUI[i].NameTextureNormal.c_str());
                 }
-                if (ImGui::CollapsingHeader("Hijo 2"))
-                {
-                    ImGui::Separator();
-                    if (ImGui::SliderFloat2("position", translation3, -1.0, 1.0)) {
-                        std::cout << "Modificado 3" << std::endl;
-                    }
-                }
-
             }
         }
 
-    	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-    	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-    	if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-    		counter++;
-    	ImGui::SameLine();
-    	ImGui::Text("counter = %d", counter);
-
-    	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    	ImGui::End();
+        ImGui::End();
     }
 
     // Rendering
@@ -132,6 +157,12 @@ void GuiManager::showGUI()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void GuiManager::addNodoSceneToGUI(NodoScene* nodo, std::string name)
+{
+    recursiveAddNodoSceneToGUI(nodo);
+}
+
+// --------------------------- FUNCIONES PRIVADAS ----------------------------
 void GuiManager::showMenu()
 {
     //IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!"); // Exceptionally add an extra assert here for people confused with initial dear imgui setup
@@ -180,4 +211,61 @@ void GuiManager::showMenu()
 
     //ImGui::Text("dear imgui says hello. (%s)", IMGUI_VERSION);
     //ImGui::Spacing();
+}
+
+void GuiManager::recursiveAddNodoSceneToGUI(NodoScene* nodo)
+{
+    //Si no hay más nodos, nos recorremos sus hijos.
+    if (nodo->getNodos().empty()) {
+
+        if (!nodo->getObjs().empty()) { 
+            for (int i = 0; i < nodo->getObjs().size(); i++) {
+                ObjSceneInfo obj;
+                obj.NameObj = "Hijo " + i + 1;
+                obj.NameTextureDiff = "";
+                obj.NameTextureSpec = "";
+                obj.NameTextureNormal = "";
+
+                if(!nodo->getObj(i)->getAlbedoTextures().empty())
+                    obj.NameTextureDiff = nodo->getObj(i)->getAlbedoTextures()[0];
+
+                if (!nodo->getObj(i)->getSpecularTextures().empty())
+                    obj.NameTextureSpec = nodo->getObj(i)->getSpecularTextures()[0];
+
+                if (!nodo->getObj(i)->getNormalMapTextures().empty())
+                    obj.NameTextureNormal = nodo->getObj(i)->getNormalMapTextures()[0];
+
+                objsInfoGUI.push_back(obj);
+            }
+        }
+    }
+    //Nos recurremos sus nodos
+    else {
+        //Sus nodos
+        for (int i = 0; i < nodo->getNodos().size(); i++) {
+            recursiveAddNodoSceneToGUI(nodo->getNodos()[i]);
+        }
+
+        //Cuano hayamos terminado, nos recorremos sus hijos.
+        if (!nodo->getObjs().empty()) {
+            for (int i = 0; i < nodo->getNodos().size(); i++) {
+                ObjSceneInfo obj;
+                obj.NameObj = "Hijo " + i + 1;
+                obj.NameTextureDiff = "";
+                obj.NameTextureSpec = "";
+                obj.NameTextureNormal = "";
+
+                if (!nodo->getObj(i)->getAlbedoTextures().empty())
+                    obj.NameTextureDiff = nodo->getObj(i)->getAlbedoTextures()[0];
+
+                if (!nodo->getObj(i)->getSpecularTextures().empty())
+                    obj.NameTextureSpec = nodo->getObj(i)->getSpecularTextures()[0];
+
+                if (!nodo->getObj(i)->getNormalMapTextures().empty())
+                    obj.NameTextureNormal = nodo->getObj(i)->getNormalMapTextures()[0];
+
+                objsInfoGUI.push_back(obj);
+            }
+        }
+    }
 }
