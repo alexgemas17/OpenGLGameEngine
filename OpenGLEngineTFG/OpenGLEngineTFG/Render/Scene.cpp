@@ -70,26 +70,25 @@ float RandomFloat(float a, float b) {
 void Scene::InitLights()
 {
 	//Cargamos los objetos
-	//AssimpLoader* loader = new AssimpLoader();
+	AssimpLoader* loader = new AssimpLoader();
 
 	this->nodoLight = new NodoScene();
 
 	// lighting info
 	// -------------
-	const unsigned int NR_LIGHTS = 32;
 	srand(13);
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = RandomFloat(-50, 50);
-		float yPos = RandomFloat(-50, 50);
-		float zPos = RandomFloat(-50, 50);
+		float xPos = RandomFloat(-30, 30);
+		float yPos = RandomFloat(20, 50);
+		float zPos = RandomFloat(-30, 30);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
 		// also calculate random color
-		float rColor = ((rand() % 100) / 200.0f) + 0.2; // between 0.2 and 1.0
-		float gColor = ((rand() % 100) / 200.0f) + 0.2; // between 0.2 and 1.0
-		float bColor = ((rand() % 100) / 200.0f) + 0.2; // between 0.2 and 1.0
+		float rColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
+		float gColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
+		float bColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
 		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
 
@@ -98,32 +97,23 @@ void Scene::InitLights()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
 
-	////Cubo Luz 
-	//NodoScene* cubo1 = loader->loadModelAssimpNode(Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "", "", "");
-	//cubo1->Scale(0.7f, 0.7f, 0.7f);
-	//cubo1->Translate(pointLightPositions[0].x, pointLightPositions[0].y, pointLightPositions[0].z);
-	//cubo1->setTypeRenderNode(BasicColor);
-	//nodoLight->addNodo(cubo1);
+	//Cubo Luz 
+	for (int i = 0; i < NR_LIGHTS; i++) {
 
-	//NodoScene* cubo2 = loader->loadModelAssimpNode(Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "", "", "");
-	//cubo2->Scale(0.7f, 0.7f, 0.7f);
-	//cubo2->Translate(pointLightPositions[1].x, pointLightPositions[1].y, pointLightPositions[1].z);
-	//cubo2->setTypeRenderNode(BasicColor);
-	//nodoLight->addNodo(cubo2);
+		NodoScene* cubo = loader->loadModelAssimpNode(
+			Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj",
+			"", 
+			"", 
+			""
+		);
 
-	//NodoScene* cubo3 = loader->loadModelAssimpNode(Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "", "", "");
-	//cubo3->Scale(0.7f, 0.7f, 0.7f);
-	//cubo3->Translate(pointLightPositions[2].x, pointLightPositions[2].y, pointLightPositions[2].z);
-	//cubo3->setTypeRenderNode(BasicColor);
-	//nodoLight->addNodo(cubo3);
+		cubo->Scale(0.1f, 0.1f, 0.1f);
+		cubo->Translate(lightPositions[i].x, lightPositions[i].y, lightPositions[i].z);
+		cubo->setTypeRenderNode(BasicColor);
+		nodoLight->addNodo(cubo);
+	}
 
-	//NodoScene* cubo4 = loader->loadModelAssimpNode(Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "", "", "");
-	//cubo4->Scale(0.7f, 0.7f, 0.7f);
-	//cubo4->Translate(pointLightPositions[3].x, pointLightPositions[3].y, pointLightPositions[3].z);
-	//cubo4->setTypeRenderNode(BasicColor);
-	//nodoLight->addNodo(cubo4);
-
-	//delete loader;
+	delete loader;
 }
 
 void Scene::InitGBuffer()
@@ -291,8 +281,10 @@ void Scene::DrawObjs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
-
-	//this->nodoLight->DrawObjs(mView, mViewProjection);
+	//Dibujamos los cubos como siempre (Forward rendering)
+	for (int i = 0; i < NR_LIGHTS; i++) {
+		this->nodoLight->DrawObjs(mView, mViewProjection);
+	}
 }
 
 /* Funciones callbacks */

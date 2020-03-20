@@ -24,8 +24,6 @@ void TextureManager::addIDTexture(std::string urlImage)
 		textInf.urlImg = urlImage;
 		
 		this->textures.push_back(textInf);
-		
-		//InitTextura(textInf);
 	}
 }
 
@@ -37,6 +35,7 @@ void TextureManager::LoadTextures()
 	}
 }
 
+// --------------------------- FUNCIONES PRIVADAS ----------------------------
 void TextureManager::InitTextura(TextureInfo &textInf)
 {
 	//Generamos la texturaID

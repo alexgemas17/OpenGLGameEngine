@@ -14,6 +14,8 @@
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
 
+const unsigned int NR_LIGHTS = 32;
+
 class Scene
 {
 public:

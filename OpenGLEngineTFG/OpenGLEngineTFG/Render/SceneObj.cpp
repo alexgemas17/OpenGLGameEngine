@@ -7,9 +7,31 @@ SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std
 	Model(), Render(puntos, index, normales, coordenada_textura, albedoURL, normalURL, materialURL)
 {}
 
-SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura,
-	std::vector<std::string> AlbedoTextures, std::vector<std::string> specularTextures, std::vector<std::string> normalMapTextures) :
-	Model(), Render(puntos, index, normales, coordenada_textura, AlbedoTextures, specularTextures, normalMapTextures)
+SceneObj::SceneObj(
+	std::vector<glm::vec3> puntos, 
+	std::vector<GLuint> index, 
+	std::vector<glm::vec3> normales,
+	std::vector<glm::vec2> coordenada_textura,
+	std::vector<std::string> AlbedoTextures, 
+	std::vector<std::string> specularTextures, 
+	std::vector<std::string> normalMapTextures
+):
+	Model(), 
+	Render(puntos, index, normales, coordenada_textura, AlbedoTextures, specularTextures, normalMapTextures)
+{}
+
+SceneObj::SceneObj( 
+	AssimpData* data,
+	std::vector<std::string> AlbedoTextures,
+	std::vector<std::string> specularTextures,
+	std::vector<std::string> normalMapTextures
+) :
+	Model(),
+	Render(
+		data, 
+		AlbedoTextures, 
+		specularTextures,
+		normalMapTextures)
 {}
 
 SceneObj::~SceneObj() {}

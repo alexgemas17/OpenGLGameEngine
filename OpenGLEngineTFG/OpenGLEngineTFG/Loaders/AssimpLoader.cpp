@@ -14,7 +14,7 @@ NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string a
 		return nullptr;
 	}
 
-	std::cout << "ASSIMP::Loaded successfully" << std::endl;
+	std::cout << "ASSIMP:  " + modelURL + "  LOADED SUCCESSFULLY" << std::endl;
 	NodoScene* root = new NodoScene();
 	loadRecursivo(scene->mRootNode, scene, root, albedoURL, normalURL, materialURL);
 
@@ -64,7 +64,7 @@ void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* 
 // Procesa la mesh, lo que es lo mismo, nuestro SceneObj (puntos, normales, indices, etc...)
 SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string albedoURL, std::string normalURL, std::string materialURL)
 {
-	AssimpData data;
+	AssimpData* data = new AssimpData;
 	SceneObj* obj;
 
 	// Walk through each of the mesh's vertices
@@ -74,26 +74,32 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 
 		// Añadimos la posición
 		if (mesh->mVertices) {
-			data.vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
+			data->vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
 		}
 
-		// Añadimos sus normale
+		// Añadimos sus normales
 		if (mesh->mNormals) {
-			data.normales.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+			data->normales.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+		}
+
+		// Añadimos sus tangentes
+		if (mesh->mTangents) {
+			data->tangentes.push_back(glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z));
+		}
+
+		// Añadimos sus bitangentes
+		if (mesh->mBitangents) {
+			data->bitangentes.push_back(glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z));
 		}
 		
 		// Añadimos sus coordenadas de textura
 		if (mesh->mTextureCoords[0])
 		{
-			// A vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't
-			// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-			data.coord_textura.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
-			data.coord_textura_3.push_back(glm::vec3(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y, mesh->mTextureCoords[0][i].z));
+			data->coord_textura.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
 		}
 		else
 		{
-			data.coord_textura.push_back(glm::vec2(0.0f, 0.0f));
-			data.coord_textura_3.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+			data->coord_textura.push_back(glm::vec2(0.0f, 0.0f));
 		}
 	}
 
@@ -104,14 +110,14 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 		for (GLuint j = 0; j < face.mNumIndices; j++)
 		{
 			if (face.mIndices) {
-				data.indices.push_back(face.mIndices[j]);
+				data->indices.push_back(face.mIndices[j]);
 			}
 		}
 		//Añadimos el primer índice para realizar bien el mapeo de las IBOs.
 		if (face.mIndices) {
-			data.indices.push_back(face.mIndices[0]);
+			data->indices.push_back(face.mIndices[0]);
 		}
-		data.indices.push_back(0xFFFFFFFF);
+		data->indices.push_back(0xFFFFFFFF);
 	}
 
 	// process materials
@@ -136,7 +142,9 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", albedoURL);
 
 	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, albedoURL, normalURL, materialURL);
-	obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, diffuseMaps, specularMaps, normalMaps);
+	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, diffuseMaps, specularMaps, normalMaps);
+	//Version buena??
+	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps);
 
 	return obj;
 }
@@ -171,15 +179,8 @@ std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiT
 
 		if (!skip)
 		{   // if texture hasn't been loaded already, load it
-
 			Application::getInstance()->getTextureManager()->addIDTexture(ID_Texture);
 			texturesURL.push_back(ID_Texture);
-			//Texture texture;
-			//texture.id = TextureFromFile(, this->directory);
-			//texture.type = typeName;
-			//texture.path = str.C_Str();
-			//textures.push_back(texture);
-			//textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
 		}
 	}
 

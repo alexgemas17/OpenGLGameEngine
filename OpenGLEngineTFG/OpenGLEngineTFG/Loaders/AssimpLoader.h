@@ -15,9 +15,10 @@
 struct AssimpData {
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normales;
+	std::vector<glm::vec3> tangentes;
+	std::vector<glm::vec3> bitangentes;
 	std::vector<GLuint> indices;
 	std::vector<glm::vec2> coord_textura;
-	std::vector<glm::vec3> coord_textura_3;
 };
 
 class AssimpLoader

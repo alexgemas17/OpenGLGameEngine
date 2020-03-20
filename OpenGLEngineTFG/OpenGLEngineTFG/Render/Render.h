@@ -5,6 +5,8 @@
 #include <glm.hpp>
 #include <GL\glew.h>
 
+#include "../Loaders/AssimpLoader.h"
+
 struct ImageData {
 	std::vector<unsigned char> image;
 	unsigned width, height;
@@ -22,9 +24,6 @@ enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight, Deferred
 
 class Render {
 public:
-	Render();
-	Render(float vertices[], unsigned int indices[]);
-	Render(float vertices[], unsigned int indices[], std::string urlImg);
 	Render(
 		std::vector<glm::vec3> puntos, 
 		std::vector<GLuint> index, 
@@ -39,6 +38,13 @@ public:
 		std::vector<glm::vec2> coordenada_textura,
 		std::vector<std::string> AlbedoTextures, 
 		std::vector<std::string> specularTextures, 
+		std::vector<std::string> normalMapTextures);
+
+	//CONSTRUCTOR BUENO
+	Render(
+		AssimpData* data,
+		std::vector<std::string> AlbedoTextures,
+		std::vector<std::string> specularTextures,
 		std::vector<std::string> normalMapTextures);
 
 	~Render();
@@ -56,15 +62,20 @@ public:
 private:
 
 	unsigned int VAO;
-	unsigned int VBO_Puntos;
-	unsigned int VBO_Normales;
+	unsigned int VBO_Puntos;			//VertexAttribArray = 0
+	unsigned int VBO_Normales;			//VertexAttribArray = 1
+	unsigned int CoordTexturaBuffer;	//VertexAttribArray = 2
+	unsigned int VBO_Tangentes;			//VertexAttribArray = 3
+	unsigned int VBO_Bitangentes;		//VertexAttribArray = 4
 	unsigned int IBO;
 	unsigned int texture;
 
-	unsigned int CoordTexturaBuffer;
 
 	TypeRender typeRender;
 
+	AssimpData* dataObj;
+
+	//BORRAR?
 	float* vertices;
 	unsigned int* indices;
 	ImageData data;
