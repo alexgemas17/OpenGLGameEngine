@@ -44,7 +44,9 @@ private:
 	Camara* camara;
 
 	unsigned int gBuffer;
-	unsigned int gPosition, gNormal, gAlbedoSpec;
+	unsigned int gPosition, gNormal, gAlbedoSpec, gNormalSpec;
+	unsigned int gTvector, gNvector, gBvector;
+
 
 	/*TESTING*/
 	std::vector<glm::vec3> lightPositions;

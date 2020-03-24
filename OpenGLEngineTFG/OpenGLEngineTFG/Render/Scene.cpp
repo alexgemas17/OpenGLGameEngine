@@ -44,7 +44,7 @@ void Scene::LoadObjs()
 	std::vector<ObjFile> mainObjs = fileLoader.getMainScene();
 	for (int i = 0; i < mainObjs.size(); i++) {
 		//Cargamos el objeto desde disco.
-		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i].obj, mainObjs[i].albedo, mainObjs[i].normal_mapping, mainObjs[i].material);
+		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i].obj, mainObjs[i].albedo);
 
 		//Selecionamos el tipo de rendering que queremos.
 		nodo->setTypeRenderNode(DeferredRendering);
@@ -96,16 +96,17 @@ void Scene::InitLights()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormalSpec", 3);
+
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gTvector", 4);
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gNvector", 5);
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gBvector", 6);
 
 	//Cubo Luz 
 	for (int i = 0; i < NR_LIGHTS; i++) {
 
 		NodoScene* cubo = loader->loadModelAssimpNode(
-			Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj",
-			"", 
-			"", 
-			""
-		);
+			Application::getInstance()->getPath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "");
 
 		cubo->Scale(0.1f, 0.1f, 0.1f);
 		cubo->Translate(lightPositions[i].x, lightPositions[i].y, lightPositions[i].z);
@@ -147,8 +148,43 @@ void Scene::InitGBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
-	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	//// normal texture buffer
+	//glGenTextures(1, &gNormalSpec);
+	//glBindTexture(GL_TEXTURE_2D, gNormalSpec);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gNormalSpec, 0);
+
+	//// normal color buffer
+	//glGenTextures(1, &gTvector);
+	//glBindTexture(GL_TEXTURE_2D, gTvector);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gTvector, 0);
+
+	//// normal color buffer
+	//glGenTextures(1, &gNvector);
+	//glBindTexture(GL_TEXTURE_2D, gNvector);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, gNvector, 0);
+
+	//// normal color buffer
+	//glGenTextures(1, &gBvector);
+	//glBindTexture(GL_TEXTURE_2D, gBvector);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D, gBvector, 0);
+
+	//// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	//unsigned int attachments[7] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6};
+	//glDrawBuffers(7, attachments);
+
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
 	glDrawBuffers(3, attachments);
 
 	// create and attach depth buffer (renderbuffer)
@@ -231,7 +267,6 @@ void Scene::DrawObjs()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-
 	// 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 		// -----------------------------------------------------------------------------------------------------------------------
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -242,6 +277,14 @@ void Scene::DrawObjs()
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+	/*glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, gNormalSpec);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, gTvector);
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, gNvector);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, gBvector);*/
 	// send light relevant uniforms
 	for (unsigned int i = 0; i < lightPositions.size(); i++)
 	{
@@ -250,8 +293,8 @@ void Scene::DrawObjs()
 
 		// update attenuation parameters and calculate radius
 		const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-		const float linear = 0.7;
-		const float quadratic = 1.8;
+		const float linear = 1.7; //0.7
+		const float quadratic = 2.8; //1.8
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
 
@@ -282,9 +325,9 @@ void Scene::DrawObjs()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	//Dibujamos los cubos como siempre (Forward rendering)
-	for (int i = 0; i < NR_LIGHTS; i++) {
+	/*for (int i = 0; i < NR_LIGHTS; i++) {
 		this->nodoLight->DrawObjs(mView, mViewProjection);
-	}
+	}*/
 }
 
 /* Funciones callbacks */

@@ -45,16 +45,16 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	textInf.IDTexture = idTexture;
 
 	int width, height, nrComponents; 
-	GLenum format;
+	GLenum formatImg = GL_RGBA;
 	unsigned char* data = stbi_load(textInf.urlImg.c_str(), &width, &height, &nrComponents, 0);
 	if (data)
 	{
 		if (nrComponents == 1)
-			format = GL_RED;
+			formatImg = GL_RED;
 		else if (nrComponents == 3)
-			format = GL_RGB;
+			formatImg = GL_RGB;
 		else if (nrComponents == 4)
-			format = GL_RGBA;
+			formatImg = GL_RGBA;
 	}
 	else {
 		std::cout << textInf.urlImg << " cannot be loaded" << std::endl;
@@ -66,7 +66,7 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 
 	//Generamos la imagen 
 	glBindTexture(GL_TEXTURE_2D, idTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, formatImg, width, height, 0, formatImg, GL_UNSIGNED_BYTE, data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	//Opciones para las texturas

@@ -9,7 +9,7 @@ Cube::Cube(float size)
 	AssimpLoader* loader = new AssimpLoader();
 
 	std::string path = ExePath();
-	this->obj = loader->loadModelAssimpObj(ExePath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "", "", "");
+	this->obj = loader->loadModelAssimpObj(ExePath() + "OpenGLEngineTFG\\BasicElement\\cube.obj", "");
 	this->obj->Scale(size, size, size);
 
 	delete loader;

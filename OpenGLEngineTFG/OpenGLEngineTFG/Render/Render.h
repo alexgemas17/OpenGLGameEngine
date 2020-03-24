@@ -20,10 +20,19 @@ struct ModelData {
 	std::string urlImg;
 };
 
-enum TypeRender { Points, Wireframe, BasicColor, Texture, TextureLight, DeferredRendering};
+enum TypeRender { 
+	Points,
+	Wireframe,
+	BasicColor, 
+	Texture, 
+	TextureLight,
+	DeferredRendering
+};
 
 class Render {
 public:
+	Render();
+
 	Render(
 		std::vector<glm::vec3> puntos, 
 		std::vector<GLuint> index, 

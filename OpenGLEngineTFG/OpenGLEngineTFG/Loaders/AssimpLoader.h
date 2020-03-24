@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <glm.hpp>
 #include <GL\glew.h>
@@ -9,8 +10,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "../Render/NodoScene.h"
-#include "../Render/SceneObj.h"
+class NodoScene;
+class SceneObj;
 
 struct AssimpData {
 	std::vector<glm::vec3> vertices;
@@ -25,17 +26,17 @@ class AssimpLoader
 {
 public:
 	// Devuelve el nodo root del modelo
-	NodoScene* loadModelAssimpNode(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL);
+	NodoScene *loadModelAssimpNode(std::string modelURL, std::string texturasPath);
 
 	// Devuelve el nodo root del modelo
-	SceneObj* loadModelAssimpObj(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL);
+	SceneObj *loadModelAssimpObj(std::string modelURL, std::string texturasPath);
 
 private:
 	/* Recorremos recursivamente los nodos que compone la escena (el modelo) */
-	void loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string albedoURL, std::string normalURL, std::string materialURL);
+	void loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string texturasPath);
 
 	/* Nos devuelve el AssimpData que contiene esa mesh */
-	SceneObj* processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string albedoURL, std::string normalURL, std::string materialURL);
+	SceneObj *processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string texturasPath);
 
 	/* Nos devuelve las textuas asociadas al objeto*/
 	std::vector<std::string> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string path);

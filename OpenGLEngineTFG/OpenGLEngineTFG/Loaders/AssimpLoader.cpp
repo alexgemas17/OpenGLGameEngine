@@ -2,11 +2,15 @@
 
 #include "../Application.h"
 
-NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL)
+#include "../Render/NodoScene.h"
+#include "../Render/SceneObj.h"
+
+
+NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string texturasPath)
 {
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(modelURL, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(modelURL, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -16,12 +20,12 @@ NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string a
 
 	std::cout << "ASSIMP:  " + modelURL + "  LOADED SUCCESSFULLY" << std::endl;
 	NodoScene* root = new NodoScene();
-	loadRecursivo(scene->mRootNode, scene, root, albedoURL, normalURL, materialURL);
+	loadRecursivo(scene->mRootNode, scene, root, texturasPath);
 
 	return root;
 }
 
-SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL, std::string albedoURL, std::string normalURL, std::string materialURL)
+SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL, std::string texturasPath)
 {
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
@@ -35,13 +39,13 @@ SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL, std::string alb
 
 	std::cout << "ASSIMP::Loaded successfully" << std::endl;
 	NodoScene* root = new NodoScene();
-	loadRecursivo(scene->mRootNode, scene, root, albedoURL, normalURL, materialURL);
+	loadRecursivo(scene->mRootNode, scene, root, texturasPath);
 
 	return root->getNode(0)->getObj(0);
 }
 
 //Recorre los distintos nodos que contiene la escena. O lo que es lo mismo, nuestro NodeScene
-void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string albedoURL, std::string normalURL, std::string materialURL)
+void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string texturasPath)
 {
 
 	// Nos recorremos la info de este nodo y la procesamos.
@@ -49,20 +53,20 @@ void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* 
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		nodo->addObj(processMeshAssimp(mesh, scene, albedoURL, normalURL, materialURL));
+		nodo->addObj(processMeshAssimp(mesh, scene, texturasPath));
 	}
 
 	// Una vez que hemos procesado el nodo actual, vamos hacia sus hijos
 	for (GLuint i = 0; i < node->mNumChildren; i++)
 	{
 		NodoScene* nodoHijo = new NodoScene;
-		this->loadRecursivo(node->mChildren[i], scene, nodoHijo, albedoURL, normalURL, materialURL);
+		this->loadRecursivo(node->mChildren[i], scene, nodoHijo, texturasPath);
 		nodo->addNodo(nodoHijo);
 	}
 }
 
 // Procesa la mesh, lo que es lo mismo, nuestro SceneObj (puntos, normales, indices, etc...)
-SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string albedoURL, std::string normalURL, std::string materialURL)
+SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string texturasPath)
 {
 	AssimpData* data = new AssimpData;
 	SceneObj* obj;
@@ -130,13 +134,13 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 	// normal: texture_normalN
 
 	// 1. diffuse maps
-	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", albedoURL);
+	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", texturasPath);
 
 	// 2. specular maps
-	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", albedoURL);
+	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", texturasPath);
 
 	// 3. normal maps
-	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", albedoURL);
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", texturasPath);
 
 	// 4. height maps
 	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", albedoURL);
