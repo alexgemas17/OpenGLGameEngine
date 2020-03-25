@@ -121,6 +121,6 @@ void SceneObj::setShaderDeferredRendering(glm::mat4& _modelMatrix, glm::mat4& _m
 {
 	ShaderManager::getInstance()->getGBuffer()->use();
 
-	ShaderManager::getInstance()->getGBuffer()->setUniform("mModel", _modelMatrix);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("mModelView", _mView * _modelMatrix);
 	ShaderManager::getInstance()->getGBuffer()->setUniform("mMVP", _mViewProjection * _modelMatrix);
 }

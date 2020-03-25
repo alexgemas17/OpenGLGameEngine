@@ -5,18 +5,16 @@ layout (location = 1) out vec3 gNormal;
 layout (location = 2) out vec4 gAlbedoSpec;
 layout (location = 3) out vec4 gNormalSpec;
 
-layout (location = 4) out vec3 gTvector;
-layout (location = 5) out vec3 gNvector;
-layout (location = 6) out vec3 gBvector;
+layout (location = 4) out vec3 gBinormal;
+layout (location = 5) out vec3 gTangent;
 
 in vec2 TexCoords;
 in vec3 FragPos;
 in vec3 Normal;
 
 //BUMP MAPPING
-in vec3 Tvector;
-in vec3 Nvector;
-in vec3 Bvector;
+in vec3 Binormal;
+in vec3 Tangent;
 
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_specular;
@@ -28,12 +26,11 @@ void main()
     gPosition = FragPos;
 
     // also store the per-fragment normals into the gbuffer
-    gNormal = normalize(Normal);
+    gNormal = Normal;
 
     // store the bump mapping data
-    gTvector = Tvector;
-    gNvector = Nvector;
-    gBvector = Bvector;
+    gBinormal = Binormal;
+    gTangent = Tangent;
 
     // and the diffuse per-fragment color
     gAlbedoSpec.rgb = texture(texture_diffuse, TexCoords).rgb;
@@ -41,6 +38,6 @@ void main()
     // store specular intensity in gAlbedoSpec's alpha component
     gAlbedoSpec.a = texture(texture_specular, TexCoords).r;
 
-     // and the diffuse per-fragment color
-    gNormalSpec.rgb = texture(texture_normal, TexCoords).rgb;
+    // and the diffuse per-fragment color
+    gNormalSpec = (2.0 * texture(texture_normal, TexCoords)) - 1.0;;
 }

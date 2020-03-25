@@ -14,7 +14,7 @@
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
 
-const unsigned int NR_LIGHTS = 32;
+const unsigned int NR_LIGHTS = 5;
 
 class Scene
 {
@@ -45,7 +45,8 @@ private:
 
 	unsigned int gBuffer;
 	unsigned int gPosition, gNormal, gAlbedoSpec, gNormalSpec;
-	unsigned int gTvector, gNvector, gBvector;
+	//Bump mapping buffer ID
+	unsigned int gBinormal, gTangent;
 
 
 	/*TESTING*/

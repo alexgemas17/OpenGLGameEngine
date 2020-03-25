@@ -10,31 +10,24 @@ out vec3 Normal;
 out vec2 TexCoords;
 
 //BUMP MAPPING
-out vec3 Tvector;
-out vec3 Nvector;
-out vec3 Bvector;
+out vec3 Binormal;
+out vec3 Tangent;
 
-uniform mat4 mModel;
+uniform mat4 mModelView;
 uniform mat4 mMVP;
 
 void main()
 {
+    //Position data
+    FragPos = vec3( mModelView * vec4(vPosition, 1.0) );
 
-	vec4 worldPos = mModel * vec4(vPosition, 1.0);
-    FragPos = worldPos.xyz; 
-    
+    //Texture coord data.
     TexCoords = vTexCoord;
 
-    mat3 normalMatrix = transpose(inverse(mat3(mModel)));
-    vec3 T = normalize(normalMatrix * vTangent);
-    vec3 N = normalize(normalMatrix * vNormal);
-    T = normalize(T - dot(T, N) * N);
-    vec3 B = cross(N, T);
-
-    Normal = normalMatrix * vNormal;
-    Tvector = T;
-    Nvector = N;
-    Bvector = B;
+    //Bump mapping data
+    Normal = vec3( mModelView * vec4(vNormal, 0.0) );
+    Tangent = vec3( mModelView * vec4(vTangent, 0.0) );
+    Binormal = normalize(cross(normal, tangent));
 
     gl_Position = mMVP * vec4(vPosition, 1.0);
 }
