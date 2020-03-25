@@ -27,7 +27,7 @@ void main()
     //Bump mapping data
     Normal = vec3( mModelView * vec4(vNormal, 0.0) );
     Tangent = vec3( mModelView * vec4(vTangent, 0.0) );
-    Binormal = normalize(cross(normal, tangent));
+    Binormal = normalize(cross(Normal, Tangent));
 
     gl_Position = mMVP * vec4(vPosition, 1.0);
 }

@@ -39,5 +39,5 @@ void main()
     gAlbedoSpec.a = texture(texture_specular, TexCoords).r;
 
     // and the diffuse per-fragment color
-    gNormalSpec = (2.0 * texture(texture_normal, TexCoords)) - 1.0;;
+    gNormalSpec = texture(texture_normal, TexCoords);
 }

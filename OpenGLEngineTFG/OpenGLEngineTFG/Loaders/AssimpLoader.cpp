@@ -140,10 +140,10 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", texturasPath);
 
 	// 3. normal maps
-	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal", texturasPath);
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "TEX_NORMAL", texturasPath);
 
 	// 4. height maps
-	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", albedoURL);
+	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "TEX_HEIGHT", texturasPath);
 
 	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, albedoURL, normalURL, materialURL);
 	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, diffuseMaps, specularMaps, normalMaps);

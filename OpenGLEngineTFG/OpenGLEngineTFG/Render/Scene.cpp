@@ -96,10 +96,10 @@ void Scene::InitLights()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
-	/*ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormalSpec", 3);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormalSpec", 3);
 
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gBinormal", 4);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gTangent", 5);*/
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gTangent", 5);
 
 	//Cubo Luz 
 	for (int i = 0; i < NR_LIGHTS; i++) {
@@ -147,36 +147,34 @@ void Scene::InitGBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
-	//// normal texture buffer
-	//glGenTextures(1, &gNormalSpec);
-	//glBindTexture(GL_TEXTURE_2D, gNormalSpec);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gNormalSpec, 0);
+	// normal texture buffer
+	glGenTextures(1, &gNormalSpec);
+	glBindTexture(GL_TEXTURE_2D, gNormalSpec);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gNormalSpec, 0);
 
-	//// normal color buffer
-	//glGenTextures(1, &gBinormal);
-	//glBindTexture(GL_TEXTURE_2D, gBinormal);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gBinormal, 0);
+	// normal color buffer
+	glGenTextures(1, &gBinormal);
+	glBindTexture(GL_TEXTURE_2D, gBinormal);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gBinormal, 0);
 
-	//// normal color buffer
-	//glGenTextures(1, &gTangent);
-	//glBindTexture(GL_TEXTURE_2D, gTangent);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, gTangent, 0);
+	// normal color buffer
+	glGenTextures(1, &gTangent);
+	glBindTexture(GL_TEXTURE_2D, gTangent);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, gTangent, 0);
 
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	/*unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
-	glDrawBuffers(6, attachments);*/
+	unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
+	glDrawBuffers(6, attachments);
 
-	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-	glDrawBuffers(3, attachments);
 
 	// create and attach depth buffer (renderbuffer)
 	unsigned int rboDepth;
@@ -268,14 +266,18 @@ void Scene::DrawObjs()
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-	/*glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, gNormalSpec);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, gBinormal);
 	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, gTangent);*/
+	glBindTexture(GL_TEXTURE_2D, gTangent);
 	// send light relevant uniforms
 
+	// update attenuation parameters and calculate radius
+	const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
+	const float linear = 1.7; //0.7
+	const float quadratic = 2.8; //1.8
 	// - Activar el alpha blending
 	glEnable(GL_BLEND);
 
@@ -288,8 +290,14 @@ void Scene::DrawObjs()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Ia", glm::vec3(0.6));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Id", glm::vec3(0.2));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Is", glm::vec3(0.2));
-	renderQuad(); //????
 
+	//// then calculate radius of light volume/sphere
+	//RADIUS: ( 4*3.14 * rad1 * rad1 * rad1 ) / 3;
+	//float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f)))) / (2.0f * quadratic);
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Radius", radius);
+
+	renderQuad(); //????
+	
 	// - este otro modo
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	for (unsigned int i = 1; i < lightPositions.size(); i++)
@@ -305,18 +313,13 @@ void Scene::DrawObjs()
 		renderQuad(); //????
 
 		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-
-		// update attenuation parameters and calculate radius
-		//const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-		//const float linear = 1.7; //0.7
-		//const float quadratic = 2.8; //1.8
+		
 		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
 		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
 
 		//// then calculate radius of light volume/sphere
-		//const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
-		//float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Radius", radius);
+		//radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f)))) / (2.0f * quadratic);
+		//ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Radius", radius);
 	}
 
 	glDisable(GL_BLEND);

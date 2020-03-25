@@ -105,11 +105,11 @@ void Render::Draw()
 	}
 
 	// Normal Texture
-	//if (!normalMapTextures.empty()) {
-	//	glActiveTexture(GL_TEXTURE2);
-	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 2);
-	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
-	//}
+	if (!normalMapTextures.empty()) {
+		glActiveTexture(GL_TEXTURE2);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 2);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
+	}
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
@@ -174,24 +174,24 @@ void Render::InitVBO()
 	);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	//// -------------- TANGENTES -------------- 
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO_Tangentes);
-	//glEnableVertexAttribArray(3);
-	//glVertexAttribPointer(
-	//	3, 
-	//	sizeof(glm::vec3) / sizeof(GLfloat),
-	//	GL_FLOAT, 
-	//	GL_FALSE, 
-	//	sizeof(glm::vec3), 
-	//	((GLubyte*)NULL + (0))
-	//);
-	//glBufferData(
-	//	GL_ARRAY_BUFFER, 
-	//	sizeof(glm::vec3) * this->dataObj->tangentes.size(), 
-	//	this->dataObj->tangentes.data(), 
-	//	GL_STATIC_DRAW
-	//);
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// -------------- TANGENTES -------------- 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Tangentes);
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(
+		3, 
+		sizeof(glm::vec3) / sizeof(GLfloat),
+		GL_FLOAT, 
+		GL_FALSE, 
+		sizeof(glm::vec3), 
+		((GLubyte*)NULL + (0))
+	);
+	glBufferData(
+		GL_ARRAY_BUFFER, 
+		sizeof(glm::vec3) * this->dataObj->tangentes.size(), 
+		this->dataObj->tangentes.data(), 
+		GL_STATIC_DRAW
+	);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 }
