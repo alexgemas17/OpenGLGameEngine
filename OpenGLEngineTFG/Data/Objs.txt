@@ -1,8 +1,8 @@
-0.0f,0.0f,0.0f;   //  Position
-0.1f,0.1f,0.1f;   //  Scale
+0.0f,-3.0f,-5.0f;  //    Position
+0.3f,0.3f,0.3f;   //      Scale
 0.0f		  //  AngleRotation
 1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\sponza\\sponza.obj
-D:\\Proyectos\\MODELOS_TFG\\sponza\\textures\\
-D:\\Proyectos\\MODELOS_TFG\\sponza\\
-D:\\Proyectos\\MODELOS_TFG\\sponza\\
+D:\\Proyectos\\MODELOS_TFG\\Old_Antique_Standing_Globe_FBX\\Old_Antique_Standing_Globe_.fbx
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\Textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\Textures\\
+D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\Textures\\

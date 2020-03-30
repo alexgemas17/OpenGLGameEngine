@@ -1,0 +1,8 @@
+0.0f,0.0f,0.0f;  	//    Position
+0.2f,0.2f,0.2f;   	//      Scale
+-90.0f			//  AngleRotation
+1.0f,0.0f,0.0f;   	//  AngleRDirection
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Model\\Japanese_Temple.fbx
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\
+D:\\Proyectos\\MODELOS_TFG\\Japanese_Temple_Model\\Textures\\

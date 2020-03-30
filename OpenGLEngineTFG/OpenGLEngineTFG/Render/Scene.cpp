@@ -80,9 +80,9 @@ void Scene::InitLights()
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = RandomFloat(-30, 30);
+		float xPos = RandomFloat(-50, 50);
 		float yPos = RandomFloat(20, 50);
-		float zPos = RandomFloat(-30, 30);
+		float zPos = RandomFloat(-50, 50);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
 		// also calculate random color
@@ -96,10 +96,10 @@ void Scene::InitLights()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormalSpec", 3);
+	/*ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormalSpec", 3);
 
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gBinormal", 4);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gTangent", 5);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gTangent", 5);*/
 
 	//Cubo Luz 
 	for (int i = 0; i < NR_LIGHTS; i++) {
@@ -147,33 +147,36 @@ void Scene::InitGBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0);
 
-	// normal texture buffer
-	glGenTextures(1, &gNormalSpec);
-	glBindTexture(GL_TEXTURE_2D, gNormalSpec);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gNormalSpec, 0);
+	//// normal texture buffer
+	//glGenTextures(1, &gNormalSpec);
+	//glBindTexture(GL_TEXTURE_2D, gNormalSpec);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gNormalSpec, 0);
 
-	// normal color buffer
-	glGenTextures(1, &gBinormal);
-	glBindTexture(GL_TEXTURE_2D, gBinormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gBinormal, 0);
+	//// normal color buffer
+	//glGenTextures(1, &gBinormal);
+	//glBindTexture(GL_TEXTURE_2D, gBinormal);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, gBinormal, 0);
 
-	// normal color buffer
-	glGenTextures(1, &gTangent);
-	glBindTexture(GL_TEXTURE_2D, gTangent);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, gTangent, 0);
+	//// normal color buffer
+	//glGenTextures(1, &gTangent);
+	//glBindTexture(GL_TEXTURE_2D, gTangent);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_FLOAT, NULL);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, gTangent, 0);
 
-	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
-	glDrawBuffers(6, attachments);
+	//// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	//unsigned int attachments[6] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5};
+	//glDrawBuffers(6, attachments);
+
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
+	glDrawBuffers(3, attachments);
 
 
 	// create and attach depth buffer (renderbuffer)
@@ -242,8 +245,17 @@ void renderQuad()
 void Scene::DrawObjs()
 {
 	// Limpiamos los buffers
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	/*glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);*/
+
+	// Only the geometry pass updates the depth buffer
+	glDepthMask(GL_TRUE);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_DEPTH_TEST);
+
+	glDisable(GL_BLEND);
 
 	// 1. geometry pass: render scene's geometry/color data into gbuffer
 	// -----------------------------------------------------------------
@@ -254,11 +266,21 @@ void Scene::DrawObjs()
 
 	this->nodoWorld->DrawObjs(mView, mViewProjection);
 
+	glDepthMask(GL_FALSE);
+
+	glDisable(GL_DEPTH_TEST);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 	// 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 		// -----------------------------------------------------------------------------------------------------------------------
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_ONE, GL_ONE);
+
 	ShaderManager::getInstance()->getDeferredShading()->use();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
@@ -266,49 +288,40 @@ void Scene::DrawObjs()
 	glBindTexture(GL_TEXTURE_2D, gNormal);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
-	glActiveTexture(GL_TEXTURE3);
+	/*glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, gNormalSpec);
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, gBinormal);
 	glActiveTexture(GL_TEXTURE5);
-	glBindTexture(GL_TEXTURE_2D, gTangent);
+	glBindTexture(GL_TEXTURE_2D, gTangent);*/
 	// send light relevant uniforms
 
 	// update attenuation parameters and calculate radius
-	const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-	const float linear = 1.7; //0.7
-	const float quadratic = 2.8; //1.8
-	// - Activar el alpha blending
-	glEnable(GL_BLEND);
+	//const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
+	//const float linear = 1.7; //0.7
+	//const float quadratic = 2.8; //1.8
 
-	// - Si es la primera, activar este modo de mezcla
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Position", glm::vec3(this->camara->getView() * glm::vec4(lightPositions[0], 1.0)));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Shininess", 32.0f);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Ks", glm::vec3(0.2));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("LightPosition", glm::vec3(this->camara->getView() * glm::vec4(lightPositions[0], 1.0)));
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("LightIntensity", glm::vec3(0.2f, 0.2f, 0.2f));
 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Ia", glm::vec3(0.6));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Id", glm::vec3(0.2));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Is", glm::vec3(0.2));
-
-	//// then calculate radius of light volume/sphere
-	//RADIUS: ( 4*3.14 * rad1 * rad1 * rad1 ) / 3;
-	//float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f)))) / (2.0f * quadratic);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Radius", radius);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Shininess", 32.0f);   // Specular shininess factor
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ka", glm::vec3(0.1)); // Ambient reflectivity
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Kd", glm::vec3(0.4)); // Diffuse reflectivity
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ks", glm::vec3(0.2)); // Specular reflectivity
 
 	renderQuad(); //????
-	
+
 	// - este otro modo
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	for (unsigned int i = 1; i < lightPositions.size(); i++)
 	{
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Position", glm::vec3(this->camara->getView() * glm::vec4(lightPositions[i], 1.0)));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Shininess", 32.0f);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Ks", glm::vec3(0.2));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("LightPosition", glm::vec3(this->camara->getView() * glm::vec4(lightPositions[0], 1.0)));
+		//ShaderManager::getInstance()->getDeferredShading()->setUniform("LightIntensity", glm::vec3(0.2f, 0.2f, 0.2f));
 
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Ia", glm::vec3(0.6));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Id", glm::vec3(0.2));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Is", glm::vec3(0.2));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Shininess", 32.0f);   // Specular shininess factor
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ka", glm::vec3(0.1)); // Ambient reflectivity
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Kd", glm::vec3(0.4)); // Diffuse reflectivity
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ks", glm::vec3(0.2)); // Specular reflectivity
 
 		renderQuad(); //????
 
@@ -319,10 +332,10 @@ void Scene::DrawObjs()
 
 		//// then calculate radius of light volume/sphere
 		//radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f)))) / (2.0f * quadratic);
-		//ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Radius", radius);
+		//ShaderManager::getInstance()->getDeferredShading()->setUniform("light.Radius", 50.0f);
 	}
 
-	glDisable(GL_BLEND);
+	//glDisable(GL_BLEND);
 
 	// 2.5. copy content of geometry's depth buffer to default framebuffer's depth buffer
 	   // ----------------------------------------------------------------------------------

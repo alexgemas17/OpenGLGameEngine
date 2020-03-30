@@ -142,6 +142,11 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 	// 3. normal maps
 	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "TEX_NORMAL", texturasPath);
 
+
+	std::vector<std::string> normalMapss = loadMaterialTextures(material, aiTextureType_BASE_COLOR, "TEX_NORMAL", texturasPath);
+	std::vector<std::string> normalMapsss = loadMaterialTextures(material, aiTextureType_METALNESS, "TEX_NORMAL", texturasPath);
+	std::vector<std::string> normalMapssss = loadMaterialTextures(material, aiTextureType_DIFFUSE_ROUGHNESS, "TEX_NORMAL", texturasPath);
+
 	// 4. height maps
 	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "TEX_HEIGHT", texturasPath);
 
@@ -153,6 +158,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 	return obj;
 }
 
+//TO-DO: Borrar std::string typeName
 std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string path)
 {
 	std::vector<std::string> texturesURL;
