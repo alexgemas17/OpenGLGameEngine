@@ -131,7 +131,7 @@ void SceneObj::setShaderToTextureLight(glm::mat4& _modelMatrix, glm::mat4& _mVie
 void SceneObj::setShaderDeferredRendering(glm::mat4& _modelMatrix, glm::mat4& _mView, glm::mat4& _mViewProjection)
 {
 	ShaderManager::getInstance()->getGBuffer()->use();
-
-	ShaderManager::getInstance()->getGBuffer()->setUniform("mModelView", _mView * _modelMatrix);
-	ShaderManager::getInstance()->getGBuffer()->setUniform("mMVP", _mViewProjection * _modelMatrix);
+	
+	ShaderManager::getInstance()->getGBuffer()->setUniform("ModelViewMatrix", _mView * _modelMatrix);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("MVP", _mViewProjection * _modelMatrix);
 }
