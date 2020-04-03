@@ -45,7 +45,9 @@ int main() {
 	glfwWindowHint(GLFW_SAMPLES, 4); // Activa antialiasing con 4 muestras.
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, true);
 	glfwSwapInterval(0); //VSync off
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -81,7 +83,7 @@ int main() {
 	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
 
-		Application::getInstance()->MainLoop(window);
+ 		Application::getInstance()->MainLoop(window);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();

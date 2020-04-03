@@ -152,6 +152,7 @@
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Render\Scene.cpp" />
     <ClCompile Include="Render\SceneObj.cpp" />
+    <ClCompile Include="Render\SceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Render\Scene.h" />
     <ClInclude Include="Render\SceneObj.h" />
+    <ClInclude Include="Render\SceneRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicShader-frag.glsl" />

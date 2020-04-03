@@ -21,11 +21,11 @@ struct ModelData {
 };
 
 enum TypeRender { 
-	Points,
-	Wireframe,
-	BasicColor, 
-	Texture, 
-	TextureLight,
+	Points,	//Borrar?
+	Wireframe,	//Borrar?
+	BasicColor,	//Borrar?
+	SSAO, 
+	ShadowMap,
 	DeferredRendering
 };
 
@@ -54,7 +54,11 @@ public:
 		AssimpData* data,
 		std::vector<std::string> AlbedoTextures,
 		std::vector<std::string> specularTextures,
-		std::vector<std::string> normalMapTextures);
+		std::vector<std::string> normalMapTextures,
+		std::string MetallicTexture,
+		std::string RoughnessTexture,
+		std::string AOTexture
+		);
 
 	~Render();
 
@@ -62,11 +66,11 @@ public:
 	void Draw();
 
 	void setTypeRender(TypeRender type);
-	TypeRender getTypeRender();
+	TypeRender getTypeRender() { return this->typeRender; }
 
-	std::vector<std::string> getAlbedoTextures();
-	std::vector<std::string> getSpecularTextures();
-	std::vector<std::string> getNormalMapTextures();
+	std::vector<std::string> getAlbedoTextures() { return this->normalMapTextures; }
+	std::vector<std::string> getSpecularTextures() { return this->specularTextures; }
+	std::vector<std::string> getNormalMapTextures() { return this->AlbedoTextures; }
 
 private:
 
@@ -97,6 +101,9 @@ private:
 	std::vector<std::string> AlbedoTextures;
 	std::vector<std::string> specularTextures;
 	std::vector<std::string> normalMapTextures;
+	std::string MetallicTexture;
+	std::string RoughnessTexture;
+	std::string AOTexture;
 
 	//Inits según el tipo que se haya especificado
 	void InitVAO();

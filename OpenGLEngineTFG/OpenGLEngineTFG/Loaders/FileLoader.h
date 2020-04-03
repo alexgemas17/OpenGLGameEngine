@@ -11,9 +11,12 @@ struct ObjFile {
 	glm::vec3 rotationDirection;
 
 	std::string obj;
-	std::string albedo;
-	std::string normal_mapping;
-	std::string material;
+	std::string textureURL;			// textureURL-> Albedo, Normal
+	
+	//PBR
+	std::string metallic_texture;	
+	std::string roughness_texture;
+	std::string ao_texture;
 };
 
 class FileLoader

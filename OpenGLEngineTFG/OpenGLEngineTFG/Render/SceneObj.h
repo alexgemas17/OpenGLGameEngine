@@ -38,13 +38,24 @@ public:
 		AssimpData* data,
 		std::vector<std::string> AlbedoTextures,
 		std::vector<std::string> specularTextures,
-		std::vector<std::string> normalMapTextures
+		std::vector<std::string> normalMapTextures,
+		std::string MetallicTexture,
+		std::string RoughnessTexture,
+		std::string AOTexture
 	);
 
 	~SceneObj();
 
 	void UpdateObj(float deltaTime);
-	void DrawObj(glm::mat4 &modelMatrix, glm::mat4& mView, glm::mat4& mViewProjection);
+
+	void DrawObjShadowMap(
+		glm::mat4& modelMatrix
+	);
+
+	void DrawObj(
+		PagShaderProgram* shader,
+		glm::mat4 &modelMatrix
+	);
 
 private:
 	void setShaderToPoints(glm::mat4& modelMatrix, glm::mat4& mViewProjection);

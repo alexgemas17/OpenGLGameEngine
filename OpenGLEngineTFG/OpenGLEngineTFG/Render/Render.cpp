@@ -36,10 +36,14 @@ Render::Render(
 	AssimpData* data,
 	std::vector<std::string> AlbedoTextures, 
 	std::vector<std::string> specularTextures, 
-	std::vector<std::string> normalMapTextures
+	std::vector<std::string> normalMapTextures,
+	std::string MetallicTexture,
+	std::string RoughnessTexture,
+	std::string AOTexture
 ) :
 	typeRender(DeferredRendering), AlbedoTextures(AlbedoTextures), normalMapTextures(normalMapTextures), 
-	specularTextures(specularTextures), dataObj(data)
+	specularTextures(specularTextures), MetallicTexture(MetallicTexture),
+		RoughnessTexture(RoughnessTexture), AOTexture(AOTexture), dataObj(data)
 {}
 
 Render::~Render()
@@ -65,27 +69,7 @@ void Render::Init()
 
 void Render::setTypeRender(TypeRender type)
 {
-	this->typeRender = type;
-}
-
-TypeRender Render::getTypeRender()
-{
-	return this->typeRender;
-}
-
-std::vector<std::string> Render::getAlbedoTextures()
-{
-	return this->AlbedoTextures;
-}
-
-std::vector<std::string> Render::getSpecularTextures()
-{
-	return this->specularTextures;
-}
-
-std::vector<std::string> Render::getNormalMapTextures()
-{
-	return this->normalMapTextures;
+	typeRender = type;
 }
 
 void Render::Draw()
@@ -93,22 +77,43 @@ void Render::Draw()
 	// Albedo Texture
 	if (!AlbedoTextures.empty()) {
 		glActiveTexture(GL_TEXTURE0); 
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_diffuse", 0);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_albedo", 0);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
 	}
 
 	// Specular Texture
-	if (!specularTextures.empty()) {
+	/*if (!specularTextures.empty()) {
 		glActiveTexture(GL_TEXTURE1); 
 		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_specular", 1);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(specularTextures[0]));
-	}
+	}*/
 
 	// Normal Texture
 	if (!normalMapTextures.empty()) {
-		glActiveTexture(GL_TEXTURE2);
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 2);
+		glActiveTexture(GL_TEXTURE1);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 1);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
+	}
+
+	// Normal Texture
+	if (!MetallicTexture.empty()) {
+		glActiveTexture(GL_TEXTURE2);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_metallic", 2);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(MetallicTexture));
+	}
+
+	// Normal Texture
+	if (!RoughnessTexture.empty()) {
+		glActiveTexture(GL_TEXTURE3);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_roughness", 3);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(RoughnessTexture));
+	}
+
+	// Normal Texture
+	if (!AOTexture.empty()) {
+		glActiveTexture(GL_TEXTURE4);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_ao", 4);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AOTexture));
 	}
 
 	glBindVertexArray(VAO);
@@ -127,7 +132,7 @@ void Render::InitVAO()
 	glGenBuffers(1, &VBO_Puntos);
 	glGenBuffers(1, &VBO_Normales);
 	glGenBuffers(1, &VBO_Tangentes);
-	//glGenBuffers(1, &VBO_Bitangentes);
+	glGenBuffers(1, &VBO_Bitangentes);
 	glGenBuffers(1, &CoordTexturaBuffer);
 	glGenBuffers(1, &IBO);
 }
@@ -189,6 +194,25 @@ void Render::InitVBO()
 		GL_ARRAY_BUFFER, 
 		sizeof(glm::vec3) * this->dataObj->tangentes.size(), 
 		this->dataObj->tangentes.data(), 
+		GL_STATIC_DRAW
+	);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// -------------- BITANGENTES -------------- 
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Bitangentes);
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(
+		4,
+		sizeof(glm::vec3) / sizeof(GLfloat),
+		GL_FLOAT,
+		GL_FALSE,
+		sizeof(glm::vec3),
+		((GLubyte*)NULL + (0))
+	);
+	glBufferData(
+		GL_ARRAY_BUFFER,
+		sizeof(glm::vec3) * this->dataObj->bitangentes.size(),
+		this->dataObj->bitangentes.data(),
 		GL_STATIC_DRAW
 	);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

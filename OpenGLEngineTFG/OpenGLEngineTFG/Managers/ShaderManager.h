@@ -12,16 +12,13 @@ public:
 
 	void setTypeRender();
 
-	PagShaderProgram* getBasicShader();
-	PagShaderProgram* getWireframeShader();
-	PagShaderProgram* getTextureShader();
 	PagShaderProgram* getBasicLightShader();
 
 	/* DEFERRED RENDERING */
 	PagShaderProgram* getGBuffer();
 	PagShaderProgram* getDeferredShading();
-
-	PagShaderProgram* getShaderType();
+	PagShaderProgram* getShadowMap();
+	PagShaderProgram* getCopyDataPass();
 
 	static ShaderManager* getInstance();
 
@@ -29,14 +26,19 @@ private:
 	// Instancia singleton.
 	static ShaderManager* instance;
 
-	PagShaderProgram* basicShader;
-	PagShaderProgram* textureShader;
+	std::string ShaderPath;
+
 	PagShaderProgram* basicLightShader;
 
 	/* DEFERRED RENDERING */
-	PagShaderProgram* gBuffer;
-	PagShaderProgram* deferredShading;
+	PagShaderProgram* gBufferPass;
+	PagShaderProgram* deferredLightingPass;
+
+	/* SHADOW MAP */
+	PagShaderProgram* shadowMap;
+
+	/* POSTPROCESS EFFECTS*/
+	PagShaderProgram* copyDataPass;
 
 	TypeShader typeShader;
 };
-

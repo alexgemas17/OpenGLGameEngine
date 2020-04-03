@@ -14,7 +14,11 @@
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
 
-const unsigned int NR_LIGHTS = 5;
+const int NR_DIRECTIONAL_LIGHTS = 1;
+const int NR_POINT_LIGHTS = 5;
+const int NR_SPOT_LIGHTS = 1;
+const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+const float NEAR_PLANE = 0.1f, FAR_PLANE = 10000000.0f;
 
 class Scene
 {
@@ -43,19 +47,35 @@ private:
 
 	Camara* camara;
 
-	unsigned int gBuffer;
-	unsigned int gPosition, gNormal, gAlbedoSpec, gNormalSpec;
+	unsigned int gb_Albedo, gb_Normal, gb_MaterialInfo;
 	//Bump mapping buffer ID
 	unsigned int gBinormal, gTangent;
 
+	unsigned int shadowMapFBO, DepthStencilTextureShadowMap;
+	unsigned int gBuffer, DepthStencilTextureGBuffer;
+	unsigned int lightBuffer, DepthStencilTextureDeferredLight, ColorTextureDeferredLight;
 
 	/*TESTING*/
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
 
+	/* Shadow map data*/
+	glm::mat4 directionalLightViewProjMatrix;
+
 	// -------- PRIVATE FUNC ------------
-	void LoadObjs();
+	void LoadObjs();	// Carga desde el objs.txt los objetos que tiene la escena
+	void InitLights();	// Crea luces puntuales aleatoriamente (hardcode: spot y direccional)
+
+	// Inits de los buffers correspondientes.
+	void InitShadowMapBuffer();
 	void InitGBuffer();
-	void InitLights();
+	void InitDeferredLightBuffer();
+
+	// Pasadas de las luces.
+	void shadowMapPass();
+	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
+	void deferredLightPass();
+	void postProcessEffectsPass();
+	void restoreDefaultDepthBuffer();	//Posiblemente borrar
 };
 

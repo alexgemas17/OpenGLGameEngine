@@ -77,5 +77,7 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 
 	this->hashmap_IDTexture.insert(make_pair(textInf.urlImg, textInf.IDTexture));
 
+	std::cout << textInf.urlImg << " be loaded successfully" << std::endl;
+
 	stbi_image_free(data);
 }

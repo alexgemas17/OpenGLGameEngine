@@ -22,6 +22,7 @@ public:
 	glm::vec3 getPosition() const;
 	glm::vec3 getLookAt() const;
 	glm::vec3 getUP() const;
+	glm::vec3 getFront() const;
 	glm::mat4 getView() const;
 	glm::mat4 getProjection() const;
 	glm::mat4 getMatrixViewProjection() const;

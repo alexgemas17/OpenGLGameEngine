@@ -4,6 +4,8 @@
 #include <vector>
 #include "Model.h"
 #include "SceneObj.h"
+#include "../PagShaderProgram.h"
+#include "../Camara/Camara.h"
 
 class NodoScene : public Model
 {
@@ -16,7 +18,12 @@ public:
 
 	void InitObjs();
 	void UpdateObjs(float deltaTime);
-	void DrawObjs(glm::mat4& mView, glm::mat4& mViewProjection);
+
+	void DrawObjsShadowMap();
+
+	void DrawObjs(
+		PagShaderProgram* shader
+	);
 
 	void setTypeRenderNode(TypeRender type) { this->typeRender = type; };
 
@@ -34,5 +41,15 @@ private:
 	/* Private functions */
 	void InitObjsRecursive(NodoScene* nodo);
 	void UpdateObjsRecursive(NodoScene* nodo, float deltaTime);
-	void DrawObjsRecursive(NodoScene* nodo, glm::mat4& modelMatrix, glm::mat4& mView, glm::mat4& mViewProjection);
+
+	void DrawObjsRecursiveShadowMap(
+		NodoScene* nodo, 
+		glm::mat4& modelMatrix
+	);
+
+	void DrawObjsRecursive(
+		PagShaderProgram* shader,
+		NodoScene* nodo,
+		glm::mat4& modelMatrix
+	);
 };

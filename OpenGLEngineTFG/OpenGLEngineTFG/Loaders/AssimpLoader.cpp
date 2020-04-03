@@ -6,11 +6,11 @@
 #include "../Render/SceneObj.h"
 
 
-NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string texturasPath)
+NodoScene* AssimpLoader::loadModelAssimpNode(ObjFile &modelData)
 {
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(modelURL, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(modelData.obj, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -18,9 +18,9 @@ NodoScene* AssimpLoader::loadModelAssimpNode(std::string modelURL, std::string t
 		return nullptr;
 	}
 
-	std::cout << "ASSIMP:  " + modelURL + "  LOADED SUCCESSFULLY" << std::endl;
+	std::cout << "ASSIMP:  " + modelData.obj + "  LOADED SUCCESSFULLY" << std::endl;
 	NodoScene* root = new NodoScene();
-	loadRecursivo(scene->mRootNode, scene, root, texturasPath);
+	loadRecursivo(scene->mRootNode, scene, root, modelData);
 
 	return root;
 }
@@ -39,13 +39,13 @@ SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL, std::string tex
 
 	std::cout << "ASSIMP::Loaded successfully" << std::endl;
 	NodoScene* root = new NodoScene();
-	loadRecursivo(scene->mRootNode, scene, root, texturasPath);
+	//loadRecursivo(scene->mRootNode, scene, root, modelData);
 
 	return root->getNode(0)->getObj(0);
 }
 
 //Recorre los distintos nodos que contiene la escena. O lo que es lo mismo, nuestro NodeScene
-void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string texturasPath)
+void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, ObjFile& modelData)
 {
 
 	// Nos recorremos la info de este nodo y la procesamos.
@@ -53,20 +53,20 @@ void AssimpLoader::loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* 
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		nodo->addObj(processMeshAssimp(mesh, scene, texturasPath));
+		nodo->addObj(processMeshAssimp(mesh, scene, modelData));
 	}
 
 	// Una vez que hemos procesado el nodo actual, vamos hacia sus hijos
 	for (GLuint i = 0; i < node->mNumChildren; i++)
 	{
 		NodoScene* nodoHijo = new NodoScene;
-		this->loadRecursivo(node->mChildren[i], scene, nodoHijo, texturasPath);
+		this->loadRecursivo(node->mChildren[i], scene, nodoHijo, modelData);
 		nodo->addNodo(nodoHijo);
 	}
 }
 
 // Procesa la mesh, lo que es lo mismo, nuestro SceneObj (puntos, normales, indices, etc...)
-SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string texturasPath)
+SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, ObjFile& modelData)
 {
 	AssimpData* data = new AssimpData;
 	SceneObj* obj;
@@ -134,26 +134,27 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, st
 	// normal: texture_normalN
 
 	// 1. diffuse maps
-	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", texturasPath);
+	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, modelData.textureURL);
 
 	// 2. specular maps
-	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", texturasPath);
+	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, modelData.textureURL);
 
 	// 3. normal maps
-	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, "TEX_NORMAL", texturasPath);
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, modelData.textureURL);
 
 	// 4. height maps
 	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "TEX_HEIGHT", texturasPath);
 
-	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, albedoURL, normalURL, materialURL);
-	//obj = new SceneObj(data.vertices, data.indices, data.normales, data.coord_textura, diffuseMaps, specularMaps, normalMaps);
-	//Version buena??
-	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps);
+	addTextureToTextureManager(modelData.metallic_texture);
+	addTextureToTextureManager(modelData.roughness_texture);
+	addTextureToTextureManager(modelData.ao_texture);
+
+	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
 
 	return obj;
 }
 
-std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string path)
+std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string path)
 {
 	std::vector<std::string> texturesURL;
 
@@ -166,11 +167,11 @@ std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiT
 
 		//Extraemos el nombre del archivo.
 		std::string filename = std::string(str.C_Str());
-		std::string ID_Texture = filename.substr(filename.find_last_of('\\') + 1, filename.size() - 1);
+		std::string ID_Texture = filename.substr(filename.find_last_of('\\') + 1, filename.size());
 
 		//Si es igual, es porque usa el sistema de asdf/asdf.asdf.
 		if (ID_Texture == filename) {
-			ID_Texture = filename.substr(filename.find_last_of('/') + 1, filename.size() - 1);
+			ID_Texture = filename.substr(filename.find_last_of('/') + 1, filename.size());
 		}
 
 		ID_Texture = path + ID_Texture;
@@ -189,4 +190,11 @@ std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiT
 	}
 
 	return texturesURL;
+}
+
+void AssimpLoader::addTextureToTextureManager(std::string texture)
+{
+	if (Application::getInstance()->getTextureManager()->getIDTexture(texture) == -1) {
+		Application::getInstance()->getTextureManager()->addIDTexture(texture);
+	}
 }

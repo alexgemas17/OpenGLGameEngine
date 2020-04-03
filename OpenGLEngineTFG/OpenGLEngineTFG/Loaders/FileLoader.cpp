@@ -37,13 +37,16 @@ void FileLoader::readFromFile(std::string urlFile)
 		obj.obj = textFromFile;
 
 		std::getline(MyReadFile, textFromFile);
-		obj.albedo = textFromFile;
+		obj.textureURL = textFromFile;
 
 		std::getline(MyReadFile, textFromFile);
-		obj.normal_mapping = textFromFile;
+		obj.metallic_texture = textFromFile;
 
 		std::getline(MyReadFile, textFromFile);
-		obj.material = textFromFile;
+		obj.roughness_texture = textFromFile;
+
+		std::getline(MyReadFile, textFromFile);
+		obj.ao_texture = textFromFile;
 
 		this->mainScene.push_back(obj);
 		std::getline(MyReadFile, textFromFile);

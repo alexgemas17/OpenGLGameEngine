@@ -156,6 +156,11 @@ glm::vec3 Camara::getUP() const
 	return this->vecUp;
 }
 
+glm::vec3 Camara::getFront() const
+{
+	return this->n;
+}
+
 glm::mat4 Camara::getView() const
 {
 	return this->mView;

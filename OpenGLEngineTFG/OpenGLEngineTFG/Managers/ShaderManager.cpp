@@ -1,5 +1,7 @@
 #include "ShaderManager.h"
 
+#include "../Application.h"
+
 ShaderManager* ShaderManager::instance = nullptr;
 
 // Acceder al singleton.
@@ -12,64 +14,64 @@ ShaderManager* ShaderManager::getInstance()
 }
 
 ShaderManager::ShaderManager(): 
-	basicShader(new PagShaderProgram()), 
-	textureShader(new PagShaderProgram()),
 	basicLightShader(new PagShaderProgram()), 
-	gBuffer(new PagShaderProgram()),
-	deferredShading(new PagShaderProgram()),
+	gBufferPass(new PagShaderProgram()),
+	deferredLightingPass(new PagShaderProgram()),
+	shadowMap(new PagShaderProgram()),
+	copyDataPass(new PagShaderProgram()),
+	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
-	this->basicShader->createShaderProgram("Shaders/BasicShader");
-	this->textureShader->createShaderProgram("Shaders/BasicShaderTexture");
-	this->basicLightShader->createShaderProgram("Shaders/Lights/Light"); //CAMBIAR!
+	std::string urlBasicShader = ShaderPath + "Lights\\Light";
+	std::string urlgBufferPass = ShaderPath + "Lights\\Deferred_Rendering\\GBuffer_Pass";
+	std::string urldeferredLightingPass = ShaderPath + "Lights\\Deferred_Rendering\\Deferred_Lighting_Pass";
+	std::string urlshadowMap = ShaderPath+ "Shadow\\shadpwmap";
+	std::string urlCopy = ShaderPath + "Postprocessefects\\Copy";
 
-	this->gBuffer->createShaderProgram("Shaders/Lights/Deferred_Rendering/g_buffer");
-	this->deferredShading->createShaderProgram("Shaders/Lights/Deferred_Rendering/deferred_shading");
+	this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
+
+	this->gBufferPass->createShaderProgram(urlgBufferPass.c_str() );
+	this->deferredLightingPass->createShaderProgram(urldeferredLightingPass.c_str() );
+
+	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
+
+	this->copyDataPass->createShaderProgram(urlCopy.c_str());
 }
 
 ShaderManager::~ShaderManager()
 {
-	delete basicShader;
-	delete textureShader;
-	delete gBuffer;
-	delete deferredShading;
+	delete basicLightShader;
+	delete gBufferPass;
+	delete shadowMap;
+	delete deferredLightingPass;
+	delete copyDataPass;
 	delete instance;
-}
-
-PagShaderProgram* ShaderManager::getBasicShader()
-{
-	return this->basicShader;
-}
-
-PagShaderProgram* ShaderManager::getWireframeShader()
-{
-	return this->basicShader;
-}
-
-PagShaderProgram* ShaderManager::getTextureShader()
-{
-	return this->textureShader;
 }
 
 PagShaderProgram* ShaderManager::getGBuffer()
 {
-	return this->gBuffer;
+	return this->gBufferPass;
 }
+
+PagShaderProgram* ShaderManager::getShadowMap()
+{
+	return this->shadowMap;
+}
+
+PagShaderProgram* ShaderManager::getCopyDataPass()
+{
+	return this->copyDataPass;
+}
+
 
 PagShaderProgram* ShaderManager::getDeferredShading()
 {
-	return this->deferredShading;
+	return this->deferredLightingPass;
 }
 
 PagShaderProgram* ShaderManager::getBasicLightShader()
 {
 	return this->basicLightShader;
-}
-
-PagShaderProgram* ShaderManager::getShaderType()
-{
-	if (typeShader == TYPE_TEXTURE) return this->textureShader;
-	return this->basicShader;
 }
 
 void ShaderManager::setTypeRender()

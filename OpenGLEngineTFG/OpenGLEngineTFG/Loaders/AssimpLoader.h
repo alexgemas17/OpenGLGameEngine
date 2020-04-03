@@ -10,6 +10,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "../Loaders/FileLoader.h"
+
 class NodoScene;
 class SceneObj;
 
@@ -26,18 +28,33 @@ class AssimpLoader
 {
 public:
 	// Devuelve el nodo root del modelo
-	NodoScene *loadModelAssimpNode(std::string modelURL, std::string texturasPath);
+	NodoScene *loadModelAssimpNode(ObjFile &modelData);
 
 	// Devuelve el nodo root del modelo
 	SceneObj *loadModelAssimpObj(std::string modelURL, std::string texturasPath);
 
 private:
 	/* Recorremos recursivamente los nodos que compone la escena (el modelo) */
-	void loadRecursivo(aiNode* node, const aiScene* scene, NodoScene* nodo, std::string texturasPath);
+	void loadRecursivo(
+		aiNode* node, 
+		const aiScene* scene, 
+		NodoScene* nodo, 
+		ObjFile& modelData
+	);
 
 	/* Nos devuelve el AssimpData que contiene esa mesh */
-	SceneObj *processMeshAssimp(aiMesh* mesh, const aiScene* scene, std::string texturasPath);
+	SceneObj *processMeshAssimp(
+		aiMesh* mesh, 
+		const aiScene* scene,
+		ObjFile& modelData
+	);
 
 	/* Nos devuelve las textuas asociadas al objeto*/
-	std::vector<std::string> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, std::string path);
+	std::vector<std::string> loadMaterialTextures(
+		aiMaterial* mat, 
+		aiTextureType type, 
+		std::string path
+	);
+
+	void addTextureToTextureManager(std::string texture);
 };
