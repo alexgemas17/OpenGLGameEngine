@@ -87,7 +87,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 
 	shader->use();
 
-	shader->setUniform("modelMatrix", modelMatrix	);
+	shader->setUniform("ModelMatrix", modelMatrix);
 	//shader->setUniform("normalMatrix", glm::mat3(glm::transpose(glm::inverse(modelMatrix))) );
 	
 	this->Draw();

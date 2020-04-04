@@ -77,7 +77,7 @@ void Render::Draw()
 	// Albedo Texture
 	if (!AlbedoTextures.empty()) {
 		glActiveTexture(GL_TEXTURE0); 
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_albedo", 0);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_Albedo", 0);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
 	}
 
@@ -89,32 +89,32 @@ void Render::Draw()
 	}*/
 
 	// Normal Texture
-	if (!normalMapTextures.empty()) {
+	/*if (!normalMapTextures.empty()) {
 		glActiveTexture(GL_TEXTURE1);
 		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 1);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
-	}
+	}*/
 
-	// Normal Texture
-	if (!MetallicTexture.empty()) {
-		glActiveTexture(GL_TEXTURE2);
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_metallic", 2);
-		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(MetallicTexture));
-	}
+	//// Normal Texture
+	//if (!MetallicTexture.empty()) {
+	//	glActiveTexture(GL_TEXTURE2);
+	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_metallic", 2);
+	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(MetallicTexture));
+	//}
 
-	// Normal Texture
-	if (!RoughnessTexture.empty()) {
-		glActiveTexture(GL_TEXTURE3);
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_roughness", 3);
-		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(RoughnessTexture));
-	}
+	//// Normal Texture
+	//if (!RoughnessTexture.empty()) {
+	//	glActiveTexture(GL_TEXTURE3);
+	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_roughness", 3);
+	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(RoughnessTexture));
+	//}
 
-	// Normal Texture
-	if (!AOTexture.empty()) {
-		glActiveTexture(GL_TEXTURE4);
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_ao", 4);
-		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AOTexture));
-	}
+	//// Normal Texture
+	//if (!AOTexture.empty()) {
+	//	glActiveTexture(GL_TEXTURE4);
+	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_ao", 4);
+	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AOTexture));
+	//}
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 

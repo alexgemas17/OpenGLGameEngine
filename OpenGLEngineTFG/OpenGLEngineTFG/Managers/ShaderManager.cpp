@@ -22,13 +22,16 @@ ShaderManager::ShaderManager():
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
-	std::string urlBasicShader = ShaderPath + "Lights\\Light";
-	std::string urlgBufferPass = ShaderPath + "Lights\\Deferred_Rendering\\GBuffer_Pass";
-	std::string urldeferredLightingPass = ShaderPath + "Lights\\Deferred_Rendering\\Deferred_Lighting_Pass";
+	//std::string urlBasicShader = ShaderPath + "Lights\\Light";
+
+	std::string urlgBufferPass = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
+	std::string urldeferredLightingPass = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";
+
 	std::string urlshadowMap = ShaderPath+ "Shadow\\shadpwmap";
+
 	std::string urlCopy = ShaderPath + "Postprocessefects\\Copy";
 
-	this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
+	//this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
 
 	this->gBufferPass->createShaderProgram(urlgBufferPass.c_str() );
 	this->deferredLightingPass->createShaderProgram(urldeferredLightingPass.c_str() );

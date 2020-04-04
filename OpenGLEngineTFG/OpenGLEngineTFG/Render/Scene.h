@@ -15,7 +15,7 @@
 #include "Render.h"
 
 const int NR_DIRECTIONAL_LIGHTS = 1;
-const int NR_POINT_LIGHTS = 5;
+const int NR_POINT_LIGHTS = 32;
 const int NR_SPOT_LIGHTS = 1;
 const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 const float NEAR_PLANE = 0.1f, FAR_PLANE = 10000000.0f;
@@ -47,12 +47,9 @@ private:
 
 	Camara* camara;
 
-	unsigned int gb_Albedo, gb_Normal, gb_MaterialInfo;
-	//Bump mapping buffer ID
-	unsigned int gBinormal, gTangent;
-
+	unsigned int gb_Position, gb_Albedo, gb_Normal, gb_MaterialInfo;
 	unsigned int shadowMapFBO, DepthStencilTextureShadowMap;
-	unsigned int gBuffer, DepthStencilTextureGBuffer;
+	unsigned int gBuffer, DepthGBuffer;
 	unsigned int lightBuffer, DepthStencilTextureDeferredLight, ColorTextureDeferredLight;
 
 	/*TESTING*/

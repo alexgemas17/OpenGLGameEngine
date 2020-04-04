@@ -194,7 +194,6 @@ std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiT
 
 void AssimpLoader::addTextureToTextureManager(std::string texture)
 {
-	if (Application::getInstance()->getTextureManager()->getIDTexture(texture) == -1) {
-		Application::getInstance()->getTextureManager()->addIDTexture(texture);
-	}
+	
+	Application::getInstance()->getTextureManager()->addIDTexture(texture);
 }

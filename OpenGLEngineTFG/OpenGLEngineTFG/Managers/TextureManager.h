@@ -20,8 +20,8 @@ public:
 
 private:
 	std::unordered_map<std::string, unsigned int> hashmap_IDTexture;		//Hash map para los IDs
+	std::unordered_map<std::string, unsigned int> hashmap_TextureURL;		//Hash map para los IDs
 	std::vector<TextureInfo> textures;
 
 	void InitTextura(TextureInfo &textInf);
 };
-

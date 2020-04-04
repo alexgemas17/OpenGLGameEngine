@@ -17,12 +17,13 @@ unsigned int TextureManager::getIDTexture(std::string urlImage)
 
 void TextureManager::addIDTexture(std::string urlImage)
 {
-	std::unordered_map<std::string, unsigned int>::const_iterator it = this->hashmap_IDTexture.find(urlImage);
-	if (it == this->hashmap_IDTexture.end()) {
+	std::unordered_map<std::string, unsigned int>::const_iterator it = this->hashmap_TextureURL.find(urlImage);
+	if (it == this->hashmap_TextureURL.end()) {
 		TextureInfo textInf;
 		textInf.IDTexture = -1;
 		textInf.urlImg = urlImage;
 		
+		this->hashmap_TextureURL.insert(make_pair(urlImage, 0));
 		this->textures.push_back(textInf);
 	}
 }
