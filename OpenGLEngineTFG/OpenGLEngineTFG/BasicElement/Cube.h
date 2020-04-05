@@ -23,8 +23,5 @@ private:
 
 	//Obj
 	SceneObj* obj;
-
-	// Funciones
-	std::string ExePath();
 };
 

@@ -89,11 +89,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 
 	shader->use();
 
-	glm::mat4 mView = Application::getInstance()->getMainScene()->camara->getView();
-	glm::mat4 mMVP = Application::getInstance()->getMainScene()->camara->getMatrixViewProjection();
-
-	shader->setUniform("mModelView", mView * modelMatrix);
-	shader->setUniform("mMVP", mMVP * modelMatrix);
+	shader->setUniform("ModelMatrix", modelMatrix);
 	
 	this->Draw();
 }

@@ -4,6 +4,8 @@
 #include "../Loaders/FileLoader.h"
 #include "../Application.h"
 
+#include "../BasicElement/Plane.h"
+
 #include <../glm/gtc/type_ptr.hpp>
 
 Scene::Scene(): camara(nullptr)
@@ -17,7 +19,7 @@ Scene::Scene(): camara(nullptr)
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 
-	glDepthFunc(GL_LESS);
+	//glDepthFunc(GL_LESS);
 	//glEnable(GL_BLEND);
 	glDisable(GL_BLEND); //Activar despues del Deferred rendering si se quiere usar
 }
@@ -64,6 +66,17 @@ void Scene::LoadObjs()
 		nodoWorld->addNodo(nodo);
 	}
 
+	//Data from floor
+	Plane* floor = new Plane(10.0f);
+	SceneObj* obj = floor->getSceneObj();
+
+	NodoScene* nodo = new NodoScene();
+	nodo->Translate(0.0f, -2.0f, 0.0f);
+	nodo->Translate(0.0f, -2.0f, 0.0f);
+	nodo->addObj(obj);
+
+	nodoWorld->addNodo(nodo);
+
 	delete loader;
 }
 
@@ -88,9 +101,9 @@ void Scene::InitLights()
 	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = RandomFloat(-5, 5);
-		float yPos = RandomFloat(-5, 5);
-		float zPos = RandomFloat(-5, 5);
+		float xPos = RandomFloat(-20, 20);
+		float yPos = RandomFloat(-20, 20);
+		float zPos = RandomFloat(-20, 20);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
 		// also calculate random color
@@ -175,7 +188,7 @@ void Scene::InitGBuffer()
 	// position color buffer
 	glGenTextures(1, &gb_Position);
 	glBindTexture(GL_TEXTURE_2D, gb_Position);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gb_Position, 0);
@@ -183,7 +196,7 @@ void Scene::InitGBuffer()
 	// normal color buffer
 	glGenTextures(1, &gb_Normal);
 	glBindTexture(GL_TEXTURE_2D, gb_Normal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gb_Normal, 0);
@@ -386,7 +399,7 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 
 	//Pasamos los datos importantes al GBufferShader
 	ShaderManager::getInstance()->getGBuffer()->use();
-	//ShaderManager::getInstance()->getGBuffer()->setUniform("ViewProjMatrix", this->camara->getMatrixViewProjection());
+	ShaderManager::getInstance()->getGBuffer()->setUniform("ViewProjMatrix", this->camara->getMatrixViewProjection());
 
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
 
@@ -417,56 +430,59 @@ void Scene::deferredLightPass()
 	// ------------------------ Light Pass ------------------------
 	//NOTA: Las luces están dentro del shader. TO-DO: Ver como pasarla aquí para ir de una en una.
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("numDirLights", NR_DIRECTIONAL_LIGHTS);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("numPointLights", NR_POINT_LIGHTS);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("nr_point_lights", NR_POINT_LIGHTS);
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("numtSpotLights", NR_SPOT_LIGHTS);
 
-	//for (int i = 0; i < NR_DIRECTIONAL_LIGHTS; i++) {	//Solo hay 1
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("dirLights[" + std::to_string(i) + "].direction").c_str(), glm::vec3(-0.25f, -1.0f, -0.25f));
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("dirLights[" + std::to_string(i) + "].intensity").c_str(), 2.0f);
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("dirLights[" + std::to_string(i) + "].lightColour").c_str(), glm::vec3(3.25f, 3.25f, 3.25f));
-	//}
+	// directional light = 1
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.shininess", 32.0f);
 
-	/*for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-		ShaderManager::getInstance()->getDeferredShading()->setUniform(("pointLights[" + std::to_string(i) + "].position").c_str(), lightPositions[i]);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform(("pointLights[" + std::to_string(i) + "].intensity").c_str(), 10.0f);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform(("pointLights[" + std::to_string(i) + "].lightColour").c_str(), lightColors[i]);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform(("pointLights[" + std::to_string(i) + "].attenuationRadius").c_str(), 30.0f);
-	}*/
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
-	glm::vec3 lightPosition;
+	const float constant = 1.0f;
+	const float linear = 0.9;
+	const float quadratic = 0.032;
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-		lightPosition = glm::vec3(camara->getView() * glm::vec4(lightPositions[i], 0.0));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].position", lightPositions[i]);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].shininess", 32.0f);
 		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].diffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].specular", glm::vec3(0.5f, 0.5f, 0.5f));
 
 		// update attenuation parameters and calculate radius
-		const float constant = 1.0f;
-		const float linear = 0.9;
-		const float quadratic = 0.032;
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Constant", constant);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].constant", constant);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].linear", linear);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].quadratic", quadratic);
 	}
 
 	//for (int i = 0; i < NR_SPOT_LIGHTS; i++) {		//Solo hay 1
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].position").c_str(), glm::vec3(0.0f, 3.0f, 0.0f));
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].direction").c_str(), glm::vec3(0.0f, -1.0f, 0.0f));
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].intensity").c_str(), 100.0f);
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].lightColour").c_str(), glm::vec3(1.0f, 1.0f, 1.0f));
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].attenuationRadius").c_str(), 50.0f);
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].cutOff").c_str(), glm::cos(glm::radians(12.5f)));
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].outerCutOff").c_str(), glm::cos(glm::radians(15.0f)));
+
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.position", glm::vec3(0.0f, 3.0f, 0.0f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.shininess", 32.0f);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
+
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.constant", 1.0f);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.linear", 0.09f);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.quadratic", 0.032f);
+
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	//}
 
 	//glm::mat4 viewMatrix = this->camara->getView();
 	//glm::mat4 projectionMatrix = this->camara->getProjection();
 
-	glm::vec3 cameraPosition = glm::vec3(camara->getView() * glm::vec4(this->camara->getPosition(), 0.0));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", cameraPosition);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", this->camara->getPosition());
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewInverse", glm::inverse(viewMatrix));
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("projectionInverse", glm::inverse(projectionMatrix));
 

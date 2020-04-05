@@ -15,7 +15,7 @@
 #include "Render.h"
 
 const int NR_DIRECTIONAL_LIGHTS = 1;
-const int NR_POINT_LIGHTS = 32;
+const int NR_POINT_LIGHTS = 5;
 const int NR_SPOT_LIGHTS = 1;
 const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 const float NEAR_PLANE = 0.01f, FAR_PLANE = 10000.0f;
@@ -46,8 +46,6 @@ private:
 	NodoScene* nodoWorld; 
 	NodoScene* nodoLight;
 	glm::vec3 lightPosition;
-
-	
 
 	unsigned int gb_Position, gb_Albedo, gb_Normal, gb_MaterialInfo;
 	unsigned int shadowMapFBO, DepthShadowMap;

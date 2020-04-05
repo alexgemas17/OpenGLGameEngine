@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="BasicElement\Cube.cpp" />
+    <ClCompile Include="BasicElement\Plane.cpp" />
     <ClCompile Include="Camara\Camara.cpp" />
     <ClCompile Include="Gui\imgui.cpp" />
     <ClCompile Include="Gui\imgui_demo.cpp" />
@@ -157,6 +158,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="BasicElement\Cube.h" />
+    <ClInclude Include="BasicElement\Plane.h" />
     <ClInclude Include="Camara\Camara.h" />
     <ClInclude Include="Gui\imconfig.h" />
     <ClInclude Include="Gui\imgui.h" />

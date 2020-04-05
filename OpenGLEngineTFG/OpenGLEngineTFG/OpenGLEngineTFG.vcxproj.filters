@@ -136,7 +136,10 @@
       <Filter>Archivos de origen\Managers</Filter>
     </ClCompile>
     <ClCompile Include="Render\SceneRenderer.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="BasicElement\Plane.cpp">
+      <Filter>Archivos de origen\BasicElement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,8 +221,11 @@
     <ClInclude Include="PagShaderProgram.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="BasicElement\Plane.h">
+      <Filter>Archivos de encabezado\BasicElement</Filter>
+    </ClInclude>
     <ClInclude Include="Render\SceneRenderer.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
