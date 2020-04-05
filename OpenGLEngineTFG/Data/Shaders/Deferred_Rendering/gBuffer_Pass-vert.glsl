@@ -3,25 +3,36 @@
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec3 vNormal;
 layout (location = 2) in vec2 vTexCoords;
-layout (location = 3) in vec2 vTangent;
-layout (location = 4) in vec2 vBitangent;
+//layout (location = 3) in vec2 vTangent;
+//layout (location = 4) in vec2 vBitangent;
 
 out vec3 FragPos;
 out vec2 TexCoords;
 out vec3 Normal;
 
-uniform mat4 ModelMatrix;
-uniform mat4 ViewProjMatrix; //projection * view
+//uniform mat4 ModelMatrix;
+//uniform mat4 ViewProjMatrix; //projection * view
+
+uniform mat4 mModelView;
+uniform mat4 mMVP;
 
 void main()
 {
-    vec4 worldPos = ModelMatrix * vec4(vPosition, 1.0);
-    FragPos = worldPos.xyz; 
+    //vec4 worldPos = ModelMatrix * vec4(vPosition, 1.0);
+    //FragPos = worldPos.xyz; 
 
-    TexCoords = vTexCoords;
+    //TexCoords = vTexCoords;
     
-    mat3 normalMatrix = transpose(inverse(mat3(ModelMatrix)));
-    Normal = normalMatrix * vNormal;
+    //mat3 normalMatrix = transpose(inverse(mat3(ModelMatrix)));
+    //Normal = normalMatrix * vNormal;
 
-    gl_Position = ViewProjMatrix * worldPos;
+    //gl_Position = ViewProjMatrix * worldPos;
+
+    FragPos = vec3(mModelView * vec4(vPosition, 1.0));
+
+    Normal = vec3(mModelView * vec4(vNormal, 0.0)); 
+
+    TexCoords = vec2(vTexCoords.x, vTexCoords.y);
+
+    gl_Position = mMVP * vec4(vPosition, 1.0);
 }

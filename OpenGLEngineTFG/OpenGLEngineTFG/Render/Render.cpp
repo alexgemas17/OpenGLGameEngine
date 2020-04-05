@@ -179,43 +179,43 @@ void Render::InitVBO()
 	);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// -------------- TANGENTES -------------- 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_Tangentes);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(
-		3, 
-		sizeof(glm::vec3) / sizeof(GLfloat),
-		GL_FLOAT, 
-		GL_FALSE, 
-		sizeof(glm::vec3), 
-		((GLubyte*)NULL + (0))
-	);
-	glBufferData(
-		GL_ARRAY_BUFFER, 
-		sizeof(glm::vec3) * this->dataObj->tangentes.size(), 
-		this->dataObj->tangentes.data(), 
-		GL_STATIC_DRAW
-	);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//// -------------- TANGENTES -------------- 
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO_Tangentes);
+	//glEnableVertexAttribArray(3);
+	//glVertexAttribPointer(
+	//	3, 
+	//	sizeof(glm::vec3) / sizeof(GLfloat),
+	//	GL_FLOAT, 
+	//	GL_FALSE, 
+	//	sizeof(glm::vec3), 
+	//	((GLubyte*)NULL + (0))
+	//);
+	//glBufferData(
+	//	GL_ARRAY_BUFFER, 
+	//	sizeof(glm::vec3) * this->dataObj->tangentes.size(), 
+	//	this->dataObj->tangentes.data(), 
+	//	GL_STATIC_DRAW
+	//);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	// -------------- BITANGENTES -------------- 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_Bitangentes);
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(
-		4,
-		sizeof(glm::vec3) / sizeof(GLfloat),
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(glm::vec3),
-		((GLubyte*)NULL + (0))
-	);
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * this->dataObj->bitangentes.size(),
-		this->dataObj->bitangentes.data(),
-		GL_STATIC_DRAW
-	);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//// -------------- BITANGENTES -------------- 
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO_Bitangentes);
+	//glEnableVertexAttribArray(4);
+	//glVertexAttribPointer(
+	//	4,
+	//	sizeof(glm::vec3) / sizeof(GLfloat),
+	//	GL_FLOAT,
+	//	GL_FALSE,
+	//	sizeof(glm::vec3),
+	//	((GLubyte*)NULL + (0))
+	//);
+	//glBufferData(
+	//	GL_ARRAY_BUFFER,
+	//	sizeof(glm::vec3) * this->dataObj->bitangentes.size(),
+	//	this->dataObj->bitangentes.data(),
+	//	GL_STATIC_DRAW
+	//);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 }

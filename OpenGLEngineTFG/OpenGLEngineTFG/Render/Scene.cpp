@@ -14,12 +14,12 @@ Scene::Scene(): camara(nullptr)
 
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	//glEnable(GL_MULTISAMPLE);
+	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LEQUAL);
-	//glDepthFunc(GL_LESS);
+
+	glDepthFunc(GL_LESS);
 	//glEnable(GL_BLEND);
-	//glDisable(GL_BLEND); //Activar despues del Deferred rendering si se quiere usar
+	glDisable(GL_BLEND); //Activar despues del Deferred rendering si se quiere usar
 }
 
 Scene::~Scene() {}
@@ -29,7 +29,7 @@ void Scene::InitScene()
 	LoadObjs();
 	InitLights();
 
-	InitShadowMapBuffer();
+	//InitShadowMapBuffer();
 	InitGBuffer();
 	InitDeferredLightBuffer();
 
@@ -88,9 +88,9 @@ void Scene::InitLights()
 	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
 		// calculate slightly random offsets
-		float xPos = RandomFloat(-10, 10);
-		float yPos = RandomFloat(10, 20);
-		float zPos = RandomFloat(-10, 10);
+		float xPos = RandomFloat(-5, 5);
+		float yPos = RandomFloat(-5, 5);
+		float zPos = RandomFloat(-5, 5);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
 		// also calculate random color
@@ -99,7 +99,6 @@ void Scene::InitLights()
 		float bColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
 		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
-
 
 	//Cubo Luz 
 	/*for (int i = 0; i < NR_POINT_LIGHTS; i++) {
@@ -172,47 +171,22 @@ void Scene::InitGBuffer()
 	// ------------------------------
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-		
-	// ---------------- GBuffer Data  ---------------- 
-	// Position color buffer 
+
+	// position color buffer
 	glGenTextures(1, &gb_Position);
 	glBindTexture(GL_TEXTURE_2D, gb_Position);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gb_Position, 0);
 
-	// Normal texture data
+	// normal color buffer
 	glGenTextures(1, &gb_Normal);
 	glBindTexture(GL_TEXTURE_2D, gb_Normal);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	//Filtro anisotropico
-	/*float maxAnisotropy2;
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy2);
-	float anistropyAmount2 = glm::min(maxAnisotropy, 1.0f);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anistropyAmount2);*/
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gb_Normal, 0);
-
-	// Material info: metallic, roughness, ao
-	//glGenTextures(1, &gb_MaterialInfo);
-	/*glBindTexture(GL_TEXTURE_2D, gb_MaterialInfo);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 0, GL_RGB, GL_UNSIGNED_BYTE, (const void*) nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);*/
-
-	//Filtro anisotropico
-	/*float maxAnisotropy3;
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy3);
-	float anistropyAmount3 = glm::min(maxAnisotropy, 1.0f);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anistropyAmount3);*/
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gb_MaterialInfo, 0);
 
 	// color + specular color buffer
 	glGenTextures(1, &gb_Albedo);
@@ -220,7 +194,6 @@ void Scene::InitGBuffer()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gb_Albedo, 0);
 
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
@@ -228,14 +201,15 @@ void Scene::InitGBuffer()
 	glDrawBuffers(3, attachments);
 
 	// create and attach depth buffer (renderbuffer)
-	glGenRenderbuffers(1, &DepthGBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, DepthGBuffer);
+	unsigned int rboDepth;
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT());
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, DepthGBuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
 
 	// finally check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "Error, GBuffer not complete!" << std::endl;
+		std::cout << "Framebuffer not complete!" << std::endl;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -295,7 +269,7 @@ void Scene::InitDeferredLightBuffer()
 	////glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, m_TextureSettings.MipBias);
 
 	//// Anisotropic filtering (TODO: Move the anistropyAmount calculation to Defs.h to avoid querying the OpenGL driver everytime)
-	///*float maxAnisotropy1;
+	//float maxAnisotropy1;
 	//glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy1);
 	//float anistropyAmount1 = glm::min(maxAnisotropy1, 1.0f);
 	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAnisotropy1);*/
@@ -408,12 +382,11 @@ void Scene::shadowMapPass()
 void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Pasamos los datos importantes al GBufferShader
 	ShaderManager::getInstance()->getGBuffer()->use();
-	ShaderManager::getInstance()->getGBuffer()->setUniform("ViewProjMatrix", this->camara->getMatrixViewProjection());
+	//ShaderManager::getInstance()->getGBuffer()->setUniform("ViewProjMatrix", this->camara->getMatrixViewProjection());
 
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
 
@@ -462,11 +435,17 @@ void Scene::deferredLightPass()
 
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 		// update attenuation parameters and calculate radius
-		const float linear = 0.7;
-		const float quadratic = 1.8;
+		const float constant = 1.0f;
+		const float linear = 0.9;
+		const float quadratic = 0.032;
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Constant", constant);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
 	}
@@ -510,7 +489,8 @@ void Scene::deferredLightPass()
 
 	glBlitFramebuffer(
 		0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 
-		0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
+		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -528,37 +508,19 @@ void Scene::postProcessEffectsPass()
 	//chromaticAberration??
 }
 
-void Scene::restoreDefaultDepthBuffer()
-{
-	//glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
-	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // write to default framebuffer
-	//// blit to default framebuffer. Note that this may or may not work as the internal formats of both the FBO and default framebuffer have to match.
-	//// the internal formats are implementation defined. This works on all of my systems, but if it doesn't on yours you'll likely have to write to the 		
-	//// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal format with the FBO's internal format).
-	//glBlitFramebuffer(0,
-	//	0,
-	//	Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
-	//	0,
-	//	0, Application::getInstance()->getWIDHT(),
-	//	Application::getInstance()->getHEIGHT(),
-	//	GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 /* Recorre */
 void Scene::DrawObjs()
 {
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	//Datos necesarios
 	glm::mat4 mView = camara->getView();
 	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	// 1. Shadow map
 	// -----------------------------------------------------------------
-	shadowMapPass();
+	//shadowMapPass();
 
 	// 2. geometry pass: render scene's geometry/color data into gbuffer
 	// -----------------------------------------------------------------
@@ -576,7 +538,7 @@ void Scene::DrawObjs()
 
 	// 5. Forward rendering
 	// ----------------------------------------------------------------------------------
-	postProcessEffectsPass();
+	//postProcessEffectsPass();
 }
 
 /* ----------------------------------------------------------------------------------------------------------------- */

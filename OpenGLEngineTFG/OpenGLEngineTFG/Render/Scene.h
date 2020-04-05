@@ -18,7 +18,7 @@ const int NR_DIRECTIONAL_LIGHTS = 1;
 const int NR_POINT_LIGHTS = 32;
 const int NR_SPOT_LIGHTS = 1;
 const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
-const float NEAR_PLANE = 0.1f, FAR_PLANE = 10000000.0f;
+const float NEAR_PLANE = 0.01f, FAR_PLANE = 10000.0f;
 
 class Scene
 {
@@ -30,6 +30,8 @@ public:
 	void InitCamara(float fov, int width, int height, float zNear, float zFar);
 	void UpdateObjs(float deltaTime);
 	void DrawObjs();
+
+	Camara* camara;
 
 	/* Funciones callbacks */
 	void framebuffer_size_callback(int width, int height); 
@@ -45,12 +47,12 @@ private:
 	NodoScene* nodoLight;
 	glm::vec3 lightPosition;
 
-	Camara* camara;
+	
 
 	unsigned int gb_Position, gb_Albedo, gb_Normal, gb_MaterialInfo;
-	unsigned int shadowMapFBO, DepthStencilTextureShadowMap;
+	unsigned int shadowMapFBO, DepthShadowMap;
 	unsigned int gBuffer, DepthGBuffer;
-	unsigned int lightBuffer, DepthStencilTextureDeferredLight, ColorTextureDeferredLight;
+	unsigned int lightBuffer;
 
 	/*TESTING*/
 	std::vector<glm::vec3> lightPositions;
@@ -73,6 +75,5 @@ private:
 	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
 	void deferredLightPass();
 	void postProcessEffectsPass();
-	void restoreDefaultDepthBuffer();	//Posiblemente borrar
 };
 

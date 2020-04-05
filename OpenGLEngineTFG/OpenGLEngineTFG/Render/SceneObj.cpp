@@ -1,5 +1,7 @@
 #include "SceneObj.h"
 
+#include "../Application.h"
+
 SceneObj::SceneObj(): Render(), Model(){}
 
 SceneObj::SceneObj(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, 
@@ -87,8 +89,11 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 
 	shader->use();
 
-	shader->setUniform("ModelMatrix", modelMatrix);
-	//shader->setUniform("normalMatrix", glm::mat3(glm::transpose(glm::inverse(modelMatrix))) );
+	glm::mat4 mView = Application::getInstance()->getMainScene()->camara->getView();
+	glm::mat4 mMVP = Application::getInstance()->getMainScene()->camara->getMatrixViewProjection();
+
+	shader->setUniform("mModelView", mView * modelMatrix);
+	shader->setUniform("mMVP", mMVP * modelMatrix);
 	
 	this->Draw();
 }

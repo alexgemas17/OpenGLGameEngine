@@ -16,7 +16,7 @@ void main()
     gPosition = FragPos;
 
     // also store the per-fragment normals into the gbuffer
-    gNormal = normalize(Normal);
+    gNormal = (gl_FrontFacing) ? normalize(Normal) : normalize(-Normal);
 
     // and the diffuse per-fragment color
     gAlbedo.rgb = texture(texture_Albedo, TexCoords).rgb;
