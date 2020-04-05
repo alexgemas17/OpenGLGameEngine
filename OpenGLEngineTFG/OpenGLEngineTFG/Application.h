@@ -11,7 +11,7 @@
 const float FOV = 45.0f;
 const int WIDHT = 1366;
 const int HEIGHT = 768;
-const float ZNEAR = 0.1f;
+const float ZNEAR = 0.001f;
 const float ZFAR = 10000000.0f;
 
 const std::string url_Config = "Data\\Config.txt";

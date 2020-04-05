@@ -31,7 +31,7 @@ void Scene::InitScene()
 
 	//InitShadowMapBuffer();
 	InitGBuffer();
-	InitDeferredLightBuffer();
+	//InitDeferredLightBuffer();
 
 	this->nodoWorld->InitObjs();
 	//this->nodoLight->InitObjs();
@@ -433,8 +433,10 @@ void Scene::deferredLightPass()
 		ShaderManager::getInstance()->getDeferredShading()->setUniform(("pointLights[" + std::to_string(i) + "].attenuationRadius").c_str(), 30.0f);
 	}*/
 
+	glm::vec3 lightPosition;
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+		lightPosition = glm::vec3(camara->getView() * glm::vec4(lightPositions[i], 0.0));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition);
 		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
@@ -463,7 +465,8 @@ void Scene::deferredLightPass()
 	//glm::mat4 viewMatrix = this->camara->getView();
 	//glm::mat4 projectionMatrix = this->camara->getProjection();
 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", this->camara->getPosition());
+	glm::vec3 cameraPosition = glm::vec3(camara->getView() * glm::vec4(this->camara->getPosition(), 0.0));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", cameraPosition);
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewInverse", glm::inverse(viewMatrix));
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("projectionInverse", glm::inverse(projectionMatrix));
 
