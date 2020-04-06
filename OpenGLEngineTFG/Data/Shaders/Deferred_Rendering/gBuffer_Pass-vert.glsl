@@ -1,4 +1,4 @@
-#version 400
+#version 430
 
 layout (location = 0) in vec3 vPosition;
 layout (location = 1) in vec3 vNormal;
@@ -11,19 +11,23 @@ out vec3 VertexNormal;
 out vec3 VertexTangent;
 out vec2 TexCoords;
 
-uniform mat4 ModelMatrix;
-uniform mat4 ViewProjMatrix; //projection * view
+uniform mat4 ModelViewMatrix; //view * model
+uniform mat4 MVP; //projection * view * model
+//uniform mat3 NormalMatrix;
 
 void main()
 {
-    vec4 worldPos = ModelMatrix * vec4(vPosition, 1.0);
-    FragPos = worldPos.xyz; 
-    
-    VertexNormal = (ModelMatrix * vec4(vNormal, 0.0)).xyz;
-
-    VertexTangent = (ModelMatrix * vec4(vTangent, 0.0)).xyz;
+    FragPos = vec3( ModelViewMatrix * vec4(vPosition,1.0) );
 
     TexCoords = vTexCoords;
 
-    gl_Position = ViewProjMatrix * worldPos;
+    mat3 NormalMatrix = mat3(transpose(inverse(ModelViewMatrix)));
+
+    //VertexNormal = vec3( ModelViewMatrix * vec4(vNormal,0.0) );
+    VertexNormal = normalize( NormalMatrix * vNormal );
+
+    //VertexTangent = vec3( ModelViewMatrix * vec4(vTangent, 0.0) );
+    VertexTangent = normalize( NormalMatrix * vTangent );
+
+    gl_Position = MVP * vec4(vPosition, 1.0);
 }

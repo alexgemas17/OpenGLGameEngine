@@ -1,4 +1,4 @@
-#version 400
+#version 430
 
 layout (location = 0) out vec3 gPosition;
 layout (location = 1) out vec3 gNormal;

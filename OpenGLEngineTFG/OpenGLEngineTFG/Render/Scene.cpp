@@ -396,8 +396,8 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Pasamos los datos importantes al GBufferShader
-	ShaderManager::getInstance()->getGBuffer()->use();
-	ShaderManager::getInstance()->getGBuffer()->setUniform("ViewProjMatrix", this->camara->getMatrixViewProjection());
+	//ShaderManager::getInstance()->getGBuffer()->use();
+	//ShaderManager::getInstance()->getGBuffer()->setUniform("ViewProjMatrix", this->camara->getMatrixViewProjection());
 
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
 
@@ -424,65 +424,36 @@ void Scene::deferredLightPass()
 	glBindTexture(GL_TEXTURE_2D, gb_Albedo);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedo", 2);
 
+	glm::mat4 ViewMatrix = this->camara->getView();
 
 	// ------------------------ Light Pass ------------------------
 	//NOTA: Las luces están dentro del shader. TO-DO: Ver como pasarla aquí para ir de una en una.
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("numDirLights", NR_DIRECTIONAL_LIGHTS);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("nr_point_lights", NR_POINT_LIGHTS);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("numtSpotLights", NR_SPOT_LIGHTS);
+
+	//Material info
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ks", glm::vec3(0.2f, 0.2f, 0.2f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Shininess", 32.0f);
 
 	// directional light = 1
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.direction", glm::vec3(-3.0f, -3.0f, -3.0f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.shininess", 32.0f);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.LightDirection", ViewMatrix * glm::vec4(glm::vec3(-3.0f, -3.0f, -3.0f),1.0f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.DiffSpecIntensity", glm::vec3(0.1f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.AmbientIntensity", glm::vec3(0.01f));
 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.diffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.specular", glm::vec3(0.2f, 0.2f, 0.2f));
-
-	const float constant = 1.0f;
-	const float linear = 0.9;
-	const float quadratic = 0.032;
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].position", lightPositions[i]);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].shininess", 32.0f);
-		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.2f, 0.2f));
-
-		// update attenuation parameters and calculate radius
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].constant", constant);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].linear", linear);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].quadratic", quadratic);
+		glm::vec3 Positon = ViewMatrix * glm::vec4(lightPositions[i], 1.0f);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", Positon);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].DiffSpecIntensity", glm::vec3(0.02f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].AmbientIntensity", glm::vec3(0.01f));
 	}
 
-	//for (int i = 0; i < NR_SPOT_LIGHTS; i++) {		//Solo hay 1
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].intensity").c_str(), 100.0f);
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].lightColour").c_str(), glm::vec3(1.0f, 1.0f, 1.0f));
+	//Solo hay 1
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Position", ViewMatrix * glm::vec4(glm::vec3(0.0f, 10.0f, 0.0f), 1.0f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Direction", ViewMatrix * glm::vec4(glm::vec3(0.0f, -2.0f, 0.0f), 1.0f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.DiffSpecIntensity", glm::vec3(0.02f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.AmbientIntensity", glm::vec3(0.01f));
 
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.position", glm::vec3(0.0f, 10.0f, 0.0f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.shininess", 32.0f);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
-
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.ambient", glm::vec3(0.0f, 0.0f, 0.0f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.constant", 1.0f);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.linear", 0.09f);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.quadratic", 0.032f);
-
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.cutOff", glm::cos(glm::radians(20.0f)));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
-	//}
-
-	//glm::mat4 viewMatrix = this->camara->getView();
-	//glm::mat4 projectionMatrix = this->camara->getProjection();
-
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", this->camara->getPosition());
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewInverse", glm::inverse(viewMatrix));
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("projectionInverse", glm::inverse(projectionMatrix));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Exponent", 50.0f);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Cutoff", glm::radians(15.0f));
 
 	// Shadowmap code
 	/*glActiveTexture(GL_TEXTURE0);

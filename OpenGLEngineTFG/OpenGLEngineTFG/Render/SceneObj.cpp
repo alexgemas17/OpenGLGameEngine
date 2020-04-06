@@ -96,6 +96,12 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 	glm::mat4 ModelViewMatrix = ViewMatrix * modelMatrix;
 
+	glm::mat3 NormalMatrix = glm::mat3(
+		glm::vec3(ModelViewMatrix[0]),
+		glm::vec3(ModelViewMatrix[1]),
+		glm::vec3(ModelViewMatrix[2]));
+
+
 	shader->use();
 
 	if (!this->getNormalMapTextures().empty())
@@ -103,11 +109,8 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	else
 		shader->setUniform("hasNormalTexture", false);
 
-	shader->setUniform("ViewModelMatrix", ViewMatrix * modelMatrix);
-	shader->setUniform("NormalMatrix",  glm::mat3(
-													glm::vec3(ModelViewMatrix[0]),
-													glm::vec3(ModelViewMatrix[1]),
-													glm::vec3(ModelViewMatrix[2])));
+	shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
+	//shader->setUniform("NormalMatrix", NormalMatrix);
 
 	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 	
