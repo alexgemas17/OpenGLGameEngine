@@ -16,11 +16,9 @@ Scene::Scene(): camara(nullptr)
 
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-	glEnable(GL_MULTISAMPLE);
+	//glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
 
-	//glDepthFunc(GL_LESS);
-	//glEnable(GL_BLEND);
 	glDisable(GL_BLEND); //Activar despues del Deferred rendering si se quiere usar
 }
 
@@ -67,7 +65,7 @@ void Scene::LoadObjs()
 	}
 
 	//Data from floor
-	Plane* floor = new Plane(10.0f);
+	Plane* floor = new Plane(Narrow1, 10.0f);
 	SceneObj* obj = floor->getSceneObj();
 
 	NodoScene* nodo = new NodoScene();
@@ -188,7 +186,7 @@ void Scene::InitGBuffer()
 	// position color buffer
 	glGenTextures(1, &gb_Position);
 	glBindTexture(GL_TEXTURE_2D, gb_Position);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gb_Position, 0);
@@ -196,7 +194,7 @@ void Scene::InitGBuffer()
 	// normal color buffer
 	glGenTextures(1, &gb_Normal);
 	glBindTexture(GL_TEXTURE_2D, gb_Normal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gb_Normal, 0);
@@ -209,16 +207,16 @@ void Scene::InitGBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gb_Albedo, 0);
 
-	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2};
-	glDrawBuffers(3, attachments);
-
 	// create and attach depth buffer (renderbuffer)
-	unsigned int rboDepth;
-	glGenRenderbuffers(1, &rboDepth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT());
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	glGenRenderbuffers(1, &DepthGBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, DepthGBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, DepthGBuffer);
+
+
+	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_NONE };
+	glDrawBuffers(4, attachments);
 
 	// finally check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -434,12 +432,12 @@ void Scene::deferredLightPass()
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("numtSpotLights", NR_SPOT_LIGHTS);
 
 	// directional light = 1
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.direction", glm::vec3(-3.0f, -3.0f, -3.0f));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.shininess", 32.0f);
 
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.diffuse", glm::vec3(0.4f, 0.4f, 0.4f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.diffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.specular", glm::vec3(0.2f, 0.2f, 0.2f));
 
 	const float constant = 1.0f;
 	const float linear = 0.9;
@@ -450,8 +448,8 @@ void Scene::deferredLightPass()
 		//ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].ambient", glm::vec3(0.05f, 0.05f, 0.05f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].diffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].specular", glm::vec3(0.5f, 0.5f, 0.5f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].specular", glm::vec3(0.2f, 0.2f, 0.2f));
 
 		// update attenuation parameters and calculate radius
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].constant", constant);
@@ -463,7 +461,7 @@ void Scene::deferredLightPass()
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].intensity").c_str(), 100.0f);
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform(("spotLights[" + std::to_string(i) + "].lightColour").c_str(), glm::vec3(1.0f, 1.0f, 1.0f));
 
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.position", glm::vec3(0.0f, 3.0f, 0.0f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.position", glm::vec3(0.0f, 10.0f, 0.0f));
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.shininess", 32.0f);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.direction", glm::vec3(0.0f, -1.0f, 0.0f));
 
@@ -475,7 +473,7 @@ void Scene::deferredLightPass()
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.linear", 0.09f);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.quadratic", 0.032f);
 
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.cutOff", glm::cos(glm::radians(20.0f)));
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 	//}
 

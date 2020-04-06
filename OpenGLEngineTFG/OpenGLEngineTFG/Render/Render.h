@@ -68,9 +68,9 @@ public:
 	void setTypeRender(TypeRender type);
 	TypeRender getTypeRender() { return this->typeRender; }
 
-	std::vector<std::string> getAlbedoTextures() { return this->normalMapTextures; }
+	std::vector<std::string> getAlbedoTextures() { return this->AlbedoTextures; }
 	std::vector<std::string> getSpecularTextures() { return this->specularTextures; }
-	std::vector<std::string> getNormalMapTextures() { return this->AlbedoTextures; }
+	std::vector<std::string> getNormalMapTextures() { return this->normalMapTextures; }
 
 private:
 

@@ -3,7 +3,7 @@
 
 #include "../Application.h"
 
-Plane::Plane(float size)
+Plane::Plane(TypeFloor type, float size)
 {
 	AssimpLoader* loader = new AssimpLoader();
 
@@ -22,6 +22,20 @@ Plane::Plane(float size)
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f),
 		glm::vec3(0.0f, 1.0f, 0.0f)
+	};
+
+	std::vector<glm::vec3> tangente = {
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f),
+		glm::vec3(1.0f, 0.0f, 0.0f)
+	};
+
+	std::vector<glm::vec3> bitangente = {
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
 	};
 
 	std::vector<glm::vec2> coord_textura = {
@@ -51,25 +65,35 @@ Plane::Plane(float size)
 	data->vertices = puntos;
 	data->normales = normales;
 	data->coord_textura = coord_textura;
-	data->bitangentes = normales;
-	data->tangentes = normales;
+	data->bitangentes = bitangente;
+	data->tangentes = tangente;
 	data->indices = indices;
 
-	std::vector<std::string> albedoText = { path + floor_albedo };
-	std::vector<std::string> specText = { path + floor_albedo };
-	std::vector<std::string> normalText = { path + floor_normal };
+	std::vector<std::string> albedoText;
+	std::vector<std::string> specText;
+	std::vector<std::string> normalText;
+	if (type == Grass1) {
+		albedoText = { path + Grass1_albedo };
+		specText = { path + Grass1_albedo };
+		normalText = { path + Grass1_normal };
+	}
+	else {
+		albedoText = { path + Narrow1_albedo };
+		specText = { path + Narrow1_albedo };
+		normalText = { path + Narrow1_normal };
+	}
 
-	Application::getInstance()->getTextureManager()->addIDTexture(path + floor_albedo);
-	Application::getInstance()->getTextureManager()->addIDTexture(path + floor_normal);
+	Application::getInstance()->getTextureManager()->addIDTexture(albedoText[0]);
+	Application::getInstance()->getTextureManager()->addIDTexture(normalText[0]);
 
 	this->obj = new SceneObj(
 		data, 
 		albedoText,
 		specText, 
 		normalText, 
-		path + floor_albedo,
-		path + floor_albedo, 
-		path + floor_albedo
+		albedoText[0],
+		albedoText[0],
+		albedoText[0]
 	);
 	this->obj->Scale(size, size, size);
 

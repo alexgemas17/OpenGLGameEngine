@@ -53,7 +53,7 @@ Render::~Render()
 	glDeleteBuffers(1, &VBO_Normales);
 	glDeleteBuffers(1, &CoordTexturaBuffer);
 	glDeleteBuffers(1, &VBO_Tangentes);
-	//glDeleteBuffers(1, &VBO_Bitangentes);
+	glDeleteBuffers(1, &VBO_Bitangentes);
 
 	delete this->dataObj;
 }
@@ -77,7 +77,7 @@ void Render::Draw()
 	// Albedo Texture
 	if (!AlbedoTextures.empty()) {
 		glActiveTexture(GL_TEXTURE0); 
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_Albedo", 0);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("Albedo_texture", 0);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
 	}
 
@@ -89,11 +89,11 @@ void Render::Draw()
 	}*/
 
 	// Normal Texture
-	/*if (!normalMapTextures.empty()) {
+	if (!normalMapTextures.empty()) {
 		glActiveTexture(GL_TEXTURE1);
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 1);
+		ShaderManager::getInstance()->getGBuffer()->setUniform("Normal_texture", 1);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
-	}*/
+	}
 
 	//// Normal Texture
 	//if (!MetallicTexture.empty()) {

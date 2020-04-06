@@ -87,9 +87,29 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 		break;
 	}*/
 
+	//mat4 mv = view * model;
+	//prog.setUniform("ModelViewMatrix", mv);
+	//prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));
+	//prog.setUniform("MVP", projection * mv);
+
+	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
+	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
+	glm::mat4 ModelViewMatrix = ViewMatrix * modelMatrix;
+
 	shader->use();
 
-	shader->setUniform("ModelMatrix", modelMatrix);
+	if (!this->getNormalMapTextures().empty())
+		shader->setUniform("hasNormalTexture", true);
+	else
+		shader->setUniform("hasNormalTexture", false);
+
+	shader->setUniform("ViewModelMatrix", ViewMatrix * modelMatrix);
+	shader->setUniform("NormalMatrix",  glm::mat3(
+													glm::vec3(ModelViewMatrix[0]),
+													glm::vec3(ModelViewMatrix[1]),
+													glm::vec3(ModelViewMatrix[2])));
+
+	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 	
 	this->Draw();
 }
