@@ -58,49 +58,17 @@ void SceneObj::DrawObjShadowMap(glm::mat4& _modelMatrix)
 	this->Draw();
 }
 
-
 void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 {
-	/*switch (getTypeRender())
-	{
-	case Points:
-		setShaderToPoints(_modelMatrix, _mViewProjection);
-		break;
-
-	case Wireframe:
-		setShaderToWireFrame(_modelMatrix, _mViewProjection);
-		break;
-
-	case Texture:
-		setShaderToTexture(_modelMatrix, _mViewProjection);
-		break;
-
-	case BasicColor:
-		setShaderToBasicColor(_modelMatrix, _mViewProjection);
-		break;
-
-	case TextureLight:
-		setShaderToTextureLight(_modelMatrix, _mView, _mViewProjection);
-		break;
-	case DeferredRendering:
-		setShaderDeferredRendering(_modelMatrix, _mView, _mViewProjection);
-		break;
-	}*/
-
-	//mat4 mv = view * model;
-	//prog.setUniform("ModelViewMatrix", mv);
-	//prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));
-	//prog.setUniform("MVP", projection * mv);
 
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 	glm::mat4 ModelViewMatrix = ViewMatrix * modelMatrix;
 
-	glm::mat3 NormalMatrix = glm::mat3(
+	/*glm::mat3 NormalMatrix = glm::mat3(
 		glm::vec3(ModelViewMatrix[0]),
 		glm::vec3(ModelViewMatrix[1]),
-		glm::vec3(ModelViewMatrix[2]));
-
+		glm::vec3(ModelViewMatrix[2]));*/
 
 	shader->use();
 
@@ -111,7 +79,6 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 
 	shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
 	//shader->setUniform("NormalMatrix", NormalMatrix);
-
 	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 	
 	this->Draw();

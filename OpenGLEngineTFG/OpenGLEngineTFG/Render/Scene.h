@@ -47,8 +47,8 @@ private:
 	NodoScene* nodoLight;
 	glm::vec3 lightPosition;
 
-	unsigned int gb_Position, gb_Albedo, gb_Normal, gb_MaterialInfo;
-	unsigned int shadowMapFBO, DepthShadowMap;
+	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
+	unsigned int shadowMap, DepthShadowMap;
 	unsigned int gBuffer, DepthGBuffer;
 	unsigned int lightBuffer;
 
@@ -57,7 +57,7 @@ private:
 	std::vector<glm::vec3> lightColors;
 
 	/* Shadow map data*/
-	glm::mat4 directionalLightViewProjMatrix;
+	glm::mat4 lightSpaceMatrix;
 
 	// -------- PRIVATE FUNC ------------
 	void LoadObjs();	// Carga desde el objs.txt los objetos que tiene la escena

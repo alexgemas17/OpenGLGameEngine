@@ -2,160 +2,293 @@
 
 layout (location = 0) out vec4 FragColor;
 
-struct DirectionLightData {
-    vec3 LightDirection;    // Light direction in cam coords
-    vec3 DiffSpecIntensity; // Diffuse/spec intensity
-    vec3 AmbientIntensity;  // Amb intensity
+const float PI = 3.14159265359;
+
+//Light Data
+struct DirectionalLight {
+    vec3 LightDirection;     // Direction of the DirLight in cam coords.
+
+    float Intensity;        // Intensity from the light
+    vec3 LightColour;       // Color from the light
 };
 
-struct PointLightData {
-    vec3 Position;              // Light position in cam. coords.
-    vec3 DiffSpecIntensity;     // D,S intensity
-    vec3 AmbientIntensity;      // Amb intensity
+struct PointLight {
+	vec3 Position;              // Position in cam coords
+
+	float Intensity;            // Intensity from the light
+	vec3 LightColour;           // Color from the light
+	float AttenuationRadius;    
 };
 
-struct SpotLightData {
-    vec3 Position;              // Position in cam coords
-    vec3 Direction;             // Direction of the spotlight in cam coords.
-    vec3 DiffSpecIntensity;     // Diffuse/spec intensity
-    vec3 AmbientIntensity;      // Amb intensity
-    float Exponent;             // Angular attenuation exponent
-    float Cutoff;               // Cutoff angle (between 0 and pi/2)
-};
+struct SpotLight {
+	vec3 Position;              // Position in cam coords
+	vec3 LightDirection;        // Direction of the spotlight in cam coords.
 
-struct MaterialInfo {
-    vec3 Ks;            // Specular reflectivity
-    float Shininess;    // Specular shininess factor
+	float Intensity;            // Intensity from the light
+	vec3 LightColour;           // Color from the light
+	float AttenuationRadius;
+
+	float CutOff;               // Cutoff angle (between 0 and pi/2
+	float OuterCutOff;          // Angular attenuation exponent
 };
 
 in vec2 TexCoords;
 
-// Data info from Framebuffers
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gAlbedo;
+// GBuffer data
+uniform sampler2D gPosition;        // Almacena la posición del fragmento
+uniform sampler2D gNormal;          // Almacena la normal (Bump mapping o default normal)
+uniform sampler2D gAlbedo;          // Almacena la información de la textura.
+uniform sampler2D gMaterialInfo;    // Almacena la info PBR: R:metallic, G:roughness, B:ao
+//uniform sampler2D ssaoTexture;
+uniform sampler2D ShadowMap;
 
-// Num max light
+// Información sobre las luces
 const int NR_POINT_LIGHTS_MAX = 32;
+//uniform int NumDirectionalLights;   Por ahora solo 1
+uniform int NumPointLights;
+//uniform int NumSpotLights;          Por ahora solo 1
 
-// Lights
-uniform MaterialInfo Material;
-uniform int nr_point_lights;
-uniform DirectionLightData dirLight;
-uniform PointLightData pointLights[NR_POINT_LIGHTS_MAX];
-uniform SpotLightData SpotLight;
+uniform DirectionalLight DirLight;
+uniform PointLight pointLights[NR_POINT_LIGHTS_MAX];
+uniform SpotLight spotLight;
 
-uniform vec3 viewPos;
+uniform vec3 viewPosition;
+uniform mat4 lightSpaceMatrix;    //Para los calculos de sombras
 
-// Light functions
-vec3 CalcDirLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture  );
-vec3 CalcPointLight(PointLightData pointLight, vec3 FragPos, vec3 Normal, vec4 ColorTexture);
-vec3 CalcSpotLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture );
+// Funciones que encapsulan las ecucaciones de las luces
+vec3 CalculateDirectionalLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity);
+vec3 CalculatePointLight(PointLight pointLight, vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity);
+vec3 CalculateSpotLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity);
 
-float fatt(vec3 FragPos, vec3 LightPosition);
+// Cook-Torrance BRDF functions adopted by Epic for UE4
+float NormalDistributionGGX(vec3 normal, vec3 halfway, float roughness);
+float GeometrySmith(vec3 normal, vec3 viewDir, vec3 lightDir, float roughness);
+float GeometrySchlickGGX(float cosTheta, float roughness);
+vec3 FresnelSchlick(float cosTheta, vec3 baseReflectivity);
+
+// Shadows
+float CalculateShadow(vec3 fragPos, vec3 normal, vec3 fragToLight);
 
 void main()
-{             
-    // retrieve data from gbuffer
-    vec3 FragPos = texture(gPosition, TexCoords).rgb;
-    vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec4 Diffuse = texture(gAlbedo, TexCoords).rgba; 
-
-    // == =====================================================
-    // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
-    // For each phase, a calculate function is defined that calculates the corresponding color
-    // per lamp. In the main() function we take all the calculated colors and sum them up for
-    // this fragment's final color.
-    // == =====================================================
-
-    // phase 1: directional lighting
-    //vec3 result = CalcDirLight(FragPos, Normal, Diffuse);
-
-    vec3 result = vec3(0.0);
-    // phase 2: point lights
-    for(int i = 0; i < nr_point_lights; i++)
-        result += CalcPointLight(pointLights[i], FragPos, Normal, Diffuse);  
-
-    // phase 3: spot light
-    result += CalcSpotLight(FragPos, Normal, Diffuse);    
-    
-    FragColor = vec4(result, 1.0);
-}
-
-// calculates the color when using a directional light.
-vec3 CalcDirLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture  ) {
-    vec3 Kad = ColorTexture.rgb; //Info del color de la textura
-    
-    vec3 l = -dirLight.LightDirection;
-    vec3 v = normalize( -FragPos );
-    vec3 r = reflect( -l, Normal );
-
-    //vec3 Ambient = dirLight.AmbientIntensity * Kad;
-
-    float dotLN = dot(l, Normal);
-    vec3 Diffuse = Kad * max( dotLN, 0.0);
-    vec3 Specular = vec3(0.0);
-    if(dotLN >= 0.0){
-        Specular = Material.Ks * pow( max( dot(r,v), 0.0), Material.Shininess );
-    }
-
-    return  dirLight.DiffSpecIntensity * (Diffuse + Specular);
-}
-
-vec3 CalcPointLight(PointLightData pointLight, vec3 FragPos, vec3 Normal, vec4 ColorTexture)
 {
-    vec3 Kad = ColorTexture.rgb; //Info del color de la textura
+    // Recuperamos la información del GBuffer
+    vec3 fragPos = texture(gPosition, TexCoords).rgb;
+	vec3 normal = texture(gNormal, TexCoords).rgb;
+	vec3 albedo = texture(gAlbedo, TexCoords).rgb;
+	float metallic = texture(gMaterialInfo, TexCoords).r;
+	float unclampedRoughness = texture(gMaterialInfo, TexCoords).g; // Used for indirect specular (reflections)
+	float roughness = max(unclampedRoughness, 0.04); // Used for calculations since specular highlights will be too fine, and will cause flicker
+	float ao = texture(gMaterialInfo, TexCoords).b;
+	//float sceneAO = texture(ssaoTexture, TexCoords).r;
+	//float ao = min(materialAO, sceneAO);
+
+	vec3 fragToView = normalize(viewPosition - fragPos);
+	vec3 reflectionVec = reflect(-fragToView, normal);
+
+	// Dielectrics have an average base specular reflectivity around 0.04, and metals absorb all of their diffuse (refraction) lighting so their albedo is used instead for their specular lighting (reflection)
+	vec3 baseReflectivity = vec3(0.04);
+	baseReflectivity = mix(baseReflectivity, albedo, metallic);
+
+	// Calculate per light radiance for all of the direct lighting
+	vec3 directLightIrradiance = vec3(0.0);
+
+    //for (int i = 0; i < NumDirectionalLights.x; i++)
+	directLightIrradiance += CalculateDirectionalLight(fragPos, normal, albedo, metallic, roughness, fragToView, baseReflectivity);
     
-    vec3 l = normalize( pointLight.Position - FragPos );
-    vec3 v = normalize( -FragPos );
-    vec3 r = reflect( -l, Normal );
+    for (int i = 0; i < NumPointLights; i++)
+        directLightIrradiance += CalculatePointLight(pointLights[i], fragPos, normal, albedo, metallic, roughness, fragToView, baseReflectivity);
 
-    //vec3 Ambient = pointLight.AmbientIntensity * Kad;
+    //for (int i = 0; i < NumSpotLights.x; i++)
+	directLightIrradiance += CalculateSpotLight(fragPos, normal, albedo, metallic, roughness, fragToView, baseReflectivity);
 
-    float dotLN = dot(l, Normal);
-    vec3 Diffuse = pointLight.DiffSpecIntensity * Kad * max( dotLN, 0.0);
-    vec3 Specular = vec3(0.0);
-    if(dotLN >= 0.0){
-        Specular = pointLight.DiffSpecIntensity * Material.Ks * pow( max( dot(r,v), 0.0), Material.Shininess );
-    }
+	// Calcualte ambient IBL for both diffuse and specular
+	vec3 ambient = vec3(0.05) * albedo * ao;
 
-    return fatt(FragPos, pointLight.Position) * (Diffuse + Specular);
+	FragColor = vec4(ambient + directLightIrradiance, 1.0);
 }
 
-// calculates the color when using a spot light.
-vec3 CalcSpotLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture ) { 
-    vec3 Kad = ColorTexture.rgb; //Info del color de la textura
-    
-    vec3 l = normalize(SpotLight.Position - FragPos);
-	vec3 d = normalize(SpotLight.Direction);
+// ----------------------------------------- ECUACIONES LUCES -------------------------------
+// TODO: Need to also add multiple shadow support
+vec3 CalculateDirectionalLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
+	vec3 lightDir = normalize(-DirLight.LightDirection);
+    vec3 halfway = normalize(lightDir + fragToView);
+    vec3 radiance = DirLight.Intensity * DirLight.LightColour;
 
-	float DotResult = dot(-l, d);
-	//cosGamma se realiza fuera en opengl.
-	float spotFactor = (DotResult < SpotLight.Cutoff) ? 0.0 : pow(DotResult, SpotLight.Exponent);
+    // Cook-Torrance Specular BRDF calculations
+    float normalDistribution = NormalDistributionGGX(normal, halfway, roughness);
+    vec3 fresnel = FresnelSchlick(max(dot(halfway, fragToView), 0.0), baseReflectivity);
+    float geometry = GeometrySmith(normal, fragToView, lightDir, roughness);
 
-    vec3 v = normalize( -FragPos );
-    vec3 r = reflect( -l, Normal );
+    // Calculate reflected and refracted light respectively, and since metals absorb all refracted light, we nullify the diffuse lighting based on the metallic parameter
+    vec3 specularRatio = fresnel;
+    vec3 diffuseRatio = vec3(1.0) - specularRatio;
+    diffuseRatio *= 1.0 - metallic;
 
-    //vec3 Ambient = dirLight.AmbientIntensity * Kad;
+    // Finally calculate the specular part of the Cook-Torrance BRDF (max 0.1 stops any visual artifacts)
+    vec3 numerator = specularRatio * normalDistribution * geometry;
+    float denominator = 4 * max(dot(fragToView, normal), 0.1) * max(dot(lightDir, normal), 0.0) + 0.001;  // Prevents any division by zero
+    vec3 specular = numerator / denominator;
 
-    float dotLN = dot(l, Normal);
-    vec3 Diffuse = Kad * max( dotLN, 0.0);
-    vec3 Specular = vec3(0.0);
-    if(dotLN >= 0.0){
-        Specular = Material.Ks * pow( max( dot(r,v), 0.0), Material.Shininess );
-    }
+    // Also calculate the diffuse, a lambertian calculation will be added onto the final radiance calculation
+    vec3 diffuse = diffuseRatio * albedo / PI;
 
-    vec3 result = SpotLight.DiffSpecIntensity * (Diffuse + Specular);
-
-    return spotFactor * (fatt(FragPos, SpotLight.Position) * result) ;
+    // Add the light's radiance to the irradiance sum
+    //return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
+    return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
 }
 
-float fatt(vec3 FragPos, vec3 LightPosition) {
-	float c1 = 1.0;
-	float c2 = 0.0;
-	float c3 = 0.0;
+vec3 CalculatePointLight(PointLight pointLight, vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
+	vec3 fragToLight = normalize(pointLight.Position - fragPos);
+    vec3 halfway = normalize(fragToView + fragToLight);
+    float fragToLightDistance = length(pointLight.Position - fragPos);
 
-	float distancia = distance(FragPos, LightPosition);
+    // Attenuation calculation (based on Epic's UE4 falloff model)
+    float d = fragToLightDistance / pointLight.AttenuationRadius;
+    float d2 = d * d;
+    float d4 = d2 * d2;
+    float falloffNumerator = clamp(1.0 - d4, 0.0, 1.0);
+    float attenuation = (falloffNumerator * falloffNumerator) / ((fragToLightDistance * fragToLightDistance) + 1.0);
+    vec3 radiance = pointLight.Intensity * pointLight.LightColour * attenuation;
 
-	return min(1.0 / (c1 + (c2 * distancia * distancia) + (c3 * pow(distancia, 2))), 1.0);
+    // Cook-Torrance Specular BRDF calculations
+    float normalDistribution = NormalDistributionGGX(normal, halfway, roughness);
+    vec3 fresnel = FresnelSchlick(max(dot(halfway, fragToView), 0.0), baseReflectivity);
+    float geometry = GeometrySmith(normal, fragToView, fragToLight, roughness);
+
+    // Calculate reflected and refracted light respectively, and since metals absorb all refracted light, we nullify the diffuse lighting based on the metallic parameter
+    vec3 specularRatio = fresnel;
+    vec3 diffuseRatio = vec3(1.0) - specularRatio;
+    diffuseRatio *= 1.0 - metallic;
+
+    // Finally calculate the specular part of the Cook-Torrance BRDF (max 0.1 stops any visual artifacts)
+    vec3 numerator = specularRatio * normalDistribution * geometry;
+    float denominator = 4 * max(dot(fragToView, normal), 0.1) * max(dot(fragToLight, normal), 0.0) + 0.001; // Prevents any division by zero
+    vec3 specular = numerator / denominator;
+
+    // Also calculate the diffuse, a lambertian calculation will be added onto the final radiance calculation
+    vec3 diffuse = diffuseRatio * albedo / PI;
+
+    // Add the light's radiance to the irradiance sum
+    return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
+}
+
+vec3 CalculateSpotLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
+	vec3 fragToLight = normalize(spotLight.Position - fragPos);
+    vec3 halfway = normalize(fragToView + fragToLight);
+    float fragToLightDistance = length(spotLight.Position - fragPos);
+
+    // Attenuation calculation (based on Epic's UE4 falloff model)
+    float d = fragToLightDistance / spotLight.AttenuationRadius;
+    float d2 = d * d;
+    float d4 = d2 * d2;
+    float falloffNumerator = clamp(1.0 - d4, 0.0, 1.0);
+
+    // Check if it is in the spotlight's circle
+    float theta = dot(normalize(spotLight.LightDirection), -fragToLight);
+    float difference = spotLight.CutOff - spotLight.OuterCutOff;
+    float intensity = clamp((theta - spotLight.OuterCutOff) / difference, 0.0, 1.0);
+    float attenuation = intensity * (falloffNumerator * falloffNumerator) / ((fragToLightDistance * fragToLightDistance) + 1.0);
+    vec3 radiance = spotLight.Intensity * spotLight.LightColour * attenuation;
+
+    // Cook-Torrance Specular BRDF calculations
+    float normalDistribution = NormalDistributionGGX(normal, halfway, roughness);
+    vec3 fresnel = FresnelSchlick(max(dot(halfway, fragToView), 0.0), baseReflectivity);
+    float geometry = GeometrySmith(normal, fragToView, fragToLight, roughness);
+
+    // Calculate reflected and refracted light respectively, and since metals absorb all refracted light, we nullify the diffuse lighting based on the metallic parameter
+    vec3 specularRatio = fresnel;
+    vec3 diffuseRatio = vec3(1.0) - specularRatio;
+    diffuseRatio *= 1.0 - metallic;
+
+    // Finally calculate the specular part of the Cook-Torrance BRDF (max 0.1 stops any visual artifacts)
+    vec3 numerator = specularRatio * normalDistribution * geometry;
+    float denominator = 4 * max(dot(fragToView, normal), 0.1) * max(dot(fragToLight, normal), 0.0) + 0.001; // Prevents any division by zero
+    vec3 specular = numerator / denominator;
+
+    // Also calculate the diffuse, a lambertian calculation will be added onto the final radiance calculation
+    vec3 diffuse = diffuseRatio * albedo / PI;
+
+    // Add the light's radiance to the irradiance sum
+    return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
+}
+
+// ----------------------------------------- PBR -------------------------------
+// Approximates the amount of microfacets that are properly aligned with the halfway vector, thus determines the strength and area for specular light
+float NormalDistributionGGX(vec3 normal, vec3 halfway, float roughness) {
+	float a = roughness * roughness;
+	float a2 = a * a;
+	float normDotHalf = dot(normal, halfway);
+	float normDotHalf2 = normDotHalf * normDotHalf;
+
+	float numerator = a2;
+	float denominator = normDotHalf2 * (a2 - 1.0) + 1.0;
+	denominator = PI * denominator * denominator;
+
+	return numerator / denominator;
+}
+
+// Approximates the geometry obstruction and geometry shadowing respectively, on the microfacet level
+float GeometrySmith(vec3 normal, vec3 viewDir, vec3 lightDir, float roughness) {
+	return GeometrySchlickGGX(max(dot(normal, viewDir), 0.0), roughness) * GeometrySchlickGGX(max(dot(normal, lightDir), 0.0), roughness);
+}
+
+float GeometrySchlickGGX(float cosTheta, float roughness) {
+	float r = (roughness + 1.0);
+	float k = (roughness * roughness) / 8.0;
+
+	float numerator = cosTheta;
+	float denominator = cosTheta * (1.0 - k) + k;
+
+	return numerator / max(denominator, 0.001);
+}
+
+// Calculates the amount of specular light. Since diffuse(refraction) and specular(reflection) are mutually exclusive, 
+// we can also use this to determine the amount of diffuse light
+// Taken from UE4's implementation which is faster and basically identical to the usual Fresnel calculations: https://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+vec3 FresnelSchlick(float cosTheta, vec3 baseReflectivity) {
+	return max(baseReflectivity + (1.0 - baseReflectivity) * pow(2, (-5.55473 * cosTheta - 6.98316) * cosTheta), 0.0);
+}
+
+// ----------------------------------------- SHADOW -------------------------------
+float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
+    vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
+
+    // perform perspective divide
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(ShadowMap, projCoords.xy).r; 
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+    // calculate bias (based on depth map resolution and slope)
+    vec3 normal = normalize(n);
+    vec3 lightDir = normalize(fragToLight - fragPos);
+    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+
+    // check whether current frag pos is in shadow
+    // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    // PCF
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(ShadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
+        }    
+    }
+
+    shadow /= 9.0;
+    
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+        
+    return shadow;
 }

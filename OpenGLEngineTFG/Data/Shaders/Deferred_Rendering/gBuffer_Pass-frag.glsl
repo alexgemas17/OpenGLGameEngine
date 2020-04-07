@@ -1,57 +1,45 @@
 #version 430
 
-layout (location = 0) out vec3 gPosition;
-layout (location = 1) out vec3 gNormal;
-layout (location = 2) out vec4 gAlbedo;
+layout (location = 0) out vec3 gPosition;       // Almacena la posición del fragmento
+layout (location = 1) out vec3 gNormal;         // Almacena la normal (Bump mapping o default normal)
+layout (location = 2) out vec4 gAlbedo;         // Almacena la información de la textura.
+layout (location = 3) out vec4 gMaterialInfo;   // Almacena la info PBR: R:metallic, G:roughness, B:ao
 
-in vec3 VertexNormal;
-in vec3 VertexTangent;
-in vec2 TexCoords;
 in vec3 FragPos;
+in vec2 TexCoords;
+in vec3 VertexNormal;
+in mat3 TBN;
 
-uniform sampler2D Albedo_texture;
-uniform sampler2D Normal_texture;
 uniform bool hasNormalTexture;
 
+uniform sampler2D texture_albedo;
+uniform sampler2D texture_normal;
+uniform sampler2D texture_metallic;
+uniform sampler2D texture_roughness;
+uniform sampler2D texture_ao;
+
+//Functions
 vec3 CalcBumpedNormal();
 
 void main()
 {    
-    // Guardamos su posición para luego poder hacer calculos.
-    gPosition = FragPos;
+    // Extraemos información de las texturas
+    vec3 albedo = texture(texture_albedo, TexCoords).rgb;
+    vec3 normal = texture(texture_normal, TexCoords).rgb;
+    float metallic = texture(texture_metallic, TexCoords).r;
+	float roughness = max(texture(texture_roughness, TexCoords).r, 0.04);
+	float ao = texture(texture_ao, TexCoords).r;
 
-    // Calcula la nueva normal modificada usando la textura de normales (Bump mapping)
+    // Comprobamos si se realiza el bump mapping o no.
     if(hasNormalTexture){
-        gNormal = CalcBumpedNormal();
+        normal = normalize(TBN *  normalize(normal * 2.0 - 1.0));
     }else{
-        gNormal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
+        normal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
     }
-    //gNormal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
 
-    // Guardamos la textura del objeto
-    gAlbedo.rgb = texture(Albedo_texture, TexCoords).rgb;
-}
-
-vec3 CalcBumpedNormal()
-{
-    vec3 Normal = normalize(VertexNormal);
-    vec3 Tangent = normalize(VertexTangent);
-
-    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
-
-    vec3 Bitangent = cross(Tangent, Normal);
-
-    vec3 BumpMapNormal = texture(Normal_texture, TexCoords).xyz;
-
-    BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
-
-    vec3 NewNormal;
-
-    mat3 TBN = mat3(Tangent, Bitangent, Normal);
-
-    NewNormal = TBN * BumpMapNormal;
-
-    NewNormal = normalize(NewNormal);
-
-    return NewNormal;
+    // Guardamos la información en el buffer
+    gPosition = FragPos;
+    gAlbedo.rgb = albedo;
+    gNormal = normal;
+    gMaterialInfo = vec4(metallic, roughness, ao, 1.0);
 }

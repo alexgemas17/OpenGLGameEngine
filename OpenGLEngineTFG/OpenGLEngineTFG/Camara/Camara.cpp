@@ -100,6 +100,10 @@ void Camara::updateCamaraData()
 	this->mVP = this->mProjection * this->mView;
 }
 
+glm::mat4 Camara::getNewLookAt(glm::vec3 Position, glm::vec3 Direction, glm::vec3 UP) {
+	return glm::lookAt(Position, Direction, UP);
+}
+
 void Camara::moveCamara(float xPosition, float yPosition, GLboolean constrainPitch)
 {
 	if (primerMovRaton)

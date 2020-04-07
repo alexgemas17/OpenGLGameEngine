@@ -3,9 +3,18 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../Loaders/stb_imagen.h"
 
+#include "il.h"
+#include "ilu.h"
+
 #include "../Loaders/lodepng.h"
 #include "../Application.h"
 #include <iostream>
+
+TextureManager::TextureManager()
+{
+	ilInit();
+	iluInit();
+}
 
 unsigned int TextureManager::getIDTexture(std::string urlImage)
 {
@@ -32,7 +41,8 @@ void TextureManager::LoadTextures()
 {
 	for (auto &textInf : this->textures)
 	{
-		InitTextura(textInf);
+		//InitTextura(textInf);
+		InitTexturaDevil(textInf);
 	}
 }
 
@@ -81,4 +91,38 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	std::cout << textInf.urlImg << " be loaded successfully" << std::endl;
 
 	stbi_image_free(data);
+}
+
+void TextureManager::InitTexturaDevil(TextureInfo& textInf) {
+	
+	ILuint ImgId = 0;
+	ilGenImages(1, &ImgId);
+	ilBindImage(ImgId);
+
+	// Cargamos la imagen
+	ilLoadImage(textInf.urlImg.c_str());
+
+	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+
+	//Generamos la texturaID
+	unsigned int idTexture = 0;
+	glGenTextures(1, &idTexture);
+	textInf.IDTexture = idTexture;
+	glBindTexture(GL_TEXTURE_2D, idTexture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	this->hashmap_IDTexture.insert(make_pair(textInf.urlImg, textInf.IDTexture));
+
+	std::cout << textInf.urlImg << " be loaded successfully" << std::endl;
+
+	//Liberamos espacio
+	ilBindImage(0);
+	ilDeleteImage(ImgId);
 }

@@ -13,7 +13,7 @@ struct TextureInfo {
 class TextureManager
 {
 public:
-
+	TextureManager();
 	unsigned int getIDTexture(std::string urlImage);
 	void addIDTexture(std::string urlImage);
 	void LoadTextures();
@@ -24,4 +24,5 @@ private:
 	std::vector<TextureInfo> textures;
 
 	void InitTextura(TextureInfo &textInf);
+	void InitTexturaDevil(TextureInfo& textInf);
 };

@@ -27,6 +27,8 @@ public:
 	glm::mat4 getProjection() const;
 	glm::mat4 getMatrixViewProjection() const;
 
+	glm::mat4 getNewLookAt(glm::vec3 Position, glm::vec3 Direction, glm::vec3 UP);
+
 
 private:
 	// Matrices para el render
