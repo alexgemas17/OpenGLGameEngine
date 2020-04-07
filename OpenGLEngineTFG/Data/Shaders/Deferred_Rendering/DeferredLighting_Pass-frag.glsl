@@ -48,16 +48,18 @@ uniform SpotLightData SpotLight;
 uniform vec3 viewPos;
 
 // Light functions
-vec3 CalcDirLight( vec3 fragPos, vec3 n, vec3 texColor );
-vec3 CalcPointLight( PointLightData pointLight, vec3 fragPos, vec3 n, vec3 texColor );
-vec3 CalcSpotLight( vec3 position, vec3 n, vec3 texColor );
+vec3 CalcDirLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture  );
+vec3 CalcPointLight(PointLightData pointLight, vec3 FragPos, vec3 Normal, vec4 ColorTexture);
+vec3 CalcSpotLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture );
+
+float fatt(vec3 FragPos, vec3 LightPosition);
 
 void main()
 {             
     // retrieve data from gbuffer
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
-    vec3 Diffuse = texture(gAlbedo, TexCoords).rgb; 
+    vec4 Diffuse = texture(gAlbedo, TexCoords).rgba; 
 
     // == =====================================================
     // Our lighting is set up in 3 phases: directional, point lights and an optional flashlight
@@ -67,8 +69,9 @@ void main()
     // == =====================================================
 
     // phase 1: directional lighting
-    vec3 result = CalcDirLight(FragPos, Normal, Diffuse);
+    //vec3 result = CalcDirLight(FragPos, Normal, Diffuse);
 
+    vec3 result = vec3(0.0);
     // phase 2: point lights
     for(int i = 0; i < nr_point_lights; i++)
         result += CalcPointLight(pointLights[i], FragPos, Normal, Diffuse);  
@@ -80,62 +83,79 @@ void main()
 }
 
 // calculates the color when using a directional light.
-vec3 CalcDirLight( vec3 fragPos, vec3 n, vec3 texColor  ) {
-    vec3 ambient = dirLight.AmbientIntensity * texColor;
+vec3 CalcDirLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture  ) {
+    vec3 Kad = ColorTexture.rgb; //Info del color de la textura
+    
+    vec3 l = -dirLight.LightDirection;
+    vec3 v = normalize( -FragPos );
+    vec3 r = reflect( -l, Normal );
 
-    vec3 s = -dirLight.LightDirection;
-    float sDotN = max( dot(s,n), 0.0 );
+    //vec3 Ambient = dirLight.AmbientIntensity * Kad;
 
-    vec3 diffuse = texColor * sDotN;
-    vec3 spec = vec3(0.0);
-    if( sDotN > 0.0 ) {
-        vec3 v = normalize(-fragPos.xyz);
-        vec3 h = normalize( v + s );
-        spec = Material.Ks * pow( max( dot(h,n), 0.0 ), Material.Shininess );
+    float dotLN = dot(l, Normal);
+    vec3 Diffuse = Kad * max( dotLN, 0.0);
+    vec3 Specular = vec3(0.0);
+    if(dotLN >= 0.0){
+        Specular = Material.Ks * pow( max( dot(r,v), 0.0), Material.Shininess );
     }
 
-    return ambient + dirLight.DiffSpecIntensity * (diffuse + spec);
+    return  dirLight.DiffSpecIntensity * (Diffuse + Specular);
 }
 
-vec3 CalcPointLight( PointLightData pointLight, vec3 fragPos, vec3 n, vec3 texColor  ) {
-    vec3 ambient = pointLight.AmbientIntensity * texColor;
+vec3 CalcPointLight(PointLightData pointLight, vec3 FragPos, vec3 Normal, vec4 ColorTexture)
+{
+    vec3 Kad = ColorTexture.rgb; //Info del color de la textura
+    
+    vec3 l = normalize( pointLight.Position - FragPos );
+    vec3 v = normalize( -FragPos );
+    vec3 r = reflect( -l, Normal );
 
-    vec3 s = normalize( pointLight.Position.xyz - fragPos );
-    float sDotN = max( dot(s,n), 0.0 );
+    //vec3 Ambient = pointLight.AmbientIntensity * Kad;
 
-    vec3 diffuse = texColor * sDotN;
-    vec3 spec = vec3(0.0);
-    if( sDotN > 0.0 ) {
-        vec3 v = normalize(-fragPos.xyz);
-        vec3 h = normalize( v + s );
-        spec = Material.Ks * pow( max( dot(h,n), 0.0 ), Material.Shininess );
+    float dotLN = dot(l, Normal);
+    vec3 Diffuse = pointLight.DiffSpecIntensity * Kad * max( dotLN, 0.0);
+    vec3 Specular = vec3(0.0);
+    if(dotLN >= 0.0){
+        Specular = pointLight.DiffSpecIntensity * Material.Ks * pow( max( dot(r,v), 0.0), Material.Shininess );
     }
 
-    return ambient + pointLight.DiffSpecIntensity * (diffuse + spec);
+    return fatt(FragPos, pointLight.Position) * (Diffuse + Specular);
 }
 
 // calculates the color when using a spot light.
-vec3 CalcSpotLight( vec3 fragPos, vec3 n, vec3 texColor ) { 
-    vec3 ambient = SpotLight.AmbientIntensity *  texColor;
-    vec3 diffuse = vec3(0);
-    vec3 spec = vec3(0);
+vec3 CalcSpotLight( vec3 FragPos, vec3 Normal, vec4 ColorTexture ) { 
+    vec3 Kad = ColorTexture.rgb; //Info del color de la textura
+    
+    vec3 l = normalize(SpotLight.Position - FragPos);
+	vec3 d = normalize(SpotLight.Direction);
 
-    vec3 s = normalize( SpotLight.Position - fragPos );
+	float DotResult = dot(-l, d);
+	//cosGamma se realiza fuera en opengl.
+	float spotFactor = (DotResult < SpotLight.Cutoff) ? 0.0 : pow(DotResult, SpotLight.Exponent);
 
-    float cosAng = dot(-s, normalize(SpotLight.Direction));
-    float angle = acos( cosAng );
+    vec3 v = normalize( -FragPos );
+    vec3 r = reflect( -l, Normal );
 
-    float spotScale = 0.0;
-    if(angle < SpotLight.Cutoff ) {
-        spotScale = pow( cosAng, SpotLight.Exponent );
-        float sDotN = max( dot(s,n), 0.0 );
-        diffuse = texColor * sDotN;
-        if( sDotN > 0.0 ) {
-            vec3 v = normalize(-fragPos.xyz);
-            vec3 h = normalize( v + s );
-            spec = Material.Ks * pow( max( dot(h,n), 0.0 ), Material.Shininess );
-        }
+    //vec3 Ambient = dirLight.AmbientIntensity * Kad;
+
+    float dotLN = dot(l, Normal);
+    vec3 Diffuse = Kad * max( dotLN, 0.0);
+    vec3 Specular = vec3(0.0);
+    if(dotLN >= 0.0){
+        Specular = Material.Ks * pow( max( dot(r,v), 0.0), Material.Shininess );
     }
 
-    return ambient + spotScale * SpotLight.DiffSpecIntensity * (diffuse + spec);
+    vec3 result = SpotLight.DiffSpecIntensity * (Diffuse + Specular);
+
+    return spotFactor * (fatt(FragPos, SpotLight.Position) * result) ;
+}
+
+float fatt(vec3 FragPos, vec3 LightPosition) {
+	float c1 = 1.0;
+	float c2 = 0.0;
+	float c3 = 0.0;
+
+	float distancia = distance(FragPos, LightPosition);
+
+	return min(1.0 / (c1 + (c2 * distancia * distancia) + (c3 * pow(distancia, 2))), 1.0);
 }

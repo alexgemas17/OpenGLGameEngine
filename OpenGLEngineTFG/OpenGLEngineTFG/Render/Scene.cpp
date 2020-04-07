@@ -431,29 +431,29 @@ void Scene::deferredLightPass()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("nr_point_lights", NR_POINT_LIGHTS);
 
 	//Material info
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ks", glm::vec3(0.2f, 0.2f, 0.2f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Ks", glm::vec3(0.2f));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("Material.Shininess", 32.0f);
 
 	// directional light = 1
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.LightDirection", ViewMatrix * glm::vec4(glm::vec3(-3.0f, -3.0f, -3.0f),1.0f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.DiffSpecIntensity", glm::vec3(0.1f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.AmbientIntensity", glm::vec3(0.01f));
+	/*ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.LightDirection", glm::normalize(ViewMatrix * glm::vec4(glm::vec3(1.0f, 0.0f, 0.0f), 0.0f)));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.DiffSpecIntensity", glm::vec3(0.5f));*/
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("dirLight.AmbientIntensity", glm::vec3(0.5f));
 
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
 		glm::vec3 Positon = ViewMatrix * glm::vec4(lightPositions[i], 1.0f);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", Positon);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].DiffSpecIntensity", glm::vec3(0.02f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].AmbientIntensity", glm::vec3(0.01f));
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].DiffSpecIntensity", glm::vec3(0.2f));
+		//ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].AmbientIntensity", glm::vec3(0.2f));
 	}
 
 	//Solo hay 1
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Position", ViewMatrix * glm::vec4(glm::vec3(0.0f, 10.0f, 0.0f), 1.0f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Direction", ViewMatrix * glm::vec4(glm::vec3(0.0f, -2.0f, 0.0f), 1.0f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Direction", glm::normalize(ViewMatrix * glm::vec4(glm::vec3(0.0f, -1.0f, 0.0f), 0.0f)));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.DiffSpecIntensity", glm::vec3(0.02f));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.AmbientIntensity", glm::vec3(0.01f));
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.AmbientIntensity", glm::vec3(0.01f));
 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Exponent", 50.0f);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Cutoff", glm::radians(15.0f));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Exponent", 98.0f);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("SpotLight.Cutoff", glm::radians(180.0f));
 
 	// Shadowmap code
 	/*glActiveTexture(GL_TEXTURE0);

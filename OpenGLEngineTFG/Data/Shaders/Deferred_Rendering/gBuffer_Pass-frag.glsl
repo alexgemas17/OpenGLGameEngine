@@ -21,7 +21,12 @@ void main()
     gPosition = FragPos;
 
     // Calcula la nueva normal modificada usando la textura de normales (Bump mapping)
-    gNormal = ( hasNormalTexture ) ? CalcBumpedNormal() : VertexNormal;
+    if(hasNormalTexture){
+        gNormal = CalcBumpedNormal();
+    }else{
+        gNormal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
+    }
+    //gNormal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
 
     // Guardamos la textura del objeto
     gAlbedo.rgb = texture(Albedo_texture, TexCoords).rgb;

@@ -21,13 +21,13 @@ void main()
 
     TexCoords = vTexCoords;
 
-    mat3 NormalMatrix = mat3(transpose(inverse(ModelViewMatrix)));
+    //mat3 NormalMatrix = mat3(transpose(inverse(ModelViewMatrix)));
 
-    //VertexNormal = vec3( ModelViewMatrix * vec4(vNormal,0.0) );
-    VertexNormal = normalize( NormalMatrix * vNormal );
+    VertexNormal = vec3( ModelViewMatrix * vec4(vNormal,0.0) );
+    //VertexNormal = normalize( NormalMatrix * vNormal );
 
-    //VertexTangent = vec3( ModelViewMatrix * vec4(vTangent, 0.0) );
-    VertexTangent = normalize( NormalMatrix * vTangent );
+    VertexTangent = vec3( ModelViewMatrix * vec4(vTangent, 0.0) );
+    //VertexTangent = normalize( NormalMatrix * vTangent );
 
     gl_Position = MVP * vec4(vPosition, 1.0);
 }
