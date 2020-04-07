@@ -5,6 +5,7 @@
 
 #include "il.h"
 #include "ilu.h"
+#include "ilut.h"
 
 #include "../Loaders/lodepng.h"
 #include "../Application.h"
@@ -14,6 +15,9 @@ TextureManager::TextureManager()
 {
 	ilInit();
 	iluInit();
+	ilutInit();
+
+	ilutRenderer(ILUT_OPENGL);
 }
 
 unsigned int TextureManager::getIDTexture(std::string urlImage)
@@ -93,36 +97,44 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 	stbi_image_free(data);
 }
 
-void TextureManager::InitTexturaDevil(TextureInfo& textInf) {
-	
-	ILuint ImgId = 0;
-	ilGenImages(1, &ImgId);
-	ilBindImage(ImgId);
-
-	// Cargamos la imagen
-	ilLoadImage(textInf.urlImg.c_str());
-
-	ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-	//Generamos la texturaID
+void TextureManager::InitTexturaDevil(TextureInfo& textInf)
+{
 	unsigned int idTexture = 0;
-	glGenTextures(1, &idTexture);
-	textInf.IDTexture = idTexture;
-	glBindTexture(GL_TEXTURE_2D, idTexture);
+	ILuint dTexId = 0;
+	ilGenImages(1, &dTexId);
+	ilBindImage(dTexId);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, GL_RGBA, GL_UNSIGNED_BYTE, ilGetData());
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (ilLoadImage(textInf.urlImg.c_str())) {
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		if (ilConvertImage(ilGetInteger(IL_IMAGE_FORMAT), IL_UNSIGNED_BYTE)) {
+			glGenTextures(1, &idTexture);
+			textInf.IDTexture = idTexture;
+			glBindTexture(GL_TEXTURE_2D, idTexture);
 
-	this->hashmap_IDTexture.insert(make_pair(textInf.urlImg, textInf.IDTexture));
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	std::cout << textInf.urlImg << " be loaded successfully" << std::endl;
+			GLuint* pixels = (GLuint*) ilGetData();
+			GLuint width = (GLuint) ilGetInteger(IL_IMAGE_WIDTH);
+			GLuint height = (GLuint) ilGetInteger(IL_IMAGE_HEIGHT);
 
-	//Liberamos espacio
-	ilBindImage(0);
-	ilDeleteImage(ImgId);
+			// Bind DevIL texture to OpenGL texture...
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			this->hashmap_IDTexture.insert(make_pair(textInf.urlImg, textInf.IDTexture));
+
+			std::cout << textInf.urlImg << " be loaded successfully" << std::endl;
+		}
+		else {
+			std::cout << textInf.urlImg << " cannot be converted to unsigned byte" << std::endl;
+		}
+	}
+	else {
+		std::cout << textInf.urlImg << " cannot be loaded" << std::endl;
+	}
+
+	ilDeleteImages(1, &dTexId);
 }

@@ -16,7 +16,8 @@ uniform sampler2D texture_albedo;
 uniform sampler2D texture_normal;
 uniform sampler2D texture_metallic;
 uniform sampler2D texture_roughness;
-uniform sampler2D texture_ao;
+uniform sampler2D texture_ao; 
+uniform sampler2D texture_AO_Met_Rough;
 
 //Functions
 vec3 CalcBumpedNormal();
@@ -26,9 +27,13 @@ void main()
     // Extraemos información de las texturas
     vec3 albedo = texture(texture_albedo, TexCoords).rgb;
     vec3 normal = texture(texture_normal, TexCoords).rgb;
-    float metallic = texture(texture_metallic, TexCoords).r;
-	float roughness = max(texture(texture_roughness, TexCoords).r, 0.04);
-	float ao = texture(texture_ao, TexCoords).r;
+    float metallic11 = texture(texture_metallic, TexCoords).r;
+	float roughness11 = max(texture(texture_roughness, TexCoords).r, 0.04);
+	float ao11 = texture(texture_ao, TexCoords).r;
+
+    float ao = texture(texture_AO_Met_Rough, TexCoords).r;
+    float roughness = max(texture(texture_AO_Met_Rough, TexCoords).g, 0.04);
+    float metallic = texture(texture_AO_Met_Rough, TexCoords).b;
 
     // Comprobamos si se realiza el bump mapping o no.
     if(hasNormalTexture){

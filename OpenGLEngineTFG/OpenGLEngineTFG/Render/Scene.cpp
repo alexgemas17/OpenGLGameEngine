@@ -66,14 +66,14 @@ void Scene::LoadObjs()
 	}
 
 	//Data from floor
-	Plane* floor = new Plane(Narrow1, 20.0f);
+	/*Plane* floor = new Plane(Narrow1, 20.0f);
 	SceneObj* obj = floor->getSceneObj();
 
 	NodoScene* nodo = new NodoScene();
 	nodo->Translate(0.0f, -2.0f, 0.0f);
 	nodo->addObj(obj);
 
-	nodoWorld->addNodo(nodo);
+	nodoWorld->addNodo(nodo);*/
 
 	delete loader;
 }
