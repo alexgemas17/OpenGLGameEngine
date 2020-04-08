@@ -11,7 +11,7 @@
 #include "../Application.h"
 #include <iostream>
 
-TextureManager::TextureManager()
+TextureManager::TextureManager(): indexTexLoaded(0)
 {
 	ilInit();
 	iluInit();
@@ -41,13 +41,21 @@ void TextureManager::addIDTexture(std::string urlImage)
 	}
 }
 
-void TextureManager::LoadTextures()
+bool TextureManager::LoadTextures()
 {
-	for (auto &textInf : this->textures)
-	{
-		//InitTextura(textInf);
-		InitTexturaDevil(textInf);
-	}
+	//for (auto &textInf : this->textures)
+	//{
+	//	//InitTextura(textInf);
+	//	InitTexturaDevil(textInf);
+	//}
+	
+	InitTexturaDevil(this->textures[indexTexLoaded]);
+
+	indexTexLoaded++;
+	if (indexTexLoaded >= textures.size())
+		return true;
+
+	return false;
 }
 
 // --------------------------- FUNCIONES PRIVADAS ----------------------------

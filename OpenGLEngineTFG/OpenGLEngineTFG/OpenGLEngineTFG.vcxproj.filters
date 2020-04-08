@@ -64,6 +64,12 @@
     <Filter Include="Archivos de origen\Gui">
       <UniqueIdentifier>{0fc6d47b-4e9d-44bc-901e-cb37dc5ea04d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\Render\Cubemap">
+      <UniqueIdentifier>{25461ffa-e278-413a-a176-d9887f8c41a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Render\Cubemap">
+      <UniqueIdentifier>{dcd90893-09e5-4e8c-b7d9-85e10c76c9b5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -140,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="BasicElement\Plane.cpp">
       <Filter>Archivos de origen\BasicElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Cubemap\CubeMap.cpp">
+      <Filter>Archivos de origen\Render\Cubemap</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +235,9 @@
     </ClInclude>
     <ClInclude Include="Render\SceneRenderer.h">
       <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Cubemap\CubeMap.h">
+      <Filter>Archivos de encabezado\Render\Cubemap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

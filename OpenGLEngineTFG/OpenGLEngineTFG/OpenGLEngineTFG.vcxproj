@@ -90,9 +90,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\lib\glfw-3.3.2.bin.WIN64\include\GLFW;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;..\lib\DevIL-1.8.0\include\IL;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>..\lib\glfw-3.3.2.bin.WIN64\lib-vc2019;..\lib\glew-2.1.0\lib\Release\x64;..\lib\assimp-5.0.0\lib\Release\Win32;..\lib\DevIL-1.8.0\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc141-mt.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,11 +124,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>..\lib\glfw-3.3.2.bin.WIN64\include\GLFW;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;..\lib\DevIL-1.8.0\include\IL;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\lib\glfw-3.3.2.bin.WIN64\lib-vc2019;..\lib\glew-2.1.0\lib\Release\x64;..\lib\assimp-5.0.0\lib\Release\Win32;..\lib\DevIL-1.8.0\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;glew32.lib;glfw3.lib;assimp-vc141-mt.lib;DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -148,6 +154,7 @@
     <ClCompile Include="Managers\ShaderManager.cpp" />
     <ClCompile Include="Managers\TextureManager.cpp" />
     <ClCompile Include="PagShaderProgram.cpp" />
+    <ClCompile Include="Render\Cubemap\CubeMap.cpp" />
     <ClCompile Include="Render\Model.cpp" />
     <ClCompile Include="Render\NodoScene.cpp" />
     <ClCompile Include="Render\Render.cpp" />
@@ -178,6 +185,7 @@
     <ClInclude Include="Managers\ShaderManager.h" />
     <ClInclude Include="Managers\TextureManager.h" />
     <ClInclude Include="PagShaderProgram.h" />
+    <ClInclude Include="Render\Cubemap\CubeMap.h" />
     <ClInclude Include="Render\Model.h" />
     <ClInclude Include="Render\NodoScene.h" />
     <ClInclude Include="Render\Render.h" />

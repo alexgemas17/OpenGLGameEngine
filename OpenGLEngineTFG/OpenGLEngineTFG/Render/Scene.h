@@ -8,6 +8,7 @@
 #include "../Camara/Camara.h"
 #include "SceneObj.h"
 #include "NodoScene.h"
+#include "Cubemap/CubeMap.h"
 
 #include "../BasicElement/Cube.h"
 
@@ -47,6 +48,8 @@ private:
 	NodoScene* nodoLight;
 	glm::vec3 lightPosition;
 
+	CubeMap* skybox;
+
 	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 	unsigned int shadowMap, DepthShadowMap;
 	unsigned int gBuffer, DepthGBuffer;
@@ -72,6 +75,7 @@ private:
 	void shadowMapPass();
 	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
 	void deferredLightPass();
+	void forwardPass(glm::mat4 mView, glm::mat4 mProj);
 	void postProcessEffectsPass();
 };
 

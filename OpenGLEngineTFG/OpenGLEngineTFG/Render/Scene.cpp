@@ -36,6 +36,8 @@ void Scene::InitScene()
 
 	this->nodoWorld->InitObjs();
 	//this->nodoLight->InitObjs();
+
+	skybox = new CubeMap(Type1);
 }
 
 void Scene::LoadObjs()
@@ -443,7 +445,7 @@ void Scene::deferredLightPass()
 	}
 
 	//Spot Light 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Position", glm::vec3(ViewMatrix * glm::vec4(glm::vec3(0.0, 5.0, 0.0), 1.0f)));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Position", glm::vec3(ViewMatrix * glm::vec4(glm::vec3(0.0, 10.0, 10.0), 1.0f)));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.LightDirection", glm::normalize(glm::vec3(ViewMatrix * glm::vec4(glm::vec3(0.0f, -1.0f, 0.0f), 1.0f))));
 
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Intensity", 100.0f);
@@ -475,6 +477,20 @@ void Scene::deferredLightPass()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
+{
+	//for (int i = 0; i < NR_LIGHTS; i++) {
+	//this->nodoLight->DrawObjs(mView, mViewProjection);
+	//}
+
+	glDepthFunc(GL_LEQUAL);
+	ShaderManager::getInstance()->getSkyBox()->use();
+	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewMatrix", mView);
+	ShaderManager::getInstance()->getSkyBox()->setUniform("ProjMatrix", mProj);
+	skybox->Draw();
+	glDepthFunc(GL_LESS); // set depth function back to default
+}
+
 void Scene::postProcessEffectsPass()
 {
 	//Gamma Correction!!
@@ -496,6 +512,7 @@ void Scene::DrawObjs()
 
 	//Datos necesarios
 	glm::mat4 mView = camara->getView();
+	glm::mat4 mProj = camara->getProjection();
 	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
 
 	// 1. Shadow map
@@ -512,9 +529,8 @@ void Scene::DrawObjs()
 	
 	// 4. Forward rendering
 	// ----------------------------------------------------------------------------------
-	//for (int i = 0; i < NR_LIGHTS; i++) {
-		//this->nodoLight->DrawObjs(mView, mViewProjection);
-	//}
+	forwardPass(mView, mProj);
+
 
 	// 5. Forward rendering
 	// ----------------------------------------------------------------------------------

@@ -21,6 +21,8 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
+float FloatAleatorio(float a, float b);
+
 int main() {
 
 	//  -------------------- Iniciamos GLFW -------------------- 
@@ -74,8 +76,21 @@ int main() {
 	std::cout << "Inicializando la escena..." << std::endl;
 	Application::getInstance()->InitMainScene();
 
-	std::cout << "Inicializando las texturas..." << std::endl;
-	Application::getInstance()->InitTextures();
+	std::cout << "Inicializando las texturas..." << std::endl;	
+	//Bucle de carga
+	bool isAllTextureLoaded = false;
+	while (!glfwWindowShouldClose(window) && !isAllTextureLoaded) {
+		float R = FloatAleatorio(0.1f, 1.0f);
+		float G = FloatAleatorio(0.1f, 1.0f);
+		float B = FloatAleatorio(0.1f, 1.0f);
+		glClearColor(R, G, B, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		isAllTextureLoaded = Application::getInstance()->getTextureManager()->LoadTextures();
+
+		glfwSwapBuffers(window);
+		//glfwPollEvents();
+	}
 
 	std::cout << "Inicializando la GUI..." << std::endl;
 	Application::getInstance()->InitGUI();
@@ -95,6 +110,13 @@ int main() {
 }
 
 // --------------------------- FUNCIONES ----------------------------
+float FloatAleatorio(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
 void showFPSCounter(int &nbFrames, double &lastTime)
 {
 	// ----------------------------- FPS ----------------------

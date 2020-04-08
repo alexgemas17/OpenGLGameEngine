@@ -18,6 +18,7 @@ public:
 	PagShaderProgram* getGBuffer();
 	PagShaderProgram* getDeferredShading();
 	PagShaderProgram* getShadowMap();
+	PagShaderProgram* getSkyBox();
 	PagShaderProgram* getCopyDataPass();
 
 	static ShaderManager* getInstance();
@@ -36,6 +37,9 @@ private:
 
 	/* SHADOW MAP */
 	PagShaderProgram* shadowMap;
+
+	/* SkyBox */
+	PagShaderProgram* skybox;
 
 	/* POSTPROCESS EFFECTS*/
 	PagShaderProgram* copyDataPass;

@@ -19,6 +19,7 @@ ShaderManager::ShaderManager():
 	deferredLightingPass(new PagShaderProgram()),
 	shadowMap(new PagShaderProgram()),
 	copyDataPass(new PagShaderProgram()),
+	skybox(new PagShaderProgram()),
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
@@ -29,6 +30,8 @@ ShaderManager::ShaderManager():
 
 	std::string urlshadowMap = ShaderPath+ "Shadow\\shadpwmap";
 
+	std::string urlskybox = ShaderPath+ "Skybox\\skybox";
+
 	std::string urlCopy = ShaderPath + "Postprocessefects\\Copy";
 
 	//this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
@@ -37,6 +40,7 @@ ShaderManager::ShaderManager():
 	this->deferredLightingPass->createShaderProgram(urldeferredLightingPass.c_str() );
 
 	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
+	this->skybox->createShaderProgram(urlskybox.c_str());
 
 	this->copyDataPass->createShaderProgram(urlCopy.c_str());
 }
@@ -75,6 +79,11 @@ PagShaderProgram* ShaderManager::getDeferredShading()
 PagShaderProgram* ShaderManager::getBasicLightShader()
 {
 	return this->basicLightShader;
+}
+
+PagShaderProgram* ShaderManager::getSkyBox()
+{
+	return this->skybox;
 }
 
 void ShaderManager::setTypeRender()
