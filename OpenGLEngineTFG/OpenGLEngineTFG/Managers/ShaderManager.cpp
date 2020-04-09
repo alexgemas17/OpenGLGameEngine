@@ -20,6 +20,8 @@ ShaderManager::ShaderManager():
 	shadowMap(new PagShaderProgram()),
 	copyDataPass(new PagShaderProgram()),
 	skybox(new PagShaderProgram()),
+	ssao(new PagShaderProgram()),
+	ssao_blur(new PagShaderProgram()),
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
@@ -32,6 +34,9 @@ ShaderManager::ShaderManager():
 
 	std::string urlskybox = ShaderPath+ "Skybox\\skybox";
 
+	std::string urlssao = ShaderPath+ "Postprocessefects\\SSAO\\ssao";
+	std::string urlssao_blur = ShaderPath+ "Postprocessefects\\SSAO\\ssao_blur";
+
 	std::string urlCopy = ShaderPath + "Postprocessefects\\Copy";
 
 	//this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
@@ -42,6 +47,9 @@ ShaderManager::ShaderManager():
 	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
 	this->skybox->createShaderProgram(urlskybox.c_str());
 
+	this->ssao->createShaderProgram(urlssao.c_str());
+	this->ssao_blur->createShaderProgram(urlssao_blur.c_str());
+
 	this->copyDataPass->createShaderProgram(urlCopy.c_str());
 }
 
@@ -50,6 +58,9 @@ ShaderManager::~ShaderManager()
 	delete basicLightShader;
 	delete gBufferPass;
 	delete shadowMap;
+	delete skybox;
+	delete ssao;
+	delete ssao_blur;
 	delete deferredLightingPass;
 	delete copyDataPass;
 	delete instance;
@@ -70,6 +81,16 @@ PagShaderProgram* ShaderManager::getCopyDataPass()
 	return this->copyDataPass;
 }
 
+
+PagShaderProgram* ShaderManager::getSSAO()
+{
+	return this->ssao;
+}
+
+PagShaderProgram* ShaderManager::getSSAOBlur()
+{
+	return this->ssao_blur;
+}
 
 PagShaderProgram* ShaderManager::getDeferredShading()
 {

@@ -98,8 +98,9 @@ void Application::ExePath() {
 	GetModuleFileName(NULL, buffer, MAX_PATH);
 	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
 
-	//pos - 5 --> Para quitar Debug de la ruta.
-	this->url_Path = std::string(buffer).substr(0, pos - 5);
+	//pos - 9 --> Para eliminar de "x64\\Debug" de la ruta
+
+	this->url_Path = std::string(buffer).substr(0, pos - 9);
 }
 
 void Application::getInfoHardware()

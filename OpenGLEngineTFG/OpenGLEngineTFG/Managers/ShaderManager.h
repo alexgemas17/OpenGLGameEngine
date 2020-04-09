@@ -19,6 +19,8 @@ public:
 	PagShaderProgram* getDeferredShading();
 	PagShaderProgram* getShadowMap();
 	PagShaderProgram* getSkyBox();
+	PagShaderProgram* getSSAO();
+	PagShaderProgram* getSSAOBlur();
 	PagShaderProgram* getCopyDataPass();
 
 	static ShaderManager* getInstance();
@@ -40,6 +42,10 @@ private:
 
 	/* SkyBox */
 	PagShaderProgram* skybox;
+
+	/* SSAO */
+	PagShaderProgram* ssao;
+	PagShaderProgram* ssao_blur;
 
 	/* POSTPROCESS EFFECTS*/
 	PagShaderProgram* copyDataPass;

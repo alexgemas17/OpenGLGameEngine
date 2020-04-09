@@ -52,6 +52,7 @@ private:
 
 	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 	unsigned int shadowMap, DepthShadowMap;
+	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;;
 	unsigned int gBuffer, DepthGBuffer;
 	unsigned int lightBuffer;
 
@@ -62,17 +63,24 @@ private:
 	/* Shadow map data*/
 	glm::mat4 lightSpaceMatrix;
 
+	/* SSAO and BLUR dada*/
+	unsigned int noiseTexture;
+	std::vector<glm::vec3> ssaoKernel; 
+	std::vector<glm::vec3> ssaoNoise;
+
 	// -------- PRIVATE FUNC ------------
 	void LoadObjs();	// Carga desde el objs.txt los objetos que tiene la escena
 	void InitLights();	// Crea luces puntuales aleatoriamente (hardcode: spot y direccional)
 
 	// Inits de los buffers correspondientes.
 	void InitShadowMapBuffer();
+	void InitSSAOBuffer();
 	void InitGBuffer();
 	void InitDeferredLightBuffer();
 
 	// Pasadas de las luces.
 	void shadowMapPass();
+	void ssaoPass(glm::mat4& mProj);
 	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
 	void deferredLightPass();
 	void forwardPass(glm::mat4 mView, glm::mat4 mProj);
