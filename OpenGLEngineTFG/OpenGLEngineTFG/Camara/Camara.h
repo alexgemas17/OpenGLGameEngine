@@ -6,6 +6,7 @@
 
 #include <glm.hpp>
 #include "../Input/InputManager.h"
+#include "../BasicElement/CPlane.h"
 
 class Camara
 {
@@ -29,6 +30,16 @@ public:
 
 	glm::mat4 getNewLookAt(glm::vec3 Position, glm::vec3 Direction, glm::vec3 UP);
 
+	void CalcFrustumPlanes();
+	bool IsPointInFrustum(glm::vec3 point);
+	bool IsSphereInFrustum(glm::vec3 center, float radius);
+	bool IsBoxInFrustum(glm::vec3 min, glm::vec3 max);
+
+	//frustum points
+	std::vector< glm::vec3> farPts;
+	std::vector< glm::vec3> nearPts;
+
+	std::vector<glm::vec4> GetFrustumPlanes();
 
 private:
 	// Matrices para el render
@@ -41,6 +52,9 @@ private:
 	glm::vec3 u;				// Vector derecha
 	glm::vec3 v;				// Vector arriba
 
+	//Frsutum planes
+	std::vector< CPlane*> frustumPlanes;
+
 	//Datos de la cámara (Posición, a donde mira y vector de arriba)
 	glm::vec3 vecPositionCamera;
 	glm::vec3 vecLookAt;
@@ -51,6 +65,7 @@ private:
 	float yaw;
 	float pitch;
 
+	float aspectRatio;
 	float fov;
 	float zNear;
 	float zFar;
@@ -59,7 +74,6 @@ private:
 	bool primerMovRaton;
 	float lastX;
 	float lastY;
-
 
 	/* Funciones privadas */
 	void updateCamaraData();

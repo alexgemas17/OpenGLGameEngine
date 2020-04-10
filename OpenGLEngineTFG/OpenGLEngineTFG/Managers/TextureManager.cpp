@@ -129,7 +129,7 @@ void TextureManager::InitTexturaDevil(TextureInfo& textInf)
 			GLuint height = (GLuint) ilGetInteger(IL_IMAGE_HEIGHT);
 
 			// Bind DevIL texture to OpenGL texture...
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+			glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_FORMAT), width, height, 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, pixels);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			this->hashmap_IDTexture.insert(make_pair(textInf.urlImg, textInf.IDTexture));

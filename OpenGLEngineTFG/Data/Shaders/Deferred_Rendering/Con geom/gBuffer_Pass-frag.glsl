@@ -5,10 +5,10 @@ layout (location = 1) out vec3 gNormal;         // Almacena la normal (Bump mapp
 layout (location = 2) out vec4 gAlbedo;         // Almacena la información de la textura.
 layout (location = 3) out vec4 gMaterialInfo;   // Almacena la info PBR: R:metallic, G:roughness, B:ao
 
-in vec3 FragPos;
-in vec2 TexCoords;
-in vec3 VertexNormal;
-in mat3 TBN;
+in vec3 GFragPos;
+in vec2 GTexCoords;
+in vec3 GVertexNormal;
+in mat3 GTBN;
 
 uniform bool hasNormalTexture;
 
@@ -25,11 +25,11 @@ vec3 CalcBumpedNormal();
 void main()
 {    
     // Extraemos información de las texturas
-    vec3 albedo = texture(texture_albedo, TexCoords).rgb;
-    vec3 normal = texture(texture_normal, TexCoords).rgb;
-    float metallic = texture(texture_metallic, TexCoords).r;
-	float roughness = max(texture(texture_roughness, TexCoords).r, 0.04);
-	float ao = texture(texture_ao, TexCoords).r;
+    vec3 albedo = texture(texture_albedo, GTexCoords).rgb;
+    vec3 normal = texture(texture_normal, GTexCoords).rgb;
+    float metallic = texture(texture_metallic, GTexCoords).r;
+	float roughness = max(texture(texture_roughness, GTexCoords).r, 0.04);
+	float ao = texture(texture_ao, GTexCoords).r;
 
     //float ao = texture(texture_AO_Met_Rough, GTexCoords).r;
     //float roughness = max(texture(texture_AO_Met_Rough, GTexCoords).g, 0.04);
@@ -37,13 +37,13 @@ void main()
 
     // Comprobamos si se realiza el bump mapping o no.
     if(hasNormalTexture){
-        normal = normalize(TBN *  normalize(normal * 2.0 - 1.0));
+        normal = normalize(GTBN *  normalize(normal * 2.0 - 1.0));
     }else{
-        normal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
+        normal = (gl_FrontFacing) ? normalize(GVertexNormal) : normalize(-GVertexNormal);
     }
 
     // Guardamos la información en el buffer
-    gPosition = FragPos;
+    gPosition = GFragPos;
     gAlbedo.rgb = albedo;
     gNormal = normal;
     gMaterialInfo = vec4(metallic, roughness, ao, 1.0);

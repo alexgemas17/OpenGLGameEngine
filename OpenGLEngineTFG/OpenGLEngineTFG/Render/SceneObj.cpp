@@ -52,14 +52,20 @@ void SceneObj::UpdateObj(float deltaTime)
 
 void SceneObj::DrawObjShadowMap(glm::mat4& _modelMatrix)
 {
+	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
+	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
+	glm::mat4 ModelViewMatrix = ViewMatrix * _modelMatrix;
+
 	ShaderManager::getInstance()->getShadowMap()->use();
-	ShaderManager::getInstance()->getShadowMap()->setUniform("ModelMatrix", _modelMatrix);
+	//ShaderManager::getInstance()->getShadowMap()->setUniform("ModelMatrix", _modelMatrix);
+	ShaderManager::getInstance()->getShadowMap()->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 
 	this->Draw();
 }
 
 void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 {
+
 
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
@@ -68,7 +74,8 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	/*glm::mat3 NormalMatrix = glm::mat3(
 		glm::vec3(ModelViewMatrix[0]),
 		glm::vec3(ModelViewMatrix[1]),
-		glm::vec3(ModelViewMatrix[2]));*/
+		glm::vec3(ModelViewMatrix[2]));
+	*/
 
 	shader->use();
 
@@ -80,7 +87,13 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
 	//shader->setUniform("NormalMatrix", NormalMatrix);
 	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
-	
+
+	/*std::vector<glm::vec4> _frustumPlanes = Application::getInstance()->getMainScene()->camara->GetFrustumPlanes();
+	for (int i = 0; i < _frustumPlanes.size(); i++) {
+		glm::vec4 plane = _frustumPlanes[i];
+		ShaderManager::getInstance()->getGBuffer()->setUniform("planes[" + std::to_string(i) + "].Plane", plane);
+	}*/
+
 	this->Draw();
 }
 

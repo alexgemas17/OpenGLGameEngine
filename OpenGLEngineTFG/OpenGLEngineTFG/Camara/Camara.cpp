@@ -11,7 +11,7 @@
 Camara::Camara(float fov, int width, int height, float zNear, float zFar): 
 	mView(glm::mat4(1.0f)), fov(fov), zNear(zNear), zFar(zFar), primerMovRaton(true),
 	u(glm::vec3(0.0f, 0.0f, -1.0f)), sensibilidad(0.2f), velocidadCamara(15.0f),
-	yaw(-90.0f), pitch(0.0f)
+	yaw(-90.0f), pitch(0.0f), aspectRatio(float(width) / float(height))
 {
 
 	//Datos para el ratón
@@ -19,7 +19,7 @@ Camara::Camara(float fov, int width, int height, float zNear, float zFar):
 	this->lastY = 300;
 
 	//Matriz de proyección
-	this->mProjection = glm::perspective( glm::radians(fov), float(width) / float(height), zNear, zFar);
+	this->mProjection = glm::perspective( glm::radians(fov), aspectRatio, zNear, zFar);
 
 	// Parsear desde Data/Config??
 	this->vecPositionCamera = glm::vec3(0.0f, 0.0f, 2.0f);
@@ -98,6 +98,8 @@ void Camara::updateCamaraData()
 
 	this->mView = glm::lookAt(vecPositionCamera, vecPositionCamera + n, v);
 	this->mVP = this->mProjection * this->mView;
+
+	CalcFrustumPlanes();
 }
 
 glm::mat4 Camara::getNewLookAt(glm::vec3 Position, glm::vec3 Direction, glm::vec3 UP) {
@@ -178,4 +180,99 @@ glm::mat4 Camara::getProjection() const
 glm::mat4 Camara::getMatrixViewProjection() const 
 {
 	return this->mVP;
+}
+
+/* ------------------------- FUNCIONES RELACIONADAS CON EL FRUSTUM CULLING ------------------------ */
+void Camara::CalcFrustumPlanes() 
+{
+	frustumPlanes.clear();
+	farPts.clear();
+	nearPts.clear();
+
+	glm::vec3 cN = vecPositionCamera + vecLookAt * zNear;
+	glm::vec3 cF = vecPositionCamera + vecLookAt * zFar;
+
+	float Hnear = 2.0f * tan(fov / 2.0f) * zNear;
+	float Wnear = Hnear * aspectRatio;
+	float Hfar = 2.0f * tan(fov / 2.0f) * zFar;
+	float Wfar = Hfar * aspectRatio;
+	float hHnear = Hnear / 2.0f;
+	float hWnear = Wnear / 2.0f;
+	float hHfar = Hfar / 2.0f;
+	float hWfar = Wfar / 2.0f;
+
+
+	farPts.push_back(cF + v * hHfar - u * hWfar);
+	farPts.push_back(cF - v * hHfar - u * hWfar);
+	farPts.push_back(cF - v * hHfar + u * hWfar);
+	farPts.push_back(cF + v * hHfar + u * hWfar);
+
+	nearPts.push_back(cN + v * hHnear - u * hWnear);
+	nearPts.push_back(cN - v * hHnear - u * hWnear);
+	nearPts.push_back(cN - v * hHnear + u * hWnear);
+	nearPts.push_back(cN + v * hHnear + u * hWnear);
+
+	frustumPlanes.push_back(new CPlane(nearPts[3], nearPts[0], farPts[0]));
+	frustumPlanes.push_back(new CPlane(nearPts[1], nearPts[2], farPts[2]));
+	frustumPlanes.push_back(new CPlane(nearPts[0], nearPts[1], farPts[1]));
+	frustumPlanes.push_back(new CPlane(nearPts[2], nearPts[3], farPts[2]));
+	frustumPlanes.push_back(new CPlane(nearPts[0], nearPts[3], nearPts[2]));
+	frustumPlanes.push_back(new CPlane(farPts[3], farPts[0], farPts[1]));
+}
+
+bool Camara::IsPointInFrustum(glm::vec3 point) 
+{
+	for (int i = 0; i < 6; i++)
+	{
+		if (frustumPlanes[i]->GetDistance(point) < 0)
+			return false;
+	}
+	return true;
+}
+
+bool Camara::IsSphereInFrustum(glm::vec3 center, float radius) 
+{
+	for (int i = 0; i < 6; i++)
+	{
+		float d = frustumPlanes[i]->GetDistance(center);
+		if (d < -radius)
+			return false;
+	}
+	return true;
+}
+
+
+bool Camara::IsBoxInFrustum(glm::vec3 min, glm::vec3 max) 
+{
+	for (int i = 0; i < 6; i++)
+	{
+		glm::vec3 p = min, n = max;
+		glm::vec3 N = frustumPlanes[i]->N;
+		if (N.x >= 0) {
+			p.x = max.x;
+			n.x = min.x;
+		}
+		if (N.y >= 0) {
+			p.y = max.y;
+			n.y = min.y;
+		}
+		if (N.z >= 0) {
+			p.z = max.z;
+			n.z = min.z;
+		}
+
+		if (frustumPlanes[i]->GetDistance(p) < 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+std::vector<glm::vec4> Camara::GetFrustumPlanes()
+{
+	std::vector<glm::vec4> result;
+	for (int i = 0; i < 6; i++)
+		result.push_back(glm::vec4(frustumPlanes[i]->N, frustumPlanes[i]->d));
+
+	return result;
 }

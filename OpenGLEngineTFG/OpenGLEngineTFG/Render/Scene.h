@@ -42,6 +42,10 @@ public:
 
 	NodoScene* getNodesScene() { return this->nodoWorld; }
 
+
+	/* Shadow map data*/
+	glm::mat4 lightSpaceMatrix;
+
 private:
 	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
 	NodoScene* nodoWorld; 
@@ -60,8 +64,6 @@ private:
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
 
-	/* Shadow map data*/
-	glm::mat4 lightSpaceMatrix;
 
 	/* SSAO and BLUR dada*/
 	unsigned int noiseTexture;

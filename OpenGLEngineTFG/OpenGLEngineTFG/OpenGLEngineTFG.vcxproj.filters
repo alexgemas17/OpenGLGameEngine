@@ -150,6 +150,9 @@
     <ClCompile Include="Render\Cubemap\CubeMap.cpp">
       <Filter>Archivos de origen\Render\Cubemap</Filter>
     </ClCompile>
+    <ClCompile Include="BasicElement\CPlane.cpp">
+      <Filter>Archivos de origen\BasicElement</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interface\ISceneClass.h">
@@ -238,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="Render\Cubemap\CubeMap.h">
       <Filter>Archivos de encabezado\Render\Cubemap</Filter>
+    </ClInclude>
+    <ClInclude Include="BasicElement\CPlane.h">
+      <Filter>Archivos de encabezado\BasicElement</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -19,16 +19,26 @@ public:
 	// cuyo nombre sea [filename]-vert.glsl y otro cuyo nombre sea [filename]-frag.glsl
 	// y con ellos crea el shader program.
 	GLuint createShaderProgram(const char *filename);
+
+	// - Crea un shader program a partir del código fuente que se pasa en
+	// los archivos cuyo nombre genérico se pasa en el argumento filename.
+	// Este método, busca entre los recursos de la aplicación un archivo
+	// cuyo nombre sea [filename]-vert.glsl, otro cuyo nombre sea [filename]-frag.glsl
+	// y otro cuyo nombre sea [filename]-geom.glsl para, con ellos, crear el shader program.
+	GLuint createShaderProgramWithGeometryShader(const char* filename);
+
 	// - Activa el shader program. A partir de ese momento y hasta que no se
 	// active un shader program distinto, las órdenes de dibujo se
 	// procesarán siguiendo las instrucciones de este programa.
 	bool use();
+
 	// - Los siguientes métodos están sobrecargados. Permiten asignar
 	// parámetros de tipo uniform al shader.
 	bool setUniform(std::string name, GLfloat value);
 	bool setUniform(std::string name, GLint value);
 	bool setUniform(std::string name, glm::mat4 value);
 	bool setUniform(std::string name, glm::vec3 value);
+	bool setUniform(std::string name, glm::vec4 value);
 
 	void setSubroutine(const GLchar *nameSubroutine);
 private:

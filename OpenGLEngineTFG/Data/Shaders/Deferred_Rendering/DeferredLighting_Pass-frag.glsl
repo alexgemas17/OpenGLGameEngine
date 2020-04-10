@@ -40,7 +40,7 @@ uniform sampler2D gNormal;          // Almacena la normal (Bump mapping o defaul
 uniform sampler2D gAlbedo;          // Almacena la información de la textura.
 uniform sampler2D gMaterialInfo;    // Almacena la info PBR: R:metallic, G:roughness, B:ao
 //uniform sampler2D ssaoTexture;
-uniform sampler2D ShadowMap;
+uniform sampler2D shadowMap;
 
 // Información sobre las luces
 const int NR_POINT_LIGHTS_MAX = 32;
@@ -53,7 +53,9 @@ uniform PointLight pointLights[NR_POINT_LIGHTS_MAX];
 uniform SpotLight spotLight;
 
 uniform vec3 viewPosition;
-uniform mat4 lightSpaceMatrix;    //Para los calculos de sombras
+//uniform mat4 lightSpaceMatrix;    //Para los calculos de sombras
+uniform float shadowMin;
+uniform mat4 mShadowMatrix;
 
 // Funciones que encapsulan las ecucaciones de las luces
 vec3 CalculateDirectionalLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity);
@@ -68,6 +70,7 @@ vec3 FresnelSchlick(float cosTheta, vec3 baseReflectivity);
 
 // Shadows
 float CalculateShadow(vec3 fragPos, vec3 normal, vec3 fragToLight);
+float shadowFactor(vec3 fragPos);
 
 void main()
 {
@@ -134,7 +137,15 @@ vec3 CalculateDirectionalLight(vec3 fragPos, vec3 normal, vec3 albedo, float met
 
     // Add the light's radiance to the irradiance sum
     //return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
-    return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
+    //return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
+    float shadowFact = shadowFactor(fragPos);
+    float shadowMul4Specular;
+    if (shadowFact < (1.0-0.000001)) {
+        shadowMul4Specular = 0.0;
+    } else {
+        shadowMul4Specular = 1.0;
+    }
+    return (diffuse + (specular * shadowMul4Specular )) * radiance * max(dot(normal, lightDir), 0.0) * shadowFact;
 }
 
 vec3 CalculatePointLight(PointLight pointLight, vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
@@ -169,7 +180,15 @@ vec3 CalculatePointLight(PointLight pointLight, vec3 fragPos, vec3 normal, vec3 
     vec3 diffuse = diffuseRatio * albedo / PI;
 
     // Add the light's radiance to the irradiance sum
-    return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
+    //return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
+    float shadowFact = shadowFactor(fragPos);
+    float shadowMul4Specular;
+    if (shadowFact < (1.0-0.000001)) {
+        shadowMul4Specular = 0.0;
+    } else {
+        shadowMul4Specular = 1.0;
+    }
+    return (diffuse + (specular * shadowMul4Specular )) * radiance * max(dot(normal, fragToLight), 0.0) * shadowFact;
 }
 
 vec3 CalculateSpotLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
@@ -209,7 +228,17 @@ vec3 CalculateSpotLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, 
     vec3 diffuse = diffuseRatio * albedo / PI;
 
     // Add the light's radiance to the irradiance sum
-    return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
+    //return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
+
+
+    float shadowFact = shadowFactor(fragPos);
+    float shadowMul4Specular;
+    if (shadowFact < (1.0-0.000001)) {
+        shadowMul4Specular = 0.0;
+    } else {
+        shadowMul4Specular = 1.0;
+    }
+    return (diffuse + (specular * shadowMul4Specular )) * radiance * max(dot(normal, fragToLight), 0.0) * shadowFact;
 }
 
 // ----------------------------------------- PBR -------------------------------
@@ -250,6 +279,7 @@ vec3 FresnelSchlick(float cosTheta, vec3 baseReflectivity) {
 }
 
 // ----------------------------------------- SHADOW -------------------------------
+/*
 float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
     vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
 
@@ -291,4 +321,29 @@ float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
         shadow = 0.0;
         
     return shadow;
+}*/
+
+float shadowFactor(vec3 fragPos) {
+    //float shadow = textureProj(ShadowMap, shadowCoord);
+    //float shadowFactor = clamp(shadow, shadowMin, 1.0);
+    //return shadowFactor;
+
+    vec4 shadowCoord = mShadowMatrix * vec4(fragPos, 1.0);
+
+    // perform perspective divide
+    vec3 projCoords = shadowCoord.xyz / shadowCoord.w;
+
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    float sum = 0;
+    sum += textureProjOffset(shadowMap, projCoords, ivec2(-1,-1)).r;
+    sum += textureProjOffset(shadowMap, projCoords, ivec2(-1,1)).r;
+    sum += textureProjOffset(shadowMap, projCoords, ivec2(1,1)).r;
+    sum += textureProjOffset(shadowMap, projCoords, ivec2(1,-1)).r;
+    sum += textureProjOffset(shadowMap, projCoords, ivec2(0,0)).r;
+
+    float shadowFactor = sum * (1.0/5.0);
+    shadowFactor = clamp(shadowFactor, shadowMin, 1.0);
+    return shadowFactor;
 }

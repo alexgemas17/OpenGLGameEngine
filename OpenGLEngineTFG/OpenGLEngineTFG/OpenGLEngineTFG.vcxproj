@@ -136,6 +136,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="BasicElement\CPlane.cpp" />
     <ClCompile Include="BasicElement\Cube.cpp" />
     <ClCompile Include="BasicElement\Plane.cpp" />
     <ClCompile Include="Camara\Camara.cpp" />
@@ -164,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="BasicElement\CPlane.h" />
     <ClInclude Include="BasicElement\Cube.h" />
     <ClInclude Include="BasicElement\Plane.h" />
     <ClInclude Include="Camara\Camara.h" />

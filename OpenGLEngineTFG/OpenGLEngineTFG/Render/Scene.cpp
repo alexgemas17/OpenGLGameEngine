@@ -69,14 +69,14 @@ void Scene::LoadObjs()
 	}
 
 	//Data from floor
-	/*Plane* floor = new Plane(Narrow1, 20.0f);
+	Plane* floor = new Plane(Narrow1, 20.0f);
 	SceneObj* obj = floor->getSceneObj();
 
 	NodoScene* nodo = new NodoScene();
-	nodo->Translate(0.0f, -2.0f, 0.0f);
+	nodo->Translate(0.0f, -1.5f, 0.0f);
 	nodo->addObj(obj);
 
-	nodoWorld->addNodo(nodo);*/
+	nodoWorld->addNodo(nodo);
 
 	delete loader;
 }
@@ -145,22 +145,27 @@ void Scene::InitShadowMapBuffer()
 	glGenTextures(1, &DepthShadowMap);
 	glBindTexture(GL_TEXTURE_2D, DepthShadowMap);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
 	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
+
+
 	// attach depth texture as FBO's depth buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DepthShadowMap, 0);
 
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
+	GLenum drawBuffers[] = { GL_NONE };
+	glDrawBuffers(1, drawBuffers);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -428,30 +433,43 @@ void Scene::shadowMapPass()
 	int SCR_WIDTH = Application::getInstance()->getWIDHT();
 	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
+	glm::mat4 shadowBias = glm::mat4(
+		glm::vec4(0.5f, 0.0f, 0.0f, 0.0f),
+		glm::vec4(0.0f, 0.5f, 0.0f, 0.0f),
+		glm::vec4(0.0f, 0.0f, 0.5f, 0.0f),
+		glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)
+	);
+
 	// 1. render depth of scene to texture (from light's perspective)
 		// --------------------------------------------------------------
 	glm::mat4 lightProjection, lightView;
 	float near_plane = 1.0f, far_plane = 7.5f;
 	lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
 	//lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-	glm::vec3 Position = glm::vec3(0.0f, 5.0f, 0.0f);
-	glm::vec3 Direction = glm::vec3(0.0f, -1.0f, 0.0f);
+	glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 Direction = glm::vec3(-1.0f, -1.0f, -1.0f);
 	glm::vec3 UP = glm::vec3(0.0, 1.0, 0.0);
 
 	//lightView = glm::lookAt(Position, Direction, UP);
 	this->camara->getNewLookAt(Position, Direction, UP);
-	lightSpaceMatrix = lightProjection * lightView;
+	lightSpaceMatrix = shadowBias * lightProjection * lightView;
 
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glEnable(GL_BLEND);
 
 	// render scene from light's point of view
-	ShaderManager::getInstance()->getShadowMap()->use();
-	ShaderManager::getInstance()->getShadowMap()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
+	//ShaderManager::getInstance()->getShadowMap()->use();
+	//ShaderManager::getInstance()->getShadowMap()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap);
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	this->nodoWorld->DrawObjsShadowMap();
+	glCullFace(GL_BACK);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// reset viewport
@@ -493,7 +511,7 @@ void Scene::ssaoPass(glm::mat4& mProj)
 
 void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 {
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -529,8 +547,12 @@ void Scene::deferredLightPass()
 
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, DepthShadowMap);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("ShadowMap", 4);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMap", 4);
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMin", 0.1f);
+
+	glm::mat4 mShadowMatrix = Application::getInstance()->getMainScene()->lightSpaceMatrix;
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("mShadowMatrix", mShadowMatrix);
 	
 	glm::mat4 ViewMatrix = this->camara->getView();
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPosition", this->camara->getPosition());
@@ -540,7 +562,7 @@ void Scene::deferredLightPass()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("NumPointLights", NR_POINT_LIGHTS);
 
 	// Directional Light 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightDirection", glm::normalize(glm::vec3(ViewMatrix * glm::vec4(glm::vec3(0.0f, -1.0f, 0.0f), 1.0f))));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightDirection", glm::normalize(glm::vec3(ViewMatrix * glm::vec4(glm::vec3(-1.0f, -1.0f, -1.0f), 1.0f))));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.Intensity", 2.0f);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightColour", glm::vec3(1.0f));
 
