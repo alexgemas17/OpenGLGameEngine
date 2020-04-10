@@ -71,6 +71,9 @@ public:
 	std::vector<std::string> getAlbedoTextures() { return this->AlbedoTextures; }
 	std::vector<std::string> getSpecularTextures() { return this->specularTextures; }
 	std::vector<std::string> getNormalMapTextures() { return this->normalMapTextures; }
+	std::string getMetallicTexture() { return this->MetallicTexture; }
+	std::string getRoughnessTexture() { return this->RoughnessTexture; }
+	std::string getAOTexture() { return this->AOTexture; }
 
 private:
 

@@ -41,10 +41,21 @@ Render::Render(
 	std::string RoughnessTexture,
 	std::string AOTexture
 ) :
-	typeRender(DeferredRendering), AlbedoTextures(AlbedoTextures), normalMapTextures(normalMapTextures), 
-	specularTextures(specularTextures), MetallicTexture(MetallicTexture),
-		RoughnessTexture(RoughnessTexture), AOTexture(AOTexture), dataObj(data)
-{}
+	typeRender(DeferredRendering), AlbedoTextures(AlbedoTextures), 
+	specularTextures(specularTextures), dataObj(data)
+{
+	if (normalMapTextures[0] != "")
+		this->normalMapTextures = normalMapTextures;
+
+	if (MetallicTexture != "")
+		this->MetallicTexture = MetallicTexture;
+
+	if (RoughnessTexture != "")
+		this->RoughnessTexture = RoughnessTexture;
+
+	if (AOTexture != "")
+		this->AOTexture = AOTexture;
+}
 
 Render::~Render()
 {

@@ -11,6 +11,9 @@ in vec3 VertexNormal;
 in mat3 TBN;
 
 uniform bool hasNormalTexture;
+uniform bool hasMetallicTexture;
+uniform bool hasRoughnessTexture;
+uniform bool hasAOTexture;
 
 uniform sampler2D texture_albedo;
 uniform sampler2D texture_normal;
@@ -27,10 +30,19 @@ void main()
     // Extraemos información de las texturas
     vec3 albedo = texture(texture_albedo, TexCoords).rgb;
     vec3 normal = texture(texture_normal, TexCoords).rgb;
-    float metallic = texture(texture_metallic, TexCoords).r;
-	float roughness = max(texture(texture_roughness, TexCoords).r, 0.04);
-	float ao = texture(texture_ao, TexCoords).r;
 
+    float metallic = 0.0f;
+    if(hasMetallicTexture)
+        metallic = texture(texture_metallic, TexCoords).r;
+
+    float roughness = 0.0f;
+    if(hasRoughnessTexture)
+        roughness = max(texture(texture_roughness, TexCoords).r, 0.04);
+
+    float ao = 0.0f;
+    if(hasAOTexture)
+        ao = texture(texture_ao, TexCoords).r;
+ 
     //float ao = texture(texture_AO_Met_Rough, GTexCoords).r;
     //float roughness = max(texture(texture_AO_Met_Rough, GTexCoords).g, 0.04);
     //float metallic = texture(texture_AO_Met_Rough, GTexCoords).b;

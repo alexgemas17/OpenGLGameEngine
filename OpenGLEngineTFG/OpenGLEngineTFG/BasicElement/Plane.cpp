@@ -76,29 +76,47 @@ Plane::Plane(TypeFloor type, float size)
 	std::string metallic;
 	std::string ao;
 	if (type == Grass1) {
-		albedoText = { path + Grass1_albedo };
-		specText = { path + Grass1_albedo };
-		normalText = { path + Grass1_normal };
-		roughess = path + Grass1_roughess;
-		metallic = path + Grass1_metallic;
-		ao = path + Grass1_AO;
+		albedoText = { Grass1_albedo };
+		specText = { Grass1_specular };
+		normalText = { Grass1_normal };
+		roughess = Grass1_roughess;
+		metallic = Grass1_metallic;
+		ao = Grass1_AO;
 	}
 	if (type == Stone1) {
-		albedoText = { path + Stone1_albedo };
-		specText = { path + Stone1_albedo };
-		normalText = { path + Stone1_normal };
-		roughess = path + Stone1_roughess;
-		metallic = path + Stone1_metallic;
-		ao = path + Stone1_AO;
+		albedoText = { Stone1_albedo };
+		specText = { Stone1_specular };
+		normalText = { Stone1_normal };
+		roughess = Stone1_roughess;
+		metallic = Stone1_metallic;
+		ao = Stone1_AO;
 	}
 	else {
-		albedoText = { path + Narrow1_albedo };
-		specText = { path + Narrow1_albedo };
-		normalText = { path + Narrow1_normal };
-		roughess = path + Narrow1_roughess;
-		metallic = path + Narrow1_metallic;
-		ao = path + Narrow1_AO;
+		albedoText = {  Narrow1_albedo };
+		specText = { Narrow1_specular };
+		normalText = { Narrow1_normal };
+		roughess = Narrow1_roughess;
+		metallic = Narrow1_metallic;
+		ao = Narrow1_AO;
 	}
+
+	albedoText[0] = path + albedoText[0];
+
+	if (specText[0] != "")
+		specText[0] = path + specText[0];
+
+	if (normalText[0] != "")
+		normalText[0] = path + normalText[0];
+	
+	if (roughess != "")
+		roughess = path + roughess;
+
+	if (metallic != "")
+		metallic = path + metallic;
+
+	if (ao != "")
+		ao = path + ao;
+
 
 	Application::getInstance()->getTextureManager()->addIDTexture(albedoText[0]);
 	Application::getInstance()->getTextureManager()->addIDTexture(normalText[0]);
@@ -110,9 +128,9 @@ Plane::Plane(TypeFloor type, float size)
 		data, 
 		albedoText,
 		specText, 
-		normalText, 
-		roughess,
+		normalText,
 		metallic,
+		roughess,
 		ao
 	);
 	this->obj->Scale(size, size, size);
