@@ -19,7 +19,7 @@ const int NR_DIRECTIONAL_LIGHTS = 1;
 const int NR_POINT_LIGHTS = 5;
 const int NR_SPOT_LIGHTS = 1;
 const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
-const float NEAR_PLANE = 0.01f, FAR_PLANE = 10000.0f;
+const float NEAR_PLANE = 0.01f, FAR_PLANE = 1000.0f;
 
 class Scene
 {
@@ -42,7 +42,6 @@ public:
 
 	NodoScene* getNodesScene() { return this->nodoWorld; }
 
-
 	/* Shadow map data*/
 	glm::mat4 lightSpaceMatrix;
 
@@ -64,11 +63,17 @@ private:
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
 
+	/* ShadowMap */
+	glm::mat4 shadowBias;
 
 	/* SSAO and BLUR dada*/
 	unsigned int noiseTexture;
 	std::vector<glm::vec3> ssaoKernel; 
 	std::vector<glm::vec3> ssaoNoise;
+
+	/* Screen Data */
+	int SCR_WIDTH;
+	int SCR_HEIGHT;
 
 	// -------- PRIVATE FUNC ------------
 	void LoadObjs();	// Carga desde el objs.txt los objetos que tiene la escena
@@ -82,9 +87,9 @@ private:
 
 	// Pasadas de las luces.
 	void shadowMapPass();
-	void ssaoPass(glm::mat4& mProj);
+	void ssaoPass(glm::mat4& mView, glm::mat4& mProj);
 	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
-	void deferredLightPass();
+	void deferredLightPass(glm::mat4& mView, glm::mat4& mProj);
 	void forwardPass(glm::mat4 mView, glm::mat4 mProj);
 	void postProcessEffectsPass();
 };

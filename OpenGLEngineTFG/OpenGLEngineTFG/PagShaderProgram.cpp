@@ -1,5 +1,7 @@
 #include "PagShaderProgram.h"
 
+#include <../glm/gtc/type_ptr.hpp>
+
 PagShaderProgram::PagShaderProgram() {
 	handler = 0;
 	linked = false;
@@ -220,6 +222,20 @@ bool PagShaderProgram::setUniform(std::string name, glm::vec4 value) {
 		// - Aquí usamos la función glUniform que recibe un argumento de tipo
 		// vec4 con valores GLfloat y expresado como un array
 		glUniform4fv(location, 1, &value[0]);
+		return true;
+	}
+	else {
+		std::cout << "Cannot find localization for: " << name << std::endl;
+		return false;
+	}
+}
+
+bool PagShaderProgram::setUniform(std::string name, int arraySize, glm::vec3* value) {
+	GLint location = glGetUniformLocation(handler, name.c_str());
+	if (location >= 0) {
+		// - Aquí usamos la función glUniform que recibe un argumento de tipo
+		// vec4 con valores GLfloat y expresado como un array
+		glUniform3fv(location, arraySize, glm::value_ptr(*value));
 		return true;
 	}
 	else {

@@ -28,6 +28,10 @@ Scene::~Scene() {}
 
 void Scene::InitScene()
 {
+
+	SCR_WIDTH = Application::getInstance()->getWIDHT();
+	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
+
 	LoadObjs();
 	InitLights();
 
@@ -169,13 +173,18 @@ void Scene::InitShadowMapBuffer()
 	glDrawBuffers(1, drawBuffers);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// Set shadow bias
+	this->shadowBias = glm::mat4(
+		glm::vec4(0.5f, 0.0f, 0.0f, 0.0f),
+		glm::vec4(0.0f, 0.5f, 0.0f, 0.0f),
+		glm::vec4(0.0f, 0.0f, 0.5f, 0.0f),
+		glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)
+	);
 }
 
 void Scene::InitSSAOBuffer()
 {
-	int SCR_WIDTH = Application::getInstance()->getWIDHT();
-	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-
 	glGenFramebuffers(1, &ssaoFBO);  
 	glGenFramebuffers(1, &ssaoBlurFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
@@ -244,9 +253,6 @@ void Scene::InitSSAOBuffer()
 /* Crear el buffer donde se guardarán los datos que se pasará posteriormente a la pasada de luces*/
 void Scene::InitGBuffer()
 {
-	int SCR_WIDTH = Application::getInstance()->getWIDHT();
-	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-
 	// configure g-buffer framebuffer
 	// ------------------------------
 	glGenFramebuffers(1, &gBuffer);
@@ -285,14 +291,28 @@ void Scene::InitGBuffer()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gMaterialInfo, 0);
 
 	// create and attach depth buffer (renderbuffer)
-	glGenRenderbuffers(1, &DepthGBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, DepthGBuffer);
+	glGenTextures(1, &DepthGBuffer);
+	glBindTexture(GL_TEXTURE_2D, DepthGBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	// attach depth texture as FBO's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DepthGBuffer, 0);
+
+	/*unsigned int renderBuffer = 0;
+	glGenRenderbuffers(1, &renderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, DepthGBuffer);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);*/
 
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[5] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_NONE };
-	glDrawBuffers(5, attachments);
+	unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+	glDrawBuffers(4, attachments);
 
 	// finally check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -431,16 +451,6 @@ void renderQuad()
 
 void Scene::shadowMapPass()
 {
-	int SCR_WIDTH = Application::getInstance()->getWIDHT();
-	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-
-	glm::mat4 shadowBias = glm::mat4(
-		glm::vec4(0.5f, 0.0f, 0.0f, 0.0f),
-		glm::vec4(0.0f, 0.5f, 0.0f, 0.0f),
-		glm::vec4(0.0f, 0.0f, 0.5f, 0.0f),
-		glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)
-	);
-
 	// 1. render depth of scene to texture (from light's perspective)
 		// --------------------------------------------------------------
 	glm::mat4 lightProjection, lightView;
@@ -460,9 +470,6 @@ void Scene::shadowMapPass()
 	glEnable(GL_BLEND);
 
 	// render scene from light's point of view
-	//ShaderManager::getInstance()->getShadowMap()->use();
-	//ShaderManager::getInstance()->getShadowMap()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
-
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap);
 	glClear(GL_DEPTH_BUFFER_BIT);
@@ -477,11 +484,8 @@ void Scene::shadowMapPass()
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 }
 
-void Scene::ssaoPass(glm::mat4& mViewProj)
+void Scene::ssaoPass(glm::mat4& mView, glm::mat4& mProj)
 {
-	int SCR_WIDTH = Application::getInstance()->getWIDHT();
-	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -495,17 +499,17 @@ void Scene::ssaoPass(glm::mat4& mViewProj)
 	ShaderManager::getInstance()->getSSAO()->setUniform("sampleRadius", 2.0f);
 	ShaderManager::getInstance()->getSSAO()->setUniform("sampleRadius2", 4.0f); //sampleRadius * sampleRadius
 	ShaderManager::getInstance()->getSSAO()->setUniform("numKernelSamples", 64); //samples.size()
-	// Send kernel + rotation 
-	for (unsigned int i = 0; i < 64; ++i)
-		ShaderManager::getInstance()->getSSAO()->setUniform("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
+	ShaderManager::getInstance()->getSSAO()->setUniform("samples", 64, &ssaoKernel[0]);
 
-	ShaderManager::getInstance()->getSSAO()->setUniform("mViewProj", mViewProj);
+	ShaderManager::getInstance()->getSSAO()->setUniform("mViewProj", mProj * mView);
+	ShaderManager::getInstance()->getSSAO()->setUniform("viewInverse", glm::inverse(mView));
+	ShaderManager::getInstance()->getSSAO()->setUniform("projectionInverse", glm::inverse(mProj));
 
 	ShaderManager::getInstance()->getSSAO()->setUniform("noiseScale", glm::vec2(SCR_WIDTH * 0.25f, SCR_HEIGHT * 0.25f));
 	
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
-	ShaderManager::getInstance()->getSSAO()->setUniform("gPosition", 0);
+	glBindTexture(GL_TEXTURE_2D, DepthGBuffer);
+	ShaderManager::getInstance()->getSSAO()->setUniform("depthTexture", 0);
 	
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
@@ -541,6 +545,7 @@ void Scene::ssaoPass(glm::mat4& mViewProj)
 void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 {
 	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -548,19 +553,26 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glDisable(GL_DEPTH_TEST);
 }
 
-void Scene::deferredLightPass()
+void Scene::deferredLightPass(glm::mat4& mView, glm::mat4& mProj)
 {
 	//No hacemos glBindFramebuffer porque estamos usando el deafult buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glDisable(GL_DEPTH_TEST);
+
 	//Pasamos los datos importantes al DeferredLightPassShader and bind GBuffer data
 	ShaderManager::getInstance()->getDeferredShading()->use();
 
-	glActiveTexture(GL_TEXTURE0);
+	/*glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);*/
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, DepthGBuffer);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("depthTexture", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
@@ -581,36 +593,32 @@ void Scene::deferredLightPass()
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, DepthShadowMap);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMap", 5);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMin", 0.1f);
-
-	glm::mat4 mShadowMatrix = Application::getInstance()->getMainScene()->lightSpaceMatrix;
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("mShadowMatrix", mShadowMatrix);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
 	
-	glm::mat4 ViewMatrix = this->camara->getView();
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPosition", this->camara->getPosition());
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewInverse", glm::inverse(mView));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("projectionInverse", glm::inverse(mProj));
 
 	// ------------------------ Light Pass ------------------------
 	//NOTA: Las luces están dentro del shader. TO-DO: Ver como pasarla aquí para ir de una en una.
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("NumPointLights", NR_POINT_LIGHTS);
 
 	// Directional Light 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightDirection", glm::normalize(glm::vec3(ViewMatrix * glm::vec4(glm::vec3(-1.0f, -1.0f, -1.0f), 1.0f))));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightDirection", glm::vec3(-1.0f, -1.0f, -1.0f));
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.Intensity", 2.0f);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightColour", glm::vec3(1.0f));
 
 	// Point Light
 	for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-		glm::vec3 LightPosition = (ViewMatrix * glm::vec4(lightPositions[i], 1.0f));
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", LightPosition);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", lightPositions[i]);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Intensity", 10.0f);
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].LightColour", glm::vec3(1.0f));
 		ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].AttenuationRadius", 30.0f);
 	}
 
 	//Spot Light 
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Position", glm::vec3(ViewMatrix * glm::vec4(glm::vec3(0.0, 10.0, 10.0), 1.0f)));
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.LightDirection", glm::normalize(glm::vec3(ViewMatrix * glm::vec4(glm::vec3(0.0f, -1.0f, 0.0f), 1.0f))));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Position", glm::vec3(0.0, 10.0, 5.0));
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.LightDirection", glm::vec3(0.0f, -1.0f, 0.0f));
 
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Intensity", 100.0f);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.LightColour", glm::vec3(1.0f, 0.52, 0.0));
@@ -621,10 +629,15 @@ void Scene::deferredLightPass()
 
 	renderQuad();
 
+	glEnable(GL_DEPTH_TEST);
+}
+
+void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
+{
 	// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
 	// ----------------------------------------------------------------------------------
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); 
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	// write to default framebuffer
 	// blit to default framebuffer. Note that this may or may not work as the internal 
 	//formats of both the FBO and default framebuffer have to match.
@@ -634,23 +647,19 @@ void Scene::deferredLightPass()
 	//format with the FBO's internal format).
 
 	glBlitFramebuffer(
-		0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(), 
+		0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
 		0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
 
-void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
-{
 	//for (int i = 0; i < NR_LIGHTS; i++) {
 	//this->nodoLight->DrawObjs(mView, mViewProjection);
 	//}
 
 	glDepthFunc(GL_LEQUAL);
 	ShaderManager::getInstance()->getSkyBox()->use();
-	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewMatrix", mView);
-	ShaderManager::getInstance()->getSkyBox()->setUniform("ProjMatrix", mProj);
+	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewProjMatrix", mProj * glm::mat4(glm::mat3(mView)));
 	skybox->Draw();
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
@@ -671,10 +680,10 @@ void Scene::postProcessEffectsPass()
 /* Recorre */
 void Scene::DrawObjs()
 {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	//Datos necesarios
+	SCR_WIDTH = Application::getInstance()->getWIDHT();
+	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
+
 	glm::mat4 mView = camara->getView();
 	glm::mat4 mProj = camara->getProjection();
 	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
@@ -689,18 +698,17 @@ void Scene::DrawObjs()
 
 	// 3. generate SSAO texture and blur SSAO texture to remove noise
 	// ------------------------------------------------------------------------
-	ssaoPass(mViewProjection);
+	ssaoPass(mView, mProj);
 
 	// 4. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 	// -----------------------------------------------------------------------------------------------------------------------
-	deferredLightPass();
+	deferredLightPass(mView, mProj);
 	
 	// 5. Forward rendering
 	// ----------------------------------------------------------------------------------
 	forwardPass(mView, mProj);
 
-
-	// 6. Forward rendering
+	// 6. PostProcess effects
 	// ----------------------------------------------------------------------------------
 	//postProcessEffectsPass();
 }

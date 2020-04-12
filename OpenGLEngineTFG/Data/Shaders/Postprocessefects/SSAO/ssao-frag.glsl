@@ -7,6 +7,7 @@ in vec2 TexCoords;
 uniform sampler2D gPosition;    
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
+uniform sampler2D depthTexture;
 
 uniform float ssaoStrength;
 uniform float sampleRadius;
@@ -18,7 +19,8 @@ uniform vec3 samples[64];
 uniform vec2 noiseScale;
 
 uniform mat4 mViewProj; //Projection * View
-uniform mat4 projection;
+uniform mat4 viewInverse;
+uniform mat4 projectionInverse;
 
 vec3 WorldPosFromDepth(vec2 textureCoordinates);
 
@@ -30,7 +32,7 @@ void main() {
 		return;
 	}
 
-	vec3 fragPos = texture(gPosition, TexCoords).xyz;
+	vec3 fragPos = WorldPosFromDepth(TexCoords);
 	vec3 randomVec = texture(texNoise, TexCoords * noiseScale).xyz;
 
 	// Make a TBN matrix to go from tangent -> world space (so we can put our hemipshere tangent sample points into world space)
@@ -52,12 +54,10 @@ void main() {
 		sampleScreenSpace.xyz = (sampleScreenSpace.xyz * 0.5) + 0.5; // [-1, 1] -> [0, 1]
 
 		// Check if our current samples depth is behind the screen space geometry's depth, if so then we know it is occluded in screenspace
-		//float sceneDepth = texture(depthTexture, sampleScreenSpace.xy).r;
-		float sceneDepth = texture(gPosition, sampleScreenSpace.xy).z;
+		float sceneDepth = texture(depthTexture, sampleScreenSpace.xy).r;
 
 		// Peform a range check on the current fragment we are calculating the occlusion factor for, and the occlusion position
-		//vec3 occlusionPos = WorldPosFromDepth(sampleScreenSpace.xy);
-		vec3 occlusionPos = texture(gPosition, sampleScreenSpace.xy).rgb;
+		vec3 occlusionPos = WorldPosFromDepth(sampleScreenSpace.xy);
 		vec3 fragToOcclusionPos = fragPos - occlusionPos;
 		if (dot(fragToOcclusionPos, fragToOcclusionPos) <= sampleRadius2) {
 			occlusion += ((sampleScreenSpace.z > sceneDepth) ? 1.0 : 0.0);
@@ -67,4 +67,16 @@ void main() {
 	occlusion = 1.0 - (occlusion / numKernelSamples);
 
 	FragColor = pow(occlusion, ssaoStrength);
+}
+
+vec3 WorldPosFromDepth(vec2 textureCoordinates) {
+	float z = 2.0 * texture(depthTexture, textureCoordinates).r - 1.0; // [-1, 1]
+	vec4 clipSpacePos = vec4(textureCoordinates * 2.0 - 1.0 , z, 1.0);
+	vec4 viewSpacePos = projectionInverse * clipSpacePos;
+
+	viewSpacePos /= viewSpacePos.w; // Perspective division
+
+	vec4 worldSpacePos = viewInverse * viewSpacePos;
+
+	return worldSpacePos.xyz;
 }

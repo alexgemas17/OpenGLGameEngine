@@ -35,12 +35,13 @@ struct SpotLight {
 in vec2 TexCoords;
 
 // GBuffer data
-uniform sampler2D gPosition;        // Almacena la posición del fragmento
+//uniform sampler2D gPosition;        // Almacena la posición del fragmento
 uniform sampler2D gNormal;          // Almacena la normal (Bump mapping o default normal)
 uniform sampler2D gAlbedo;          // Almacena la información de la textura.
 uniform sampler2D gMaterialInfo;    // Almacena la info PBR: R:metallic, G:roughness, B:ao
 uniform sampler2D ssaoTexture;
 uniform sampler2D shadowMap;
+uniform sampler2D depthTexture;
 
 // Información sobre las luces
 const int NR_POINT_LIGHTS_MAX = 32;
@@ -53,9 +54,9 @@ uniform PointLight pointLights[NR_POINT_LIGHTS_MAX];
 uniform SpotLight spotLight;
 
 uniform vec3 viewPosition;
-//uniform mat4 lightSpaceMatrix;    //Para los calculos de sombras
-uniform float shadowMin;
-uniform mat4 mShadowMatrix;
+uniform mat4 lightSpaceMatrix;    //Para los calculos de sombras
+uniform mat4 viewInverse;
+uniform mat4 projectionInverse;
 
 // Funciones que encapsulan las ecucaciones de las luces
 vec3 CalculateDirectionalLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity);
@@ -71,11 +72,12 @@ vec3 FresnelSchlick(float cosTheta, vec3 baseReflectivity);
 // Shadows
 float CalculateShadow(vec3 fragPos, vec3 normal, vec3 fragToLight);
 float shadowFactor(vec3 fragPos);
+vec3 WorldPosFromDepth();
 
 void main()
 {
     // Recuperamos la información del GBuffer
-    vec3 fragPos = texture(gPosition, TexCoords).rgb;
+    //vec3 fragPos = texture(gPosition, TexCoords).rgb;
 	vec3 normal = texture(gNormal, TexCoords).rgb;
 	vec3 albedo = texture(gAlbedo, TexCoords).rgb;
 	float metallic = texture(gMaterialInfo, TexCoords).r;
@@ -84,6 +86,9 @@ void main()
 	float materialAO = texture(gMaterialInfo, TexCoords).b;
 	float sceneAO = texture(ssaoTexture, TexCoords).r;
 	float ao = min(materialAO, sceneAO);
+
+    // Reconstruct fragPos
+	vec3 fragPos = WorldPosFromDepth();
 
 	vec3 fragToView = normalize(viewPosition - fragPos);
 	vec3 reflectionVec = reflect(-fragToView, normal);
@@ -136,16 +141,7 @@ vec3 CalculateDirectionalLight(vec3 fragPos, vec3 normal, vec3 albedo, float met
     vec3 diffuse = diffuseRatio * albedo / PI;
 
     // Add the light's radiance to the irradiance sum
-    //return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
-    //return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
-    float shadowFact = shadowFactor(fragPos);
-    float shadowMul4Specular;
-    if (shadowFact < (1.0-0.000001)) {
-        shadowMul4Specular = 0.0;
-    } else {
-        shadowMul4Specular = 1.0;
-    }
-    return (diffuse + (specular * shadowMul4Specular )) * radiance * max(dot(normal, lightDir), 0.0) * shadowFact;
+    return (diffuse + specular) * radiance * max(dot(normal, lightDir), 0.0) * (1.0 - CalculateShadow(fragPos, normal, lightDir));
 }
 
 vec3 CalculatePointLight(PointLight pointLight, vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
@@ -180,15 +176,7 @@ vec3 CalculatePointLight(PointLight pointLight, vec3 fragPos, vec3 normal, vec3 
     vec3 diffuse = diffuseRatio * albedo / PI;
 
     // Add the light's radiance to the irradiance sum
-    //return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
-    float shadowFact = shadowFactor(fragPos);
-    float shadowMul4Specular;
-    if (shadowFact < (1.0-0.000001)) {
-        shadowMul4Specular = 0.0;
-    } else {
-        shadowMul4Specular = 1.0;
-    }
-    return (diffuse + (specular * shadowMul4Specular )) * radiance * max(dot(normal, fragToLight), 0.0) * shadowFact;
+    return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0);
 }
 
 vec3 CalculateSpotLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, float roughness, vec3 fragToView, vec3 baseReflectivity) {
@@ -228,17 +216,7 @@ vec3 CalculateSpotLight(vec3 fragPos, vec3 normal, vec3 albedo, float metallic, 
     vec3 diffuse = diffuseRatio * albedo / PI;
 
     // Add the light's radiance to the irradiance sum
-    //return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0) * (1.0 - CalculateShadow(fragPos, normal, fragToLight));
-
-
-    float shadowFact = shadowFactor(fragPos);
-    float shadowMul4Specular;
-    if (shadowFact < (1.0-0.000001)) {
-        shadowMul4Specular = 0.0;
-    } else {
-        shadowMul4Specular = 1.0;
-    }
-    return (diffuse + (specular * shadowMul4Specular )) * radiance * max(dot(normal, fragToLight), 0.0) * shadowFact;
+    return (diffuse + specular) * radiance * max(dot(normal, fragToLight), 0.0);
 }
 
 // ----------------------------------------- PBR -------------------------------
@@ -279,7 +257,6 @@ vec3 FresnelSchlick(float cosTheta, vec3 baseReflectivity) {
 }
 
 // ----------------------------------------- SHADOW -------------------------------
-/*
 float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
     vec4 fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
 
@@ -290,7 +267,7 @@ float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
     projCoords = projCoords * 0.5 + 0.5;
 
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(ShadowMap, projCoords.xy).r; 
+    float closestDepth = texture(shadowMap, projCoords.xy).r; 
 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
@@ -304,12 +281,12 @@ float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
     // float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
     // PCF
     float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(ShadowMap, 0);
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
     for(int x = -1; x <= 1; ++x)
     {
         for(int y = -1; y <= 1; ++y)
         {
-            float pcfDepth = texture(ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
             shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;        
         }    
     }
@@ -321,8 +298,9 @@ float CalculateShadow(vec3 fragPos, vec3 n, vec3 fragToLight) {
         shadow = 0.0;
         
     return shadow;
-}*/
+}
 
+/*
 float shadowFactor(vec3 fragPos) {
     //float shadow = textureProj(ShadowMap, shadowCoord);
     //float shadowFactor = clamp(shadow, shadowMin, 1.0);
@@ -346,4 +324,17 @@ float shadowFactor(vec3 fragPos) {
     float shadowFactor = sum * (1.0/5.0);
     shadowFactor = clamp(shadowFactor, shadowMin, 1.0);
     return shadowFactor;
+}
+*/
+
+vec3 WorldPosFromDepth() {
+    float z = 2.0 * texture(depthTexture, TexCoords).r - 1.0; // [-1, 1]
+    vec4 clipSpacePos = vec4(TexCoords * 2.0 - 1.0 , z, 1.0);
+    vec4 viewSpacePos = projectionInverse * clipSpacePos;
+
+    viewSpacePos /= viewSpacePos.w; // Perspective division
+
+    vec4 worldSpacePos = viewInverse * viewSpacePos;
+
+    return worldSpacePos.xyz;
 }

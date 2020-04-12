@@ -40,6 +40,7 @@ public:
 	bool setUniform(std::string name, glm::vec3 value);
 	bool setUniform(std::string name, glm::vec2 value);
 	bool setUniform(std::string name, glm::vec4 value);
+	bool setUniform(std::string name, int arraySize, glm::vec3* value);
 
 	void setSubroutine(const GLchar *nameSubroutine);
 private:
