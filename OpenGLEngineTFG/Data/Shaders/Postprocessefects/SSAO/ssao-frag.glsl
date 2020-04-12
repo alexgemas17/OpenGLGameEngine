@@ -4,64 +4,67 @@ out float FragColor;
 
 in vec2 TexCoords;
 
-uniform sampler2D gPosition;
+uniform sampler2D gPosition;    
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
 
+uniform float ssaoStrength;
+uniform float sampleRadius;
+uniform float sampleRadius2;
+uniform int numKernelSamples;
 uniform vec3 samples[64];
 
-// parameters (you'd probably want to use them as uniforms to more easily tweak the effect)
-int kernelSize = 64;
-float radius = 0.5;
-float bias = 0.025;
-
 // tile noise texture over screen based on screen dimensions divided by noise size
-const vec2 noiseScale = vec2(1280.0/4.0, 720.0/4.0); 
+uniform vec2 noiseScale;
 
-uniform mat4 view;
+uniform mat4 mViewProj; //Projection * View
 uniform mat4 projection;
 
-void main()
-{
-    // get input for SSAO algorithm
-    vec3 normal = normalize(texture(gNormal, TexCoords).rgb);
-    if (normal == vec3(0.0, 0.0, 0.0)) {
+vec3 WorldPosFromDepth(vec2 textureCoordinates);
+
+void main() {
+	// Early out if there is no data in the GBuffer at this particular sample
+	vec3 normal = texture(gNormal, TexCoords).xyz;
+	if (normal == vec3(0.0, 0.0, 0.0)) {
 		FragColor = 1.0;
 		return;
 	}
-    
-    vec3 fragPos = texture(gPosition, TexCoords).xyz;
-    vec3 randomVec = normalize(texture(texNoise, TexCoords * noiseScale).xyz);
 
-    // create TBN change-of-basis matrix: from tangent-space to view-space
-    vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
-    vec3 bitangent = cross(normal, tangent);
-    mat3 TBN = mat3(tangent, bitangent, normal);
+	vec3 fragPos = texture(gPosition, TexCoords).xyz;
+	vec3 randomVec = texture(texNoise, TexCoords * noiseScale).xyz;
 
-    // iterate over the sample kernel and calculate occlusion factor
-    float occlusion = 0.0;
-    for(int i = 0; i < kernelSize; i++) {
+	// Make a TBN matrix to go from tangent -> world space (so we can put our hemipshere tangent sample points into world space)
+	// Since our normal is already in world space, this TBN matrix will take our tangent space vector and put it into world space
+	vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
+	vec3 bitangent = cross(normal, tangent);
+	mat3 TBN = mat3(tangent, bitangent, normal);
 
-        // get sample position
-        vec3 sampleI = samples[i];
+	// Calculate the total amount of occlusion for this fragment
+	float occlusion = 0.0f;
+	for (int i = 0; i < numKernelSamples; ++i) {
+		vec3 sampleWorld = (TBN * samples[i]) * sampleRadius;
+		sampleWorld = fragPos + sampleWorld;
 
-        vec3 sample = TBN * sampleI; // from tangent to view-space
-        sample = fragPos + sample * radius; 
-        
-        // project sample position (to sample texture) (to get position on screen/texture)
-        vec4 offset = vec4(sample, 1.0);
-        offset = projection * offset; // from view to clip-space
-        offset.xyz /= offset.w; // perspective divide
-        offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
-        
-        // get sample depth
-        float sampleDepth = texture(gPosition, offset.xy).z; // get depth value of kernel sample
-        
-        // range check & accumulate
-        float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth));
-        occlusion += (sampleDepth >= sample.z + bias ? 1.0 : 0.0) * rangeCheck;           
-    }
-    occlusion = 1.0 - (occlusion / kernelSize);
-    
-    FragColor = occlusion;
+		// Take our sample position in world space and convert it to screen coordinates
+		vec4 sampleScreenSpace = vec4(sampleWorld, 1.0);
+		sampleScreenSpace = mViewProj * sampleScreenSpace; // World -> View -> Clip Space
+		sampleScreenSpace.xyz /= sampleScreenSpace.w; // Perspective division (Clip Space -> NDC)
+		sampleScreenSpace.xyz = (sampleScreenSpace.xyz * 0.5) + 0.5; // [-1, 1] -> [0, 1]
+
+		// Check if our current samples depth is behind the screen space geometry's depth, if so then we know it is occluded in screenspace
+		//float sceneDepth = texture(depthTexture, sampleScreenSpace.xy).r;
+		float sceneDepth = texture(gPosition, sampleScreenSpace.xy).z;
+
+		// Peform a range check on the current fragment we are calculating the occlusion factor for, and the occlusion position
+		//vec3 occlusionPos = WorldPosFromDepth(sampleScreenSpace.xy);
+		vec3 occlusionPos = texture(gPosition, sampleScreenSpace.xy).rgb;
+		vec3 fragToOcclusionPos = fragPos - occlusionPos;
+		if (dot(fragToOcclusionPos, fragToOcclusionPos) <= sampleRadius2) {
+			occlusion += ((sampleScreenSpace.z > sceneDepth) ? 1.0 : 0.0);
+		}
+	}
+	// Finally we need to normalize our occlusion factor
+	occlusion = 1.0 - (occlusion / numKernelSamples);
+
+	FragColor = pow(occlusion, ssaoStrength);
 }

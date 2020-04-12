@@ -6,17 +6,19 @@ in vec2 TexCoords;
 
 uniform sampler2D ssaoInput;
 
-void main() 
-{
-    vec2 texelSize = 1.0 / vec2(textureSize(ssaoInput, 0));
-    float result = 0.0;
-    for (int x = -2; x < 2; ++x) 
-    {
-        for (int y = -2; y < 2; ++y) 
-        {
-            vec2 offset = vec2(float(x), float(y)) * texelSize;
-            result += texture(ssaoInput, TexCoords + offset).r;
-        }
-    }
-    FragColor = result / (4.0 * 4.0);
+uniform int numSamplesAroundTexel; // Represents the amount of texels around the center texel (2 = 5x5 matrix, 3 = 7x7, 4 = 9x9)
+
+void main() {
+	vec2 texelSize = 1.0 / vec2(textureSize(ssaoInput, 0));
+
+	float totalResult = 0.0f;
+	for (int y = -numSamplesAroundTexel; y <= numSamplesAroundTexel; ++y) {
+		for (int x = -numSamplesAroundTexel; x <= numSamplesAroundTexel; ++x) {
+			vec2 offset = vec2(float(x), float(y)) * texelSize;
+			totalResult += texture(ssaoInput, TexCoords + offset).r;
+		}
+	}
+
+	float kernelRowColSize = (numSamplesAroundTexel + numSamplesAroundTexel) + 1;
+	FragColor = totalResult / (kernelRowColSize * kernelRowColSize);
 }

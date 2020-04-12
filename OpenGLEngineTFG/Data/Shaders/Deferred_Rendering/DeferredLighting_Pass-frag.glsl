@@ -39,7 +39,7 @@ uniform sampler2D gPosition;        // Almacena la posición del fragmento
 uniform sampler2D gNormal;          // Almacena la normal (Bump mapping o default normal)
 uniform sampler2D gAlbedo;          // Almacena la información de la textura.
 uniform sampler2D gMaterialInfo;    // Almacena la info PBR: R:metallic, G:roughness, B:ao
-//uniform sampler2D ssaoTexture;
+uniform sampler2D ssaoTexture;
 uniform sampler2D shadowMap;
 
 // Información sobre las luces
@@ -81,9 +81,9 @@ void main()
 	float metallic = texture(gMaterialInfo, TexCoords).r;
 	float unclampedRoughness = texture(gMaterialInfo, TexCoords).g; // Used for indirect specular (reflections)
 	float roughness = max(unclampedRoughness, 0.04); // Used for calculations since specular highlights will be too fine, and will cause flicker
-	float ao = texture(gMaterialInfo, TexCoords).b;
-	//float sceneAO = texture(ssaoTexture, TexCoords).r;
-	//float ao = min(materialAO, sceneAO);
+	float materialAO = texture(gMaterialInfo, TexCoords).b;
+	float sceneAO = texture(ssaoTexture, TexCoords).r;
+	float ao = min(materialAO, sceneAO);
 
 	vec3 fragToView = normalize(viewPosition - fragPos);
 	vec3 reflectionVec = reflect(-fragToView, normal);

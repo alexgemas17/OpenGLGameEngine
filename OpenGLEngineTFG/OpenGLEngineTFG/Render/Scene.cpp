@@ -32,7 +32,8 @@ void Scene::InitScene()
 	InitLights();
 
 	InitShadowMapBuffer();
-	InitGBuffer();
+	InitGBuffer(); 
+	InitSSAOBuffer();
 	//InitDeferredLightBuffer();
 
 	this->nodoWorld->InitObjs();
@@ -476,24 +477,44 @@ void Scene::shadowMapPass()
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 }
 
-void Scene::ssaoPass(glm::mat4& mProj)
+void Scene::ssaoPass(glm::mat4& mViewProj)
 {
+	int SCR_WIDTH = Application::getInstance()->getWIDHT();
+	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
 	ShaderManager::getInstance()->getSSAO()->use();
+
+	ShaderManager::getInstance()->getSSAO()->setUniform("ssaoStrength", 3.0f);
+	ShaderManager::getInstance()->getSSAO()->setUniform("sampleRadius", 2.0f);
+	ShaderManager::getInstance()->getSSAO()->setUniform("sampleRadius2", 4.0f); //sampleRadius * sampleRadius
+	ShaderManager::getInstance()->getSSAO()->setUniform("numKernelSamples", 64); //samples.size()
 	// Send kernel + rotation 
 	for (unsigned int i = 0; i < 64; ++i)
 		ShaderManager::getInstance()->getSSAO()->setUniform("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
 
-	ShaderManager::getInstance()->getSSAO()->setUniform("projection", mProj);
+	ShaderManager::getInstance()->getSSAO()->setUniform("mViewProj", mViewProj);
 
+	ShaderManager::getInstance()->getSSAO()->setUniform("noiseScale", glm::vec2(SCR_WIDTH * 0.25f, SCR_HEIGHT * 0.25f));
+	
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
+	ShaderManager::getInstance()->getSSAO()->setUniform("gPosition", 0);
+	
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
+	ShaderManager::getInstance()->getSSAO()->setUniform("gNormal", 1);
+	
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, noiseTexture);
-
+	ShaderManager::getInstance()->getSSAO()->setUniform("texNoise", 2);
+	
 	renderQuad();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -502,11 +523,19 @@ void Scene::ssaoPass(glm::mat4& mProj)
 	// ------------------------------------
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
 	glClear(GL_COLOR_BUFFER_BIT);
+
 	ShaderManager::getInstance()->getSSAOBlur()->use();
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+	ShaderManager::getInstance()->getSSAOBlur()->setUniform("ssaoInput", 0); 
+
+	ShaderManager::getInstance()->getSSAOBlur()->setUniform("numSamplesAroundTexel", 2); // 5x5 kernel blur
 	renderQuad();
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
@@ -546,8 +575,12 @@ void Scene::deferredLightPass()
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gMaterialInfo", 3);
 
 	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("ssaoTexture", 4);
+
+	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, DepthShadowMap);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMap", 4);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMap", 5);
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMin", 0.1f);
 
@@ -656,7 +689,7 @@ void Scene::DrawObjs()
 
 	// 3. generate SSAO texture and blur SSAO texture to remove noise
 	// ------------------------------------------------------------------------
-	//ssaoPass(mProj);
+	ssaoPass(mViewProjection);
 
 	// 4. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 	// -----------------------------------------------------------------------------------------------------------------------
