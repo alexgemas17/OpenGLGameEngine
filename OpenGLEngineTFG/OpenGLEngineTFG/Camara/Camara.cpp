@@ -220,11 +220,16 @@ void Camara::CalcFrustumPlanes()
 	frustumPlanes.push_back(new CPlane(farPts[3], farPts[0], farPts[1]));
 }
 
-bool Camara::IsPointInFrustum(glm::vec3 point) 
+bool Camara::IsPointInFrustum(glm::vec3 p) 
 {
 	for (int i = 0; i < 6; i++)
 	{
-		if (frustumPlanes[i]->GetDistance(point) < 0)
+		glm::vec4 planeee = glm::vec4(frustumPlanes[i]->N, frustumPlanes[i]->d);
+
+		float vAbsolute = abs((planeee.x * p.x) + (planeee.y * p.y) + (planeee.z * p.z) + planeee.w);
+		float sum = pow(planeee.x, 2) + pow(planeee.y, 2) + pow(planeee.z, 2);
+		float raiz = pow(sum, 0.5);
+		if ((vAbsolute / raiz) < 0.001)
 			return false;
 	}
 	return true;

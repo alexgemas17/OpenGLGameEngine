@@ -1,6 +1,6 @@
 0.0f,0.0f,0.0f;   //  Position
-0.001f,0.001f,0.001f;   //  Scale
-0.0f		  //  AngleRotation
+0.05f,0.05f,0.05f;   //  Scale
+-45.0f		  //  AngleRotation
 1.0f,0.0f,0.0f;   //  AngleRDirection
 D:\\Proyectos\\MODELOS_TFG\\ORCA_Resources\\Bistrov4\\Bistro_Interior.fbx
 D:\\Proyectos\\MODELOS_TFG\\ORCA_Resources\\Bistrov4\\Textures\\

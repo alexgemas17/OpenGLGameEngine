@@ -44,7 +44,7 @@ Render::Render(
 	typeRender(DeferredRendering), AlbedoTextures(AlbedoTextures), 
 	specularTextures(specularTextures), dataObj(data)
 {
-	if (normalMapTextures[0] != "")
+	if (!normalMapTextures.empty())
 		this->normalMapTextures = normalMapTextures;
 
 	if (MetallicTexture != "")

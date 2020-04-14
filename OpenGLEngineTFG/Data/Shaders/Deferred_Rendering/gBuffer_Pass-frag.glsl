@@ -35,11 +35,11 @@ void main()
     if(hasMetallicTexture)
         metallic = texture(texture_metallic, TexCoords).r;
 
-    float roughness = 0.0f;
+    float roughness = 1.0f;
     if(hasRoughnessTexture)
         roughness = max(texture(texture_roughness, TexCoords).r, 0.04);
 
-    float ao = 0.0f;
+    float ao = 0.5f;
     if(hasAOTexture)
         ao = texture(texture_ao, TexCoords).r;
  

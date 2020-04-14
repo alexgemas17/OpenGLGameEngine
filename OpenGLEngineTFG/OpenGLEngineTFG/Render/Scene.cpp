@@ -74,14 +74,14 @@ void Scene::LoadObjs()
 	}
 
 	//Data from floor
-	Plane* floor = new Plane(Narrow1, 20.0f);
+	/*Plane* floor = new Plane(Narrow1, 20.0f);
 	SceneObj* obj = floor->getSceneObj();
 
 	NodoScene* nodo = new NodoScene();
 	nodo->Translate(0.0f, -1.5f, 0.0f);
 	nodo->addObj(obj);
 
-	nodoWorld->addNodo(nodo);
+	nodoWorld->addNodo(nodo);*/
 
 	delete loader;
 }
@@ -550,11 +550,14 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 }
 
 void Scene::deferredLightPass(glm::mat4& mView, glm::mat4& mProj)
@@ -664,8 +667,17 @@ void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
-void Scene::postProcessEffectsPass()
+void Scene::postProcessEffectsPass(glm::mat4& mViewProjection)
 {
+	ShaderManager::getInstance()->getGodRays()->use();
+	glm::vec3 lightPos = mViewProjection * glm::vec4(glm::vec3(-1.0f, -1.0f, -1.0f),1.0f);
+	ShaderManager::getInstance()->getGodRays()->setUniform("ScreenLightPos", lightPos);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gAlbedo);
+	ShaderManager::getInstance()->getGodRays()->setUniform("input_texture", 0);
+	renderQuad();
+
 	//Gamma Correction!!
 
 	//BLOOM
@@ -710,7 +722,7 @@ void Scene::DrawObjs()
 
 	// 6. PostProcess effects
 	// ----------------------------------------------------------------------------------
-	//postProcessEffectsPass();
+	//postProcessEffectsPass(mViewProjection);
 }
 
 /* ----------------------------------------------------------------------------------------------------------------- */

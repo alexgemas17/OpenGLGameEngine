@@ -140,6 +140,7 @@
     <ClCompile Include="BasicElement\Cube.cpp" />
     <ClCompile Include="BasicElement\Plane.cpp" />
     <ClCompile Include="Camara\Camara.cpp" />
+    <ClCompile Include="Camara\Frustum.cpp" />
     <ClCompile Include="Gui\imgui.cpp" />
     <ClCompile Include="Gui\imgui_demo.cpp" />
     <ClCompile Include="Gui\imgui_draw.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="Managers\GuiManager.cpp" />
     <ClCompile Include="Managers\ShaderManager.cpp" />
     <ClCompile Include="Managers\TextureManager.cpp" />
+    <ClCompile Include="Math\AABB.cpp" />
     <ClCompile Include="PagShaderProgram.cpp" />
     <ClCompile Include="Render\Cubemap\CubeMap.cpp" />
     <ClCompile Include="Render\Model.cpp" />
@@ -169,6 +171,7 @@
     <ClInclude Include="BasicElement\Cube.h" />
     <ClInclude Include="BasicElement\Plane.h" />
     <ClInclude Include="Camara\Camara.h" />
+    <ClInclude Include="Camara\Frustum.h" />
     <ClInclude Include="Gui\imconfig.h" />
     <ClInclude Include="Gui\imgui.h" />
     <ClInclude Include="Gui\imgui_impl_glfw.h" />
@@ -186,6 +189,8 @@
     <ClInclude Include="Managers\GuiManager.h" />
     <ClInclude Include="Managers\ShaderManager.h" />
     <ClInclude Include="Managers\TextureManager.h" />
+    <ClInclude Include="Math\AABB.h" />
+    <ClInclude Include="Math\vector_math.h" />
     <ClInclude Include="PagShaderProgram.h" />
     <ClInclude Include="Render\Cubemap\CubeMap.h" />
     <ClInclude Include="Render\Model.h" />

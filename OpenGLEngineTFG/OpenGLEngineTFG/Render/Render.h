@@ -75,6 +75,8 @@ public:
 	std::string getRoughnessTexture() { return this->RoughnessTexture; }
 	std::string getAOTexture() { return this->AOTexture; }
 
+	AssimpData* dataObj;
+
 private:
 
 	unsigned int VAO;
@@ -89,7 +91,6 @@ private:
 
 	TypeRender typeRender;
 
-	AssimpData* dataObj;
 
 	//BORRAR?
 	float* vertices;

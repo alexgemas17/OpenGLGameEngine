@@ -22,6 +22,7 @@ ShaderManager::ShaderManager():
 	skybox(new PagShaderProgram()),
 	ssao(new PagShaderProgram()),
 	ssao_blur(new PagShaderProgram()),
+	godRays(new PagShaderProgram()),
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
@@ -38,6 +39,7 @@ ShaderManager::ShaderManager():
 	std::string urlssao_blur = ShaderPath+ "Postprocessefects\\SSAO\\ssao_blur";
 
 	std::string urlCopy = ShaderPath + "Postprocessefects\\Copy";
+	std::string urlGodRays = ShaderPath + "Postprocessefects\\God_rays\\God_rays";
 
 	//this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
 
@@ -51,6 +53,7 @@ ShaderManager::ShaderManager():
 	this->ssao_blur->createShaderProgram(urlssao_blur.c_str());
 
 	this->copyDataPass->createShaderProgram(urlCopy.c_str());
+	this->godRays->createShaderProgram(urlGodRays.c_str());
 }
 
 ShaderManager::~ShaderManager()
@@ -81,6 +84,10 @@ PagShaderProgram* ShaderManager::getCopyDataPass()
 	return this->copyDataPass;
 }
 
+PagShaderProgram* ShaderManager::getGodRays()
+{
+	return this->godRays;
+}
 
 PagShaderProgram* ShaderManager::getSSAO()
 {

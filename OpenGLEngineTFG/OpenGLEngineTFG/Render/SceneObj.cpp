@@ -79,11 +79,30 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
 	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 
+	glm::vec3 vertex = this->dataObj->vertices[0];
+	//std::cout << "Vertex: " << vertex.x << " - " << vertex.y << " - " << vertex.z << std::endl;
+
+	vertex = ModelViewMatrix * glm::vec4(vertex, 1.0f);
+	std::cout << "Vertex ViewMatrix: " << vertex.x << " - " << vertex.y << " - " << vertex.z << std::endl;
+
+	if (InputManager::getInstance()->getInputButtonDown(Key_C)) {
+		int a = 0;
+	}
+
+	bool isInFrustum = Application::getInstance()->getMainScene()->camara->IsPointInFrustum(vertex);
+
+	//std::cout << "Vertex ViewMatrix: " << isInFrustum << std::endl;
+
+	glm::vec4 asd = Application::getInstance()->getMainScene()->camara->GetFrustumPlanes()[0];
+	std::cout << "Plane: " << asd.x << " - " << asd.y << " - " << asd.z << std::endl;
+
+
 	/*std::vector<glm::vec4> _frustumPlanes = Application::getInstance()->getMainScene()->camara->GetFrustumPlanes();
 	for (int i = 0; i < _frustumPlanes.size(); i++) {
 		glm::vec4 plane = _frustumPlanes[i];
 		ShaderManager::getInstance()->getGBuffer()->setUniform("planes[" + std::to_string(i) + "].Plane", plane);
 	}*/
+
 
 	this->Draw();
 }

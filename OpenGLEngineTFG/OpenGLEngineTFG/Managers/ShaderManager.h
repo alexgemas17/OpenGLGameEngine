@@ -22,6 +22,7 @@ public:
 	PagShaderProgram* getSSAO();
 	PagShaderProgram* getSSAOBlur();
 	PagShaderProgram* getCopyDataPass();
+	PagShaderProgram* getGodRays();
 
 	static ShaderManager* getInstance();
 
@@ -49,6 +50,7 @@ private:
 
 	/* POSTPROCESS EFFECTS*/
 	PagShaderProgram* copyDataPass;
+	PagShaderProgram* godRays;
 
 	TypeShader typeShader;
 };

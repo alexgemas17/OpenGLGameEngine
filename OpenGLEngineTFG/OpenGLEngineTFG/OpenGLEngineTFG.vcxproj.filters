@@ -70,6 +70,12 @@
     <Filter Include="Archivos de origen\Render\Cubemap">
       <UniqueIdentifier>{dcd90893-09e5-4e8c-b7d9-85e10c76c9b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de origen\Math">
+      <UniqueIdentifier>{876731da-eaca-48df-bec4-b07c5601b519}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\Math">
+      <UniqueIdentifier>{bc629ec5-b051-4f10-a53b-222438382557}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -152,6 +158,12 @@
     </ClCompile>
     <ClCompile Include="BasicElement\CPlane.cpp">
       <Filter>Archivos de origen\BasicElement</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\AABB.cpp">
+      <Filter>Archivos de origen\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Camara\Frustum.cpp">
+      <Filter>Archivos de origen\Camara</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +256,15 @@
     </ClInclude>
     <ClInclude Include="BasicElement\CPlane.h">
       <Filter>Archivos de encabezado\BasicElement</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\AABB.h">
+      <Filter>Archivos de encabezado\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\vector_math.h">
+      <Filter>Archivos de encabezado\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Camara\Frustum.h">
+      <Filter>Archivos de encabezado\Camara</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

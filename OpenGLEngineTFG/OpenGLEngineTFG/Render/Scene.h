@@ -55,7 +55,7 @@ private:
 
 	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 	unsigned int shadowMap, DepthShadowMap;
-	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;;
+	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;
 	unsigned int gBuffer, DepthGBuffer;
 	unsigned int lightBuffer;
 
@@ -91,6 +91,6 @@ private:
 	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
 	void deferredLightPass(glm::mat4& mView, glm::mat4& mProj);
 	void forwardPass(glm::mat4 mView, glm::mat4 mProj);
-	void postProcessEffectsPass();
+	void postProcessEffectsPass(glm::mat4& mViewProjection);
 };
 

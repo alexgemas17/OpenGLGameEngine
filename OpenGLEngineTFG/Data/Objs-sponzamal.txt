@@ -4,6 +4,6 @@
 1.0f,0.0f,0.0f;   //  AngleRDirection
 D:\\Proyectos\\MODELOS_TFG\\sponza\\sponza.obj
 D:\\Proyectos\\MODELOS_TFG\\sponza\\textures\\
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg
+no-texture
+no-texture
+no-texture

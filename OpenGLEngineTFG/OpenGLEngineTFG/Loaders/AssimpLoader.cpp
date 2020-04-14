@@ -140,14 +140,33 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, modelData.textureURL);
 
 	// 3. normal maps
-	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, modelData.textureURL);
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, modelData.textureURL);
 
 	// 4. height maps
 	//std::vector<std::string> heightMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, "TEX_HEIGHT", texturasPath);
 
-	addTextureToTextureManager(modelData.metallic_texture);
-	addTextureToTextureManager(modelData.roughness_texture);
-	addTextureToTextureManager(modelData.ao_texture);
+	if (modelData.metallic_texture != "no-texture") {
+		addTextureToTextureManager(modelData.metallic_texture);
+	}
+	else {
+		modelData.metallic_texture = "";
+	}
+		
+
+	if (modelData.roughness_texture != "no-texture"){
+		addTextureToTextureManager(modelData.roughness_texture);
+	}
+	else {
+		modelData.roughness_texture = "";
+	}
+		
+	
+	if (modelData.ao_texture != "no-texture"){
+		addTextureToTextureManager(modelData.ao_texture);
+	}
+	else {
+		modelData.ao_texture = "";
+	}
 
 	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
 
