@@ -159,11 +159,8 @@
     <ClCompile Include="BasicElement\CPlane.cpp">
       <Filter>Archivos de origen\BasicElement</Filter>
     </ClCompile>
-    <ClCompile Include="Math\AABB.cpp">
-      <Filter>Archivos de origen\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Camara\Frustum.cpp">
-      <Filter>Archivos de origen\Camara</Filter>
+    <ClCompile Include="Render\Model\AABB.cpp">
+      <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -257,14 +254,8 @@
     <ClInclude Include="BasicElement\CPlane.h">
       <Filter>Archivos de encabezado\BasicElement</Filter>
     </ClInclude>
-    <ClInclude Include="Math\AABB.h">
-      <Filter>Archivos de encabezado\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\vector_math.h">
-      <Filter>Archivos de encabezado\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Camara\Frustum.h">
-      <Filter>Archivos de encabezado\Camara</Filter>
+    <ClInclude Include="Render\Model\AABB.h">
+      <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -71,6 +71,14 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 	AssimpData* data = new AssimpData;
 	SceneObj* obj;
 
+	float minX = 999999999;
+	float minY = 999999999;
+	float minZ = 999999999;
+
+	float maxX = -999999999;
+	float maxY = -999999999;
+	float maxZ = -999999999;
+
 	// Walk through each of the mesh's vertices
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -78,7 +86,28 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 
 		// Añadimos la posición
 		if (mesh->mVertices) {
-			data->vertices.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
+			glm::vec3 vertex = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+			data->vertices.push_back(vertex);
+
+			if (vertex.x < minX) {
+				minX = vertex.x;
+			}
+			if (vertex.y < minY) {
+				minY = vertex.y;
+			}
+			if (vertex.z < minZ) {
+				minZ = vertex.z;
+			}
+
+			if (vertex.x > maxX) {
+				maxX = vertex.x;
+			}
+			if (vertex.y > maxY) {
+				maxY = vertex.y;
+			}
+			if (vertex.z > maxZ) {
+				maxZ = vertex.z;
+			}
 		}
 
 		// Añadimos sus normales
@@ -106,6 +135,9 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 			data->coord_textura.push_back(glm::vec2(0.0f, 0.0f));
 		}
 	}
+
+	glm::vec3 min = glm::vec3(minX, minY, minZ);
+	glm::vec3 max = glm::vec3(maxX, maxY, maxZ);
 
 	// Añadimos sus indices
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
@@ -168,7 +200,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		modelData.ao_texture = "";
 	}
 
-	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
+	obj = new SceneObj(data, min, max, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
 
 	return obj;
 }

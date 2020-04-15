@@ -24,6 +24,8 @@ SceneObj::SceneObj(
 
 SceneObj::SceneObj( 
 	AssimpData* data,
+	glm::vec3 min,
+	glm::vec3 max,
 	std::vector<std::string> AlbedoTextures,
 	std::vector<std::string> specularTextures,
 	std::vector<std::string> normalMapTextures,
@@ -31,7 +33,7 @@ SceneObj::SceneObj(
 	std::string RoughnessTexture,
 	std::string AOTexture
 ) :
-	Model(),
+	Model(min, max),
 	Render(
 		data, 
 		AlbedoTextures, 
@@ -55,12 +57,16 @@ void SceneObj::DrawObjShadowMap(glm::mat4& _modelMatrix)
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 	glm::mat4 ModelViewMatrix = ViewMatrix * _modelMatrix;
+	bool isInFrustum = Application::getInstance()->getMainScene()->camara->isPointInFrustum(*this->getAABB(), ModelViewMatrix);
+	//std::cout << "¿Esta el punto en el frustum?: " << isInFrustum << std::endl;
 
-	ShaderManager::getInstance()->getShadowMap()->use();
-	//ShaderManager::getInstance()->getShadowMap()->setUniform("ModelMatrix", _modelMatrix);
-	ShaderManager::getInstance()->getShadowMap()->setUniform("ProjLightModelMatrix", ProjMatrix * ModelViewMatrix);
+	if (isInFrustum) {
+		ShaderManager::getInstance()->getShadowMap()->use();
+		//ShaderManager::getInstance()->getShadowMap()->setUniform("ModelMatrix", _modelMatrix);
+		ShaderManager::getInstance()->getShadowMap()->setUniform("ProjLightModelMatrix", ProjMatrix * ModelViewMatrix);
 
-	this->Draw();
+		this->Draw();
+	}
 }
 
 void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
@@ -68,43 +74,25 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 	glm::mat4 ModelViewMatrix = ViewMatrix * modelMatrix;
+	bool isInFrustum = Application::getInstance()->getMainScene()->camara->isPointInFrustum(*this->getAABB(), ModelViewMatrix);
+	//std::cout << "¿Esta el punto en el frustum?: " << isInFrustum << std::endl;
 
-	shader->use();
+	if (isInFrustum) {
+		shader->use();
 
-	shader->setUniform("hasNormalTexture", !this->getNormalMapTextures().empty());
-	shader->setUniform("hasMetallicTexture", !this->getMetallicTexture().empty());
-	shader->setUniform("hasRoughnessTexture", !this->getRoughnessTexture().empty());
-	shader->setUniform("hasAOTexture", !this->getAOTexture().empty());
+		shader->setUniform("hasNormalTexture", !this->getNormalMapTextures().empty());
+		shader->setUniform("hasMetallicTexture", !this->getMetallicTexture().empty());
+		shader->setUniform("hasRoughnessTexture", !this->getRoughnessTexture().empty());
+		shader->setUniform("hasAOTexture", !this->getAOTexture().empty());
 
-	shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
-	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
+		shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
+		shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 
-	glm::vec3 vertex = this->dataObj->vertices[0];
-	//std::cout << "Vertex: " << vertex.x << " - " << vertex.y << " - " << vertex.z << std::endl;
+		glm::vec3 vertex = ModelViewMatrix * glm::vec4(vertex, 1.0f);
 
-	vertex = ModelViewMatrix * glm::vec4(vertex, 1.0f);
-	std::cout << "Vertex ViewMatrix: " << vertex.x << " - " << vertex.y << " - " << vertex.z << std::endl;
 
-	if (InputManager::getInstance()->getInputButtonDown(Key_C)) {
-		int a = 0;
+		this->Draw();
 	}
-
-	bool isInFrustum = Application::getInstance()->getMainScene()->camara->IsPointInFrustum(vertex);
-
-	//std::cout << "Vertex ViewMatrix: " << isInFrustum << std::endl;
-
-	glm::vec4 asd = Application::getInstance()->getMainScene()->camara->GetFrustumPlanes()[0];
-	std::cout << "Plane: " << asd.x << " - " << asd.y << " - " << asd.z << std::endl;
-
-
-	/*std::vector<glm::vec4> _frustumPlanes = Application::getInstance()->getMainScene()->camara->GetFrustumPlanes();
-	for (int i = 0; i < _frustumPlanes.size(); i++) {
-		glm::vec4 plane = _frustumPlanes[i];
-		ShaderManager::getInstance()->getGBuffer()->setUniform("planes[" + std::to_string(i) + "].Plane", plane);
-	}*/
-
-
-	this->Draw();
 }
 
 void SceneObj::setShaderToPoints(glm::mat4& modelMatrix, glm::mat4& mViewProjection)

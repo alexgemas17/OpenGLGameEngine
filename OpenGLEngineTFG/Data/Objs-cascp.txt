@@ -1,9 +1,9 @@
 0.0f,0.0f,0.0f;   //  Position
-0.05f,0.05f,0.05f;   //  Scale
--45.0f		  //  AngleRotation
+1.0f,1.0f,1.0f;   //  Scale
+45.0f		  //  AngleRotation
 1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\ORCA_Resources\\Bistrov4\\Bistro_Interior.fbx
-D:\\Proyectos\\MODELOS_TFG\\ORCA_Resources\\Bistrov4\\Textures\\
+D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\DamagedHelmet.gltf
+D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\
 D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_emissive.jpg 
 D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_metalRoughness.jpg
 D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg

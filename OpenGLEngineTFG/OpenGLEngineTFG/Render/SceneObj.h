@@ -36,6 +36,8 @@ public:
 	
 	SceneObj( 
 		AssimpData* data,
+		glm::vec3 min,
+		glm::vec3 max,
 		std::vector<std::string> AlbedoTextures,
 		std::vector<std::string> specularTextures,
 		std::vector<std::string> normalMapTextures,
