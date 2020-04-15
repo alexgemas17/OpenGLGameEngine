@@ -110,6 +110,7 @@ private:
 	std::string AOTexture;
 
 	//Inits según el tipo que se haya especificado
+	void InitVAOInterleaved();
 	void InitVAO();
 	void InitVBO();
 	void InitIBO();

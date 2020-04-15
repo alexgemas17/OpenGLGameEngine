@@ -60,13 +60,11 @@ void SceneObj::DrawObjShadowMap(glm::mat4& _modelMatrix)
 	bool isInFrustum = Application::getInstance()->getMainScene()->camara->isPointInFrustum(*this->getAABB(), ModelViewMatrix);
 	//std::cout << "¿Esta el punto en el frustum?: " << isInFrustum << std::endl;
 
-	if (isInFrustum) {
-		ShaderManager::getInstance()->getShadowMap()->use();
-		//ShaderManager::getInstance()->getShadowMap()->setUniform("ModelMatrix", _modelMatrix);
-		ShaderManager::getInstance()->getShadowMap()->setUniform("ProjLightModelMatrix", ProjMatrix * ModelViewMatrix);
+	ShaderManager::getInstance()->getShadowMap()->use();
+	//ShaderManager::getInstance()->getShadowMap()->setUniform("ModelMatrix", _modelMatrix);
+	ShaderManager::getInstance()->getShadowMap()->setUniform("ProjLightModelMatrix", ProjMatrix * ModelViewMatrix);
 
-		this->Draw();
-	}
+	this->Draw();
 }
 
 void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
@@ -77,22 +75,20 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix)
 	bool isInFrustum = Application::getInstance()->getMainScene()->camara->isPointInFrustum(*this->getAABB(), ModelViewMatrix);
 	//std::cout << "¿Esta el punto en el frustum?: " << isInFrustum << std::endl;
 
-	if (isInFrustum) {
-		shader->use();
+	shader->use();
 
-		shader->setUniform("hasNormalTexture", !this->getNormalMapTextures().empty());
-		shader->setUniform("hasMetallicTexture", !this->getMetallicTexture().empty());
-		shader->setUniform("hasRoughnessTexture", !this->getRoughnessTexture().empty());
-		shader->setUniform("hasAOTexture", !this->getAOTexture().empty());
+	shader->setUniform("hasNormalTexture", !this->getNormalMapTextures().empty());
+	shader->setUniform("hasMetallicTexture", !this->getMetallicTexture().empty());
+	shader->setUniform("hasRoughnessTexture", !this->getRoughnessTexture().empty());
+	shader->setUniform("hasAOTexture", !this->getAOTexture().empty());
 
-		shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
-		shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
+	shader->setUniform("ModelViewMatrix", ViewMatrix * modelMatrix);
+	shader->setUniform("MVP", ProjMatrix * ModelViewMatrix);
 
-		glm::vec3 vertex = ModelViewMatrix * glm::vec4(vertex, 1.0f);
+	glm::vec3 vertex = ModelViewMatrix * glm::vec4(vertex, 1.0f);
 
 
-		this->Draw();
-	}
+	this->Draw();
 }
 
 void SceneObj::setShaderToPoints(glm::mat4& modelMatrix, glm::mat4& mViewProjection)

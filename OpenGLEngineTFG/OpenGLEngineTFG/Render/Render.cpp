@@ -73,9 +73,10 @@ Render::~Render()
 void Render::Init()
 {
 	InitVAO();
-	InitVBO();
+	InitVAOInterleaved();
+	//InitVBO();
 	InitIBO();
-	InitCoordTextura();
+	//InitCoordTextura();
 }
 
 void Render::setTypeRender(TypeRender type)
@@ -137,6 +138,94 @@ void Render::Draw()
 }
 
 //------------------------------- PRIVATE -------------------------------
+void Render::InitVAOInterleaved()
+{
+	// Preprocess the mesh data in the format that was specified
+	std::vector<float> dataVAO;
+	for (unsigned int i = 0; i < dataObj->vertices.size(); i++) {
+
+		dataVAO.push_back(dataObj->vertices[i].x);
+		dataVAO.push_back(dataObj->vertices[i].y);
+		dataVAO.push_back(dataObj->vertices[i].z);
+
+		if (dataObj->normales.size() > 0) {
+			dataVAO.push_back(dataObj->normales[i].x);
+			dataVAO.push_back(dataObj->normales[i].y);
+			dataVAO.push_back(dataObj->normales[i].z);
+		}
+		if (dataObj->coord_textura.size() > 0) {
+			dataVAO.push_back(dataObj->coord_textura[i].x);
+			dataVAO.push_back(dataObj->coord_textura[i].y);
+		}
+		if (dataObj->tangentes.size() > 0) {
+			dataVAO.push_back(dataObj->tangentes[i].x);
+			dataVAO.push_back(dataObj->tangentes[i].y);
+			dataVAO.push_back(dataObj->tangentes[i].z);
+		}
+		if (dataObj->bitangentes.size() > 0) {
+			dataVAO.push_back(dataObj->bitangentes[i].x);
+			dataVAO.push_back(dataObj->bitangentes[i].y);
+			dataVAO.push_back(dataObj->bitangentes[i].z);
+		}
+	}
+
+	// Compute the component count
+	unsigned int bufferComponentCount = 0;
+	if (dataObj->vertices.size() > 0)
+		bufferComponentCount += 3;
+
+	if (dataObj->normales.size() > 0)
+		bufferComponentCount += 3;
+
+	if (dataObj->coord_textura.size() > 0)
+		bufferComponentCount += 2;
+
+	if (dataObj->tangentes.size() > 0)
+		bufferComponentCount += 3;
+
+	if (dataObj->bitangentes.size() > 0)
+		bufferComponentCount += 3;
+
+	size_t stride = bufferComponentCount * sizeof(float);
+	size_t offset = 0;
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO_Puntos);
+	glBufferData(GL_ARRAY_BUFFER, dataVAO.size() * sizeof(float), &dataVAO[0], GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
+	offset += 3 * sizeof(float);
+
+	if (dataObj->normales.size() > 0) {
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
+		offset += 3 * sizeof(float);
+	}
+
+	if (dataObj->coord_textura.size() > 0) {
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)offset);
+		offset += 2 * sizeof(float);
+	}
+
+	if (dataObj->tangentes.size() > 0) {
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
+		offset += 3 * sizeof(float);
+	}
+
+	if (dataObj->bitangentes.size() > 0) {
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
+		offset += 3 * sizeof(float);
+	}
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+
 void Render::InitVAO() 
 {
 	glGenVertexArrays(1, &VAO);

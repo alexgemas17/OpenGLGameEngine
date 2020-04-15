@@ -1,6 +1,8 @@
 #include "NodoScene.h"
 #include <gtc/matrix_transform.hpp>
 
+#include "../Application.h"
+
 NodoScene::NodoScene(): Model(), typeRender(DeferredRendering) {}
 NodoScene::~NodoScene() {}
 
@@ -45,6 +47,7 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 				for (int i = 0; i < nodo->objs.size(); i++) {
 					nodo->objs[i]->setTypeRender(this->typeRender);
 					nodo->objs[i]->Init();
+					Application::getInstance()->getMainScene()->objs.push_back(nodo->objs[i]);
 				}
 			}
 		}
@@ -57,6 +60,7 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 				for (int i = 0; i < nodo->objs.size(); i++) {
 					nodo->objs[i]->setTypeRender(this->typeRender);
 					nodo->objs[i]->Init();
+					Application::getInstance()->getMainScene()->objs.push_back(nodo->objs[i]);
 				}
 			}
 		}

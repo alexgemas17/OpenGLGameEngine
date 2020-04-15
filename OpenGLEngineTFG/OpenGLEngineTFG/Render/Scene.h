@@ -45,6 +45,8 @@ public:
 	/* Shadow map data*/
 	glm::mat4 lightSpaceMatrix;
 
+	std::vector<SceneObj*> objs;
+
 private:
 	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
 	NodoScene* nodoWorld; 
@@ -58,6 +60,7 @@ private:
 	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;
 	unsigned int gBuffer, DepthGBuffer;
 	unsigned int lightBuffer;
+
 
 	/*TESTING*/
 	std::vector<glm::vec3> lightPositions;
