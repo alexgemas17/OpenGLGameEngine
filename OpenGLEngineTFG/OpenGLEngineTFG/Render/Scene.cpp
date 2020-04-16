@@ -552,11 +552,7 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	//this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
-	glm::mat4 model = glm::mat4(1.0f);
-	for (int i = 0; i < objs.size(); i++) {
-		objs[i]->DrawObj(ShaderManager::getInstance()->getGBuffer(), model);
-	}
+	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

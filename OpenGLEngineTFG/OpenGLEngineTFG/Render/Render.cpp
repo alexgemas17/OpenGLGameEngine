@@ -135,6 +135,7 @@ void Render::Draw()
 	glDrawElements(GL_TRIANGLE_STRIP, this->dataObj->indices.size(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);
+
 }
 
 //------------------------------- PRIVATE -------------------------------
