@@ -8,9 +8,11 @@
 
 NodoScene* AssimpLoader::loadModelAssimpNode(ObjFile &modelData)
 {
+	std::string pathObj = Application::getInstance()->getPath() + modelData.obj;
+
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(modelData.obj, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* scene = importer.ReadFile(pathObj, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -70,15 +72,6 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 {
 	AssimpData* data = new AssimpData;
 	SceneObj* obj;
-
-	float minX = 999999999;
-	float minY = 999999999;
-	float minZ = 999999999;
-
-	float maxX = -999999999;
-	float maxY = -999999999;
-	float maxZ = -999999999;
-
 	// Walk through each of the mesh's vertices
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
@@ -88,26 +81,6 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		if (mesh->mVertices) {
 			glm::vec3 vertex = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 			data->vertices.push_back(vertex);
-
-			if (vertex.x < minX) {
-				minX = vertex.x;
-			}
-			if (vertex.y < minY) {
-				minY = vertex.y;
-			}
-			if (vertex.z < minZ) {
-				minZ = vertex.z;
-			}
-
-			if (vertex.x > maxX) {
-				maxX = vertex.x;
-			}
-			if (vertex.y > maxY) {
-				maxY = vertex.y;
-			}
-			if (vertex.z > maxZ) {
-				maxZ = vertex.z;
-			}
 		}
 
 		// Añadimos sus normales
@@ -136,9 +109,6 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		}
 	}
 
-	glm::vec3 min = glm::vec3(minX, minY, minZ);
-	glm::vec3 max = glm::vec3(maxX, maxY, maxZ);
-
 	// Añadimos sus indices
 	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{
@@ -156,38 +126,33 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		data->indices.push_back(0xFFFFFFFF);
 	}
 
+	std::string path = Application::getInstance()->getPath();
+
 	// process materials
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-	// we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-	// as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-	// Same applies to other texture as the following list summarizes:
-	// diffuse: texture_diffuseN
-	// specular: texture_specularN
-	// normal: texture_normalN
 
 	// 1. diffuse maps
-	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, modelData.textureURL);
+	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, path + modelData.textureURL);
 
 	// 2. specular maps
-	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, modelData.textureURL);
+	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, path + modelData.textureURL);
 
 	// 3. normal maps
-	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, modelData.textureURL);
-	
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, path + modelData.textureURL);
+
 	if (normalMaps.empty()) {
 		normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, modelData.textureURL);
 	}
 
 	if (modelData.metallic_texture != "no-texture") {
-		addTextureToTextureManager(modelData.metallic_texture);
+		addTextureToTextureManager(path + modelData.metallic_texture);
 	}
 	else {
 		modelData.metallic_texture = "";
 	}
 		
-
 	if (modelData.roughness_texture != "no-texture"){
-		addTextureToTextureManager(modelData.roughness_texture);
+		addTextureToTextureManager(path + modelData.roughness_texture);
 	}
 	else {
 		modelData.roughness_texture = "";
@@ -195,13 +160,13 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		
 	
 	if (modelData.ao_texture != "no-texture"){
-		addTextureToTextureManager(modelData.ao_texture);
+		addTextureToTextureManager(path + modelData.ao_texture);
 	}
 	else {
 		modelData.ao_texture = "";
 	}
 
-	obj = new SceneObj(data, min, max, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
+	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
 
 	return obj;
 }
@@ -227,8 +192,6 @@ std::vector<std::string> AssimpLoader::loadMaterialTextures(aiMaterial* mat, aiT
 		}
 
 		ID_Texture = path + ID_Texture;
-
-		
 
 		if (Application::getInstance()->getTextureManager()->getIDTexture(ID_Texture) != -1)
 		{

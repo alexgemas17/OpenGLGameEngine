@@ -2,8 +2,8 @@
 1.0f,1.0f,1.0f;   //  Scale
 45.0f		  //  AngleRotation
 1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\DamagedHelmet.gltf
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_emissive.jpg 
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_metalRoughness.jpg
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg
+Data\\3DModels\\DamagedHelmet\\DamagedHelmet.gltf
+Data\\3DModels\\DamagedHelmet\\Textures\\
+Data\\3DModels\\DamagedHelmet\\Textures\\Default_emissive.jpg 
+Data\\3DModels\\DamagedHelmet\\Textures\\Default_metalRoughness.jpg
+Data\\3DModels\\DamagedHelmet\\Textures\\Default_AO.jpg

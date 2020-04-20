@@ -40,15 +40,18 @@ AABB* Model::getAABB()
 
 glm::vec3 Model::getPosition()
 {
+	//TO-DO
 	return glm::vec3(0, 0, 0);
 }
 
 glm::vec3 Model::getRotation()
 {
+	//TO-DO
 	return glm::vec3(0, 0, 0);
 }
 
 glm::vec3 Model::getScale()
 {
+	//TO-DO
 	return glm::vec3(0, 0, 0);
 }

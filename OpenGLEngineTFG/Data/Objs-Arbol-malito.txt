@@ -1,9 +1,0 @@
-0.0f,0.0f,0.0f;   //  Position
-0.1f,0.1f,0.1f;   //  Scale
--90.0f		  //  AngleRotation
-1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\ORCA_Resources\\SpeedTree_v2\\Japanese Maple\\HighPoly\\Japanese_Maple.fbx
-D:\\Proyectos\\MODELOS_TFG\\ORCA_Resources\\SpeedTree_v2\\Japanese Maple\\HighPoly\\Textures\\
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_emissive.jpg 
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_metalRoughness.jpg
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg

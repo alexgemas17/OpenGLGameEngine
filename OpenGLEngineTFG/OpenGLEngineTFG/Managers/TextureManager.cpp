@@ -43,12 +43,6 @@ void TextureManager::addIDTexture(std::string urlImage)
 
 bool TextureManager::LoadTextures()
 {
-	//for (auto &textInf : this->textures)
-	//{
-	//	//InitTextura(textInf);
-	//	InitTexturaDevil(textInf);
-	//}
-	
 	InitTexturaDevil(this->textures[indexTexLoaded]);
 
 	indexTexLoaded++;

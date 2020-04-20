@@ -1,8 +1,0 @@
-0.0f,20.0f,0.0f;   	//  Position
-1.0f,1.0f,1.0f;   	//  Scale
-0.0f		  		//  AngleRotation
-1.0f,0.0f,0.0f;   	//  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\source\\scene.fbx
-D:\\Proyectos\\MODELOS_TFG\\crysis-nano-suit-2\\textures\\
-D:\\Proyectos\\MODELOS_TFG\\sponza\\
-D:\\Proyectos\\MODELOS_TFG\\sponza\\

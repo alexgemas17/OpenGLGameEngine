@@ -18,38 +18,29 @@ public:
 
 	void InitObjs();
 	void UpdateObjs(float deltaTime);
-
-	void DrawObjsShadowMap();
-
-	void DrawObjs(
-		PagShaderProgram* shader
-	);
-
-	void setTypeRenderNode(TypeRender type) { this->typeRender = type; };
+	void DrawObjs( PagShaderProgram* shader, const TypeDraw& type );
 
 	SceneObj* getObj(int index) { return this->objs[index]; }
 	std::vector<SceneObj*> getObjs() { return this->objs; }
 	NodoScene* getNode(int index) { return this->nodos[index]; }
 	std::vector<NodoScene*> getNodos() { return this->nodos; }
 
-
 private:
-	TypeRender typeRender;
 	std::vector<NodoScene*> nodos;
 	std::vector<SceneObj*> objs;
 
 	/* Private functions */
 	void InitObjsRecursive(NodoScene* nodo);
-	void UpdateObjsRecursive(NodoScene* nodo, float deltaTime);
 
-	void DrawObjsRecursiveShadowMap(
-		NodoScene* nodo, 
-		glm::mat4& modelMatrix
+	void UpdateObjsRecursive(
+		NodoScene* nodo,
+		float deltaTime
 	);
 
 	void DrawObjsRecursive(
 		PagShaderProgram* shader,
 		NodoScene* nodo,
-		glm::mat4& modelMatrix
+		glm::mat4& modelMatrix,
+		const TypeDraw& type
 	);
 };

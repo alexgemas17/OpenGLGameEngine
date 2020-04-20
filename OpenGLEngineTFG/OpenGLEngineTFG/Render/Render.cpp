@@ -5,32 +5,6 @@
 
 Render::Render() {}
 
-Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura, 
-	std::string albedoURL, std::string normalURL, std::string materialURL):
-	typeRender(DeferredRendering), albedoURL(albedoURL), normalURL(normalURL), materialURL(materialURL)
-{
-	this->model.puntos = puntos;
-	this->model.normales = normales;
-	this->model.index = index;
-	this->model.coordenada_textura = coordenada_textura;
-	this->model.urlImg = albedoURL;
-}
-
-Render::Render(std::vector<glm::vec3> puntos, std::vector<GLuint> index, std::vector<glm::vec3> normales, std::vector<glm::vec2> coordenada_textura,
-	std::vector<std::string> AlbedoTextures, std::vector<std::string> specularTextures, std::vector<std::string> normalMapTextures) :
-	typeRender(DeferredRendering), albedoURL(albedoURL), normalURL(normalURL), materialURL(materialURL)
-{
-	this->model.puntos = puntos;
-	this->model.normales = normales;
-	this->model.index = index;
-	this->model.coordenada_textura = coordenada_textura;
-	this->model.urlImg = albedoURL;
-
-	this->AlbedoTextures = AlbedoTextures;
-	this->specularTextures = specularTextures;
-	this->normalMapTextures = normalMapTextures;
-}
-
 //CONSTRUCTOR BUENO
 Render::Render(
 	AssimpData* data,
@@ -41,8 +15,9 @@ Render::Render(
 	std::string RoughnessTexture,
 	std::string AOTexture
 ) :
-	typeRender(DeferredRendering), AlbedoTextures(AlbedoTextures), 
-	specularTextures(specularTextures), dataObj(data)
+	AlbedoTextures(AlbedoTextures), 
+	specularTextures(specularTextures), 
+	dataObj(data)
 {
 	if (!normalMapTextures.empty())
 		this->normalMapTextures = normalMapTextures;
@@ -74,14 +49,7 @@ void Render::Init()
 {
 	InitVAO();
 	InitVAOInterleaved();
-	//InitVBO();
 	InitIBO();
-	//InitCoordTextura();
-}
-
-void Render::setTypeRender(TypeRender type)
-{
-	typeRender = type;
 }
 
 void Render::Draw()
@@ -135,7 +103,6 @@ void Render::Draw()
 	glDrawElements(GL_TRIANGLE_STRIP, this->dataObj->indices.size(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);
-
 }
 
 //------------------------------- PRIVATE -------------------------------
@@ -226,7 +193,6 @@ void Render::InitVAOInterleaved()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-
 void Render::InitVAO() 
 {
 	glGenVertexArrays(1, &VAO);
@@ -238,89 +204,6 @@ void Render::InitVAO()
 	glGenBuffers(1, &IBO);
 }
 
-void Render::InitVBO() 
-{
-	glBindVertexArray(VAO);
-
-	// -------------- PUNTOS -------------- 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_Puntos);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0, 
-		sizeof(glm::vec3) / sizeof(GLfloat), 
-		GL_FLOAT,
-		GL_FALSE, 
-		sizeof(glm::vec3), 
-		((GLubyte*)NULL + (0))
-	);
-	glBufferData(
-		GL_ARRAY_BUFFER, 
-		sizeof(glm::vec3) * this->dataObj->vertices.size(), 
-		this->dataObj->vertices.data(), 
-		GL_STATIC_DRAW
-	);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// -------------- NORMALES -------------- 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_Normales);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(
-		1, 
-		sizeof(glm::vec3) / sizeof(GLfloat), 
-		GL_FLOAT, 
-		GL_FALSE, 
-		sizeof(glm::vec3), 
-		((GLubyte*)NULL + (0))
-	);
-	glBufferData(
-		GL_ARRAY_BUFFER, 
-		sizeof(glm::vec3) * this->dataObj->normales.size(), 
-		this->dataObj->normales.data(), 
-		GL_STATIC_DRAW
-	);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// -------------- TANGENTES -------------- 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_Tangentes);
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(
-		3, 
-		sizeof(glm::vec3) / sizeof(GLfloat),
-		GL_FLOAT, 
-		GL_FALSE, 
-		sizeof(glm::vec3), 
-		((GLubyte*)NULL + (0))
-	);
-	glBufferData(
-		GL_ARRAY_BUFFER, 
-		sizeof(glm::vec3) * this->dataObj->tangentes.size(), 
-		this->dataObj->tangentes.data(), 
-		GL_STATIC_DRAW
-	);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	// -------------- BITANGENTES -------------- 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_Bitangentes);
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(
-		4,
-		sizeof(glm::vec3) / sizeof(GLfloat),
-		GL_FLOAT,
-		GL_FALSE,
-		sizeof(glm::vec3),
-		((GLubyte*)NULL + (0))
-	);
-	glBufferData(
-		GL_ARRAY_BUFFER,
-		sizeof(glm::vec3) * this->dataObj->bitangentes.size(),
-		this->dataObj->bitangentes.data(),
-		GL_STATIC_DRAW
-	);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glBindVertexArray(0);
-}
-
 void Render::InitIBO() 
 {
 	glBindVertexArray(VAO);
@@ -329,19 +212,5 @@ void Render::InitIBO()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->dataObj->indices.size(), this->dataObj->indices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-void Render::InitCoordTextura()
-{
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, CoordTexturaBuffer);
-
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, sizeof(glm::vec2) / sizeof(GLfloat), GL_FLOAT, GL_FALSE, sizeof(glm::vec2), ((GLubyte*)NULL + (0)));
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * this->dataObj->coord_textura.size(), this->dataObj->coord_textura.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }

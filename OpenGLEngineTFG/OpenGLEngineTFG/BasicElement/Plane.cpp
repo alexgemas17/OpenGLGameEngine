@@ -50,9 +50,6 @@ Plane::Plane(TypeFloor type, float size)
 		0,3,2,0,0xFFFFFFFF
 	};
 
-	glm::vec3 min = glm::vec3(0.0f);
-	glm::vec3 max = glm::vec3(0.0f);
-
 	//float planeVertices[] = {
 	//	// positions            // normals         // texcoords
 	//	 10.0f, -0.5f,  10.0f,  0.0f, 1.0f, 0.0f,  10.0f,  0.0f,
@@ -129,8 +126,6 @@ Plane::Plane(TypeFloor type, float size)
 
 	this->obj = new SceneObj(
 		data, 
-		min,
-		max,
 		albedoText,
 		specText, 
 		normalText,

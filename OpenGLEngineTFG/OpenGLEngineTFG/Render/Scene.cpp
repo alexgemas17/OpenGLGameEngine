@@ -26,6 +26,19 @@ Scene::Scene(): camara(nullptr)
 
 Scene::~Scene() {}
 
+float RandomFloat(float a, float b) {
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
+float lerp(float a, float b, float f)
+{
+	return a + f * (b - a);
+}
+
+/* ---------------------------------------	INITS	----------------------------------------- */
 void Scene::InitScene()
 {
 
@@ -36,7 +49,7 @@ void Scene::InitScene()
 	InitLights();
 
 	InitShadowMapBuffer();
-	InitGBuffer(); 
+	InitGBuffer();
 	InitSSAOBuffer();
 	//InitDeferredLightBuffer();
 
@@ -62,9 +75,6 @@ void Scene::LoadObjs()
 		//Cargamos el objeto desde disco.
 		NodoScene* nodo = loader->loadModelAssimpNode(mainObjs[i]);
 
-		//Selecionamos el tipo de rendering que queremos.
-		nodo->setTypeRenderNode(DeferredRendering);
-
 		//Realizamos las transformaciones necesarias.
 		nodo->Rotate(mainObjs[i].angleRotation, mainObjs[i].rotationDirection);
 		nodo->Scale(mainObjs[i].scale.x, mainObjs[i].scale.y, mainObjs[i].scale.z);
@@ -84,18 +94,6 @@ void Scene::LoadObjs()
 	nodoWorld->addNodo(nodo);*/
 
 	delete loader;
-}
-
-float RandomFloat(float a, float b) {
-	float random = ((float)rand()) / (float)RAND_MAX;
-	float diff = b - a;
-	float r = random * diff;
-	return a + r;
-}
-
-float lerp(float a, float b, float f)
-{
-	return a + f * (b - a);
 }
 
 /* Crea aleatoriamente un número determinado de luces*/
@@ -139,7 +137,7 @@ void Scene::InitLights()
 	delete loader;
 }
 
-/* Crear el buffer para poder calcular las sombras */
+/* Buffer para el ShadowMap */
 void Scene::InitShadowMapBuffer()
 {
 	// configure depth map FBO
@@ -183,6 +181,7 @@ void Scene::InitShadowMapBuffer()
 	);
 }
 
+/* Buffer para el SSAO */
 void Scene::InitSSAOBuffer()
 {
 	glGenFramebuffers(1, &ssaoFBO);  
@@ -250,7 +249,7 @@ void Scene::InitSSAOBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
-/* Crear el buffer donde se guardarán los datos que se pasará posteriormente a la pasada de luces*/
+/* Buffer para el Geometry Pass */
 void Scene::InitGBuffer()
 {
 	// configure g-buffer framebuffer
@@ -321,6 +320,7 @@ void Scene::InitGBuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+/* SIN USAR. TO-DO: Ver si vale la pena */
 void Scene::InitDeferredLightBuffer()
 {
 	//			ESTO ES POR SI LO QUIERO EN OTRO BUFFER PERO VALE LA PENA??
@@ -418,10 +418,11 @@ void Scene::UpdateObjs(float deltaTime)
 	}
 }
 
-// renderQuad() renders a 1x1 XY quad in NDC
-// -----------------------------------------
+/* ---------------------------------------	RENDERING PASS	----------------------------------------- */
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
+// renderQuad() renders a 1x1 XY quad in NDC
+// -----------------------------------------
 void renderQuad()
 {
 	if (quadVAO == 0)
@@ -449,20 +450,53 @@ void renderQuad()
 	glBindVertexArray(0);
 }
 
+/* Llamada principal que llama a las distintas pasadas dentro del rendering */
+void Scene::DrawObjs()
+{
+	//Datos necesarios
+	SCR_WIDTH = Application::getInstance()->getWIDHT();
+	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
+
+	glm::mat4 mView = camara->getView();
+	glm::mat4 mProj = camara->getProjection();
+	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
+
+	// 1. Shadow map
+	// -----------------------------------------------------------------
+	shadowMapPass();
+
+	// 2. geometry pass: render scene's geometry/color data into gbuffer
+	// -----------------------------------------------------------------
+	gBufferPass(mView, mViewProjection);
+
+	// 3. generate SSAO texture and blur SSAO texture to remove noise
+	// ------------------------------------------------------------------------
+	ssaoPass(mView, mProj);
+
+	// 4. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
+	// -----------------------------------------------------------------------------------------------------------------------
+	deferredLightPass(mView, mProj);
+
+	// 5. Forward rendering
+	// ----------------------------------------------------------------------------------
+	forwardPass(mView, mProj);
+
+	// 6. PostProcess effects
+	// ----------------------------------------------------------------------------------
+	//postProcessEffectsPass(mViewProjection);
+}
+
+/* Posiciona la escena según el punto de vista de la luz direccional y la dibuja */
 void Scene::shadowMapPass()
 {
-	// 1. render depth of scene to texture (from light's perspective)
-		// --------------------------------------------------------------
 	glm::mat4 lightProjection, lightView;
 	float near_plane = 1.0f, far_plane = 7.5f;
-	lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
-	//lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane);
 	glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 Direction = glm::vec3(-1.0f, -1.0f, -1.0f);
 	glm::vec3 UP = glm::vec3(0.0, 1.0, 0.0);
 
-	//lightView = glm::lookAt(Position, Direction, UP);
-	this->camara->getNewLookAt(Position, Direction, UP);
+	lightView = this->camara->getNewLookAt(Position, Direction, UP);
 	lightSpaceMatrix = shadowBias * lightProjection * lightView;
 
 	glEnable(GL_DEPTH_TEST);
@@ -475,7 +509,7 @@ void Scene::shadowMapPass()
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-	this->nodoWorld->DrawObjsShadowMap();
+	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getShadowMap(), TypeDraw::ShadowMap);
 	glCullFace(GL_BACK);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -484,6 +518,7 @@ void Scene::shadowMapPass()
 	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
 }
 
+/* Pasasa del SSAO */
 void Scene::ssaoPass(glm::mat4& mView, glm::mat4& mProj)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
@@ -542,6 +577,7 @@ void Scene::ssaoPass(glm::mat4& mView, glm::mat4& mProj)
 	glEnable(GL_DEPTH_TEST);
 }
 
+/* Pasasa del GBuffer */
 void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 {
 	glDisable(GL_BLEND);
@@ -552,7 +588,7 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer());
+	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer(), TypeDraw::GeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -560,6 +596,7 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 	glDisable(GL_CULL_FACE);
 }
 
+/* Pasasa de luces */
 void Scene::deferredLightPass(glm::mat4& mView, glm::mat4& mProj)
 {
 	//No hacemos glBindFramebuffer porque estamos usando el deafult buffer
@@ -635,6 +672,7 @@ void Scene::deferredLightPass(glm::mat4& mView, glm::mat4& mProj)
 	glEnable(GL_DEPTH_TEST);
 }
 
+/* Pasasa de los objetos que no se han podido incluir dentro del deferred rendering: transparecias, skymap, etc... */
 void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
 {
 	// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
@@ -667,6 +705,7 @@ void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
 	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
+/* Pasasa de efectos */
 void Scene::postProcessEffectsPass(glm::mat4& mViewProjection)
 {
 	ShaderManager::getInstance()->getGodRays()->use();
@@ -687,42 +726,6 @@ void Scene::postProcessEffectsPass(glm::mat4& mViewProjection)
 	//fxaa
 
 	//chromaticAberration??
-}
-
-/* Recorre */
-void Scene::DrawObjs()
-{
-	//Datos necesarios
-	SCR_WIDTH = Application::getInstance()->getWIDHT();
-	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-
-	glm::mat4 mView = camara->getView();
-	glm::mat4 mProj = camara->getProjection();
-	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
-
-	// 1. Shadow map
-	// -----------------------------------------------------------------
-	shadowMapPass();
-
-	// 2. geometry pass: render scene's geometry/color data into gbuffer
-	// -----------------------------------------------------------------
-	gBufferPass(mView, mViewProjection);
-
-	// 3. generate SSAO texture and blur SSAO texture to remove noise
-	// ------------------------------------------------------------------------
-	ssaoPass(mView, mProj);
-
-	// 4. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
-	// -----------------------------------------------------------------------------------------------------------------------
-	deferredLightPass(mView, mProj);
-	
-	// 5. Forward rendering
-	// ----------------------------------------------------------------------------------
-	forwardPass(mView, mProj);
-
-	// 6. PostProcess effects
-	// ----------------------------------------------------------------------------------
-	//postProcessEffectsPass(mViewProjection);
 }
 
 /* ----------------------------------------------------------------------------------------------------------------- */
