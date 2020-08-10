@@ -8,7 +8,8 @@
 
 NodoScene* AssimpLoader::loadModelAssimpNode(ObjFile &modelData)
 {
-	std::string pathObj = Application::getInstance()->getPath() + modelData.obj;
+	//std::string pathObj = Application::getInstance()->getPath() + modelData.obj;
+	std::string pathObj = modelData.obj;
 
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
@@ -132,27 +133,27 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 	aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
 	// 1. diffuse maps
-	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, path + modelData.textureURL);
+	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, modelData.textureURL);
 
 	// 2. specular maps
-	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, path + modelData.textureURL);
+	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, modelData.textureURL);
 
 	// 3. normal maps
-	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, path + modelData.textureURL);
+	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, modelData.textureURL);
 
 	if (normalMaps.empty()) {
 		normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, modelData.textureURL);
 	}
 
 	if (modelData.metallic_texture != "no-texture") {
-		addTextureToTextureManager(path + modelData.metallic_texture);
+		addTextureToTextureManager(modelData.metallic_texture);
 	}
 	else {
 		modelData.metallic_texture = "";
 	}
 		
 	if (modelData.roughness_texture != "no-texture"){
-		addTextureToTextureManager(path + modelData.roughness_texture);
+		addTextureToTextureManager(modelData.roughness_texture);
 	}
 	else {
 		modelData.roughness_texture = "";
@@ -160,7 +161,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		
 	
 	if (modelData.ao_texture != "no-texture"){
-		addTextureToTextureManager(path + modelData.ao_texture);
+		addTextureToTextureManager(modelData.ao_texture);
 	}
 	else {
 		modelData.ao_texture = "";

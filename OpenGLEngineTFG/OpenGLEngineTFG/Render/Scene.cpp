@@ -509,6 +509,7 @@ void Scene::shadowMapPass()
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
+	ShaderManager::getInstance()->getShadowMap()->use();
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getShadowMap(), TypeDraw::ShadowMap);
 	glCullFace(GL_BACK);
 
@@ -588,6 +589,7 @@ void Scene::gBufferPass(glm::mat4& mView, glm::mat4& mViewProjection)
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
+	ShaderManager::getInstance()->getGBuffer()->use();
 	this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer(), TypeDraw::GeometryPass);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
