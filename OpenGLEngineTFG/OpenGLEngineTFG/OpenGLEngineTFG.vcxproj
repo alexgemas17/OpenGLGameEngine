@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\lib\glfw-3.3.2.bin.WIN64\include\;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;..\lib\DevIL-1.8.0\include\IL;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\lib\glfw-3.3.2.bin.WIN64\include\;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.8\glm\glm;..\lib\DevIL-1.8.0\include\IL;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,7 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\lib\glfw-3.3.2.bin.WIN64\include\;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.0\glm\glm;..\lib\DevIL-1.8.0\include\IL;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\lib\glfw-3.3.2.bin.WIN64\include\;..\lib\glew-2.1.0\include;..\lib\glm-0.9.9.8\glm\glm;..\lib\DevIL-1.8.0\include\IL;..\lib\assimp-5.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
