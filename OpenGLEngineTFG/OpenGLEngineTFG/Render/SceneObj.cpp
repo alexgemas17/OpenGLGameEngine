@@ -44,7 +44,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	//bool isInFrustum = Application::getInstance()->getMainScene()->camara->isPointInFrustum(*this->getAABB(), ModelViewMatrix);
 	//std::cout << "¿Esta el punto en el frustum?: " << isInFrustum << std::endl;
 
-	//shader->use();
+	shader->use();
 
 	if (type == TypeDraw::ShadowMap) {
 		shadowMapDraw(shader, MVP);
