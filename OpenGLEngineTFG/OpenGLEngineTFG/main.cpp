@@ -61,6 +61,21 @@ int main() {
 		return -3;
 	}
 
+	// Especificamos la versión de GLEW para poder usar el Voxel Cone tracing.
+	std::vector<std::pair<GLuint, std::string>> requiredGLEWExtensions = {
+		{ GLEW_ARB_shader_image_load_store,		"ARB_shader_image_load_store"},
+		{ GLEW_VERSION_4_5,						"GLEW_VERSION_4_5 (OpenGL 4.5)"},
+		{ GL_ARB_multisample,					"GLFW MSAA" }
+	};
+
+	for (const auto& ext : requiredGLEWExtensions) {
+		if (!ext.first) {
+			std::cerr << "ERROR: " << ext.second << " not supported! Expect unexpected behaviour." << std::endl;
+			std::cerr << "Press any key to continue ... " << std::endl;
+			getchar();
+		}
+	}
+
 	glViewport(0, 0, WIDHT, HEIGHT);
 
 	// -------------------- Creamos la GUI -------------------- 
