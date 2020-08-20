@@ -84,14 +84,14 @@ void Scene::LoadObjs()
 	}
 
 	//Data from floor
-	/*Plane* floor = new Plane(Narrow1, 20.0f);
+	Plane* floor = new Plane(Narrow1, 20.0f);
 	SceneObj* obj = floor->getSceneObj();
 
 	NodoScene* nodo = new NodoScene();
 	nodo->Translate(0.0f, -1.5f, 0.0f);
 	nodo->addObj(obj);
 
-	nodoWorld->addNodo(nodo);*/
+	nodoWorld->addNodo(nodo);
 
 	delete loader;
 }
@@ -490,13 +490,15 @@ void Scene::DrawObjs()
 void Scene::shadowMapPass()
 {
 	glm::mat4 lightProjection, lightView;
-	float near_plane = 1.0f, far_plane = 7.5f;
-	lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane);
-	glm::vec3 Position = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 Direction = glm::vec3(-1.0f, -1.0f, -1.0f);
+	float near_plane = 1.0f, far_plane = 400.5f;
+	//lightProjection = glm::perspective(glm::radians(60.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane);
+	lightProjection = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, near_plane, far_plane);
+	glm::vec3 Position = glm::vec3(0.0, 150.0f, 0.0f);
 	glm::vec3 UP = glm::vec3(0.0, 1.0, 0.0);
 
-	lightView = this->camara->getNewLookAt(Position, Direction, UP);
+	glm::vec3 directionalLight = glm::vec3(-0.25f, -1.0f, -0.25f);
+
+	lightView = this->camara->getNewLookAt(Position, directionalLight + Position, UP);
 	lightSpaceMatrix = shadowBias * lightProjection * lightView;
 
 	glEnable(GL_DEPTH_TEST);

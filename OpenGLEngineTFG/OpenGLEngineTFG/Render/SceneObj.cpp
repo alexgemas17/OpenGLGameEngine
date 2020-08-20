@@ -47,7 +47,9 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	//shader->use();
 
 	if (type == TypeDraw::ShadowMap) {
-		shadowMapDraw(shader, MVP);
+		glm::mat4 lightSpaceMatrix = Application::getInstance()->getMainScene()->lightSpaceMatrix;
+		glm::mat4 matrixShadow = lightSpaceMatrix * modelMatrix;
+		shadowMapDraw(shader, matrixShadow);
 	}
 	else {
 		geometryPassDraw(shader, ModelViewMatrix, MVP);
