@@ -5,39 +5,40 @@
 
 void ForwardRender::createFrameBuffer()
 {
-	int SCR_WIDTH = Application::getInstance()->getWIDHT();
-	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
+	//int SCR_WIDTH = Application::getInstance()->getWIDHT();
+	//int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
-	// configure g-buffer framebuffer
-	// ------------------------------
-	glGenFramebuffers(1, &fbID);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbID);
+	//// configure framebuffer
+	//// ------------------------------
+	//glGenFramebuffers(1, &forwardBufferID);
+	//glBindFramebuffer(GL_FRAMEBUFFER, forwardBufferID);
 
-	// create and attach depth buffer (renderbuffer)
-	glGenTextures(1, &fbDepthID);
-	glBindTexture(GL_TEXTURE_2D, fbDepthID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+	//// create and attach depth buffer (renderbuffer)
+	//glGenTextures(1, &forwardBufferDepthID);
+	//glBindTexture(GL_TEXTURE_2D, forwardBufferDepthID);
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-	// attach depth texture as FBO's depth buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, fbID);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbDepthID, 0);
+	//// attach depth texture as FBO's depth buffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, forwardBufferID);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, forwardBufferDepthID, 0);
 }
 
 void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, fbID);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, forwardBufferID);
+	glEnable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ShaderManager::getInstance()->getForwardLighting()->use();
 
-	// send light relevant uniforms
 	for (unsigned int i = 0; i < lightPosition.size(); i++)
 	{
 		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition[i]);
@@ -55,9 +56,9 @@ void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition,
 		const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
 		float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
 		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Radius", radius);
-
-		world->DrawObjs(ShaderManager::getInstance()->getForwardLighting(), TypeDraw::ForwardRender);
 	}
+
+	world->DrawObjs(ShaderManager::getInstance()->getForwardLighting(), TypeDraw::ForwardRender);
 
 	// ¿Dibujamos las bolas?
 	/*if (lBillboards) {

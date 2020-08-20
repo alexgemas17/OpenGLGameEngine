@@ -9,11 +9,11 @@
 
 #include <../glm/gtc/type_ptr.hpp>
 
-Scene::Scene(): camara(nullptr), mode(0)
+Scene::Scene(): camara(nullptr), mode(0), forwardRender(new ForwardRender()), deferredShadingRender(new DeferredShadingRender())
 {
-	glPrimitiveRestartIndex(0xFFFFFFFF); //Posible incompatibilidad con los modelos cargados desde Assimp.
-	glEnable(GL_PRIMITIVE_RESTART);
-	glEnable(GL_PROGRAM_POINT_SIZE);
+	//glPrimitiveRestartIndex(0xFFFFFFFF); //Posible incompatibilidad con los modelos cargados desde Assimp.
+	//glEnable(GL_PRIMITIVE_RESTART);
+	//glEnable(GL_PROGRAM_POINT_SIZE);
 
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -51,8 +51,8 @@ void Scene::InitScene()
 	InitSSAOBuffer();*/
 
 	forwardRender->createFrameBuffer();
-	/*deferredShadingRender->createFrameBuffer();
-	forwardPlusRender->createFrameBuffer();*/
+	deferredShadingRender->createFrameBuffer();
+	//forwardPlusRender->createFrameBuffer();
 
 	this->nodoWorld->InitObjs();
 
@@ -107,7 +107,7 @@ void Scene::InitLights()
 	srand(13);
 	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
-		lightIntensity.push_back((RandomFloat(0.5, 0.8)));
+		lightIntensity.push_back((RandomFloat(0.1, 0.9)));
 
 		// calculate slightly random offsets
 		float xPos = RandomFloat(-20, 20);
@@ -271,15 +271,19 @@ void Scene::DrawObjs()
 	glm::mat4 mProj = camara->getProjection();
 	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
 
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("viewPos", camara->getPosition());
+
 	if (mode == 0) {
 		forwardRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
 	}
 	else if (mode == 1) {
-		//deferredShadingRender->draw();
+		deferredShadingRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
 	}
 	else if (mode == 2) {
 		//forwardPlusRender->draw();
 	}
+
+	skyboxRender(mView, mProj);
 }
 
 /* Posiciona la escena según el punto de vista de la luz direccional y la dibuja */
@@ -377,36 +381,38 @@ void Scene::ssaoPass(glm::mat4& mView, glm::mat4& mProj)
 }
 
 /* Pasasa de los objetos que no se han podido incluir dentro del deferred rendering: transparecias, skymap, etc... */
-void Scene::forwardPass(glm::mat4 mView, glm::mat4 mProj)
+void Scene::skyboxRender(glm::mat4 mView, glm::mat4 mProj)
 {
-	//// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
-	//// ----------------------------------------------------------------------------------
-	//glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer);
-	//glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	//// write to default framebuffer
-	//// blit to default framebuffer. Note that this may or may not work as the internal 
-	////formats of both the FBO and default framebuffer have to match.
-	//// the internal formats are implementation defined. This works on all of my systems, 
-	////but if it doesn't on yours you'll likely have to write to the 		
-	//// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal 
-	////format with the FBO's internal format).
+	if (mode == 1) {
+		// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
+		// ----------------------------------------------------------------------------------
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, deferredShadingRender->getGBufferID());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		// write to default framebuffer
+		// blit to default framebuffer. Note that this may or may not work as the internal 
+		//formats of both the FBO and default framebuffer have to match.
+		// the internal formats are implementation defined. This works on all of my systems, 
+		//but if it doesn't on yours you'll likely have to write to the 		
+		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal 
+		//format with the FBO's internal format).
 
-	//glBlitFramebuffer(
-	//	0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
-	//	0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
-	//	GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(
+			0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
+			0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
+			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 
-	////for (int i = 0; i < NR_LIGHTS; i++) {
-	////this->nodoLight->DrawObjs(mView, mViewProjection);
-	////}
+	//for (int i = 0; i < NR_LIGHTS; i++) {
+	//this->nodoLight->DrawObjs(mView, mViewProjection);
+	//}
 
-	//glDepthFunc(GL_LEQUAL);
-	//ShaderManager::getInstance()->getSkyBox()->use();
-	//ShaderManager::getInstance()->getSkyBox()->setUniform("ViewProjMatrix", mProj * glm::mat4(glm::mat3(mView)));
-	//skybox->Draw();
-	//glDepthFunc(GL_LESS); // set depth function back to default
+	glDepthFunc(GL_LEQUAL);
+	ShaderManager::getInstance()->getSkyBox()->use();
+	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewProjMatrix", mProj * glm::mat4(glm::mat3(mView)));
+	skybox->Draw();
+	glDepthFunc(GL_LESS); // set depth function back to default
 }
 
 /* Pasasa de efectos */

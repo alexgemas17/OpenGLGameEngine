@@ -38,19 +38,17 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 {
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
-	glm::mat4 ModelViewMatrix = ViewMatrix * modelMatrix;
-	glm::mat4 MVP = ProjMatrix * ModelViewMatrix;
 
 	switch (type)
 	{
 	case TypeDraw::ForwardRender:
-		forwardDraw(shader, ModelViewMatrix, MVP);
+		forwardDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
 		break;
 	case TypeDraw::GeometryRender:
-		geometryDraw(shader, ModelViewMatrix, MVP);
+		geometryDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
 		break;
 	case TypeDraw::ForwardPlusRender:
-		forwardPlusDraw(shader, ModelViewMatrix, MVP);
+		forwardPlusDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
 		break;
 	}
 
@@ -69,20 +67,23 @@ void SceneObj::shadowMapDraw(PagShaderProgram* shader, glm::mat4& MVP)
 	shader->setUniform("ProjLightModelMatrix", MVP);
 }
 
-void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
+void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("ModelViewMatrix", ModelViewMatrix);
-	shader->setUniform("MVP", MVP);
+	shader->setUniform("model", modelMatrix);
+	shader->setUniform("view", ViewMatrix);
+	shader->setUniform("projection", ProjMatrix);
 }
 
-void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
+void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("ModelViewMatrix", ModelViewMatrix);
-	shader->setUniform("MVP", MVP);
+	shader->setUniform("model", modelMatrix);
+	shader->setUniform("view", ViewMatrix);
+	shader->setUniform("projection", ProjMatrix);
 }
 
-void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
+void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("ModelViewMatrix", ModelViewMatrix);
-	shader->setUniform("MVP", MVP);
+	shader->setUniform("model", modelMatrix);
+	shader->setUniform("view", ViewMatrix);
+	shader->setUniform("projection", ProjMatrix);
 }

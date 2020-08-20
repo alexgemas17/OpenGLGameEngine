@@ -4,11 +4,15 @@
 #include <glm.hpp>
 #include <GL\glew.h>
 
+#include "NodoScene.h"
+
 class DeferredShadingRender
 {
 public:
 	void createFrameBuffer();
-	void draw();
+	void draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
+
+	unsigned int getGBufferID() { return this->fbID; }
 
 private:
 	unsigned int fbID, fbDepthID;
@@ -16,7 +20,7 @@ private:
 	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 
 	void renderQuad();
-	void geometryBufferPass();
-	void deferredLightingPass();
+	void geometryBufferPass(NodoScene* world);
+	void deferredLightingPass(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
 };
 

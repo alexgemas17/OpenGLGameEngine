@@ -27,7 +27,7 @@ ShaderManager::ShaderManager():
 {
 	//std::string urlBasicShader = ShaderPath + "Lights\\Light";
 
-	std::string urlForwardLightingShader = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
+	std::string urlForwardLightingShader = ShaderPath + "Forward_Rendering\\forward_shader";
 
 	std::string urlGBufferShader = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
 	std::string urlDeferredLightingShader = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";

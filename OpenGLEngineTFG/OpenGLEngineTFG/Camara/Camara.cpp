@@ -101,7 +101,7 @@ void Camara::updateCamaraData()
 	this->mView = glm::lookAt(vecPositionCamera, vecPositionCamera + n, v);
 	this->mVP = this->mProjection * this->mView;
 
-	CalcFrustumPlanes(mVP);
+	//CalcFrustumPlanes(mVP);
 }
 
 glm::mat4 Camara::getNewLookAt(glm::vec3 Position, glm::vec3 Direction, glm::vec3 UP) {

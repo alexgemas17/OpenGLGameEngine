@@ -37,14 +37,6 @@ void DeferredShadingRender::createFrameBuffer()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
 
-	// Info PBR: metallic, roughness, ao
-	glGenTextures(1, &gMaterialInfo);
-	glBindTexture(GL_TEXTURE_2D, gMaterialInfo);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gMaterialInfo, 0);
-
 	// create and attach depth buffer (renderbuffer)
 	glGenTextures(1, &fbDepthID);
 	glBindTexture(GL_TEXTURE_2D, fbDepthID);
@@ -60,8 +52,8 @@ void DeferredShadingRender::createFrameBuffer()
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fbDepthID, 0);
 
 	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-	unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-	glDrawBuffers(4, attachments);
+	unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+	glDrawBuffers(3, attachments);
 
 	// finally check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -70,15 +62,15 @@ void DeferredShadingRender::createFrameBuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void DeferredShadingRender::draw()
+void DeferredShadingRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
 {
 	// 1. geometry pass: render scene's geometry/color data into gbuffer
 	// -----------------------------------------------------------------
-	geometryBufferPass();
+	geometryBufferPass(world);
 
 	// 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 	// -----------------------------------------------------------------------------------------------------------------------
-	deferredLightingPass();
+	deferredLightingPass(world, lightPosition, lightColors, lightIntensity);
 }
 
 // renderQuad() renders a 1x1 XY quad in NDC
@@ -110,7 +102,7 @@ void DeferredShadingRender::renderQuad()
 	glBindVertexArray(0);
 }
 
-void DeferredShadingRender::geometryBufferPass()
+void DeferredShadingRender::geometryBufferPass(NodoScene* world)
 {
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
@@ -121,7 +113,7 @@ void DeferredShadingRender::geometryBufferPass()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	ShaderManager::getInstance()->getGBuffer()->use();
-	//this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getGBuffer(), TypeDraw::GeometryRender);
+	world->DrawObjs(ShaderManager::getInstance()->getGBuffer(), TypeDraw::GeometryRender);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -129,45 +121,51 @@ void DeferredShadingRender::geometryBufferPass()
 	glDisable(GL_CULL_FACE);
 }
 
-void DeferredShadingRender::deferredLightingPass()
+void DeferredShadingRender::deferredLightingPass(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
 {
-	////No hacemos glBindFramebuffer porque estamos usando el deafult buffer
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//No hacemos glBindFramebuffer porque estamos usando el deafult buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
 
-	//glDisable(GL_DEPTH_TEST);
+	//Pasamos los datos importantes al DeferredLightPassShader and bind GBuffer data
+	ShaderManager::getInstance()->getDeferredShading()->use();
 
-	////Pasamos los datos importantes al DeferredLightPassShader and bind GBuffer data
-	//ShaderManager::getInstance()->getDeferredShading()->use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gPosition);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
 
-	////glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, gPosition);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);*/
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, DepthGBuffer);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("depthTexture", 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gNormal);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
 
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, gNormal);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, gAlbedo);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
 
-	//glActiveTexture(GL_TEXTURE2);
-	//glBindTexture(GL_TEXTURE_2D, gAlbedo);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedo", 2);
+	for (unsigned int i = 0; i < lightPosition.size(); i++)
+	{
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition[i]);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
 
-	//glActiveTexture(GL_TEXTURE3);
-	//glBindTexture(GL_TEXTURE_2D, gMaterialInfo);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("gMaterialInfo", 3);
+		// update attenuation parameters and calculate radius
+		const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
+		const float linear = 0.7;
+		const float quadratic = 1.8;
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
 
-	//glActiveTexture(GL_TEXTURE4);
-	//glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("ssaoTexture", 4);
+		// then calculate radius of light volume/sphere
+		const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
+		float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
+		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Radius", radius);
+	}
 
-	//glActiveTexture(GL_TEXTURE5);
-	//glBindTexture(GL_TEXTURE_2D, DepthShadowMap);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("shadowMap", 5);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("lightSpaceMatrix", lightSpaceMatrix);
 
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPosition", this->camara->getPosition());
+	//glm::mat4 mView = Application::getInstance()->getMainScene()->camara->getView();
+	//glm::mat4 mProj = Application::getInstance()->getMainScene()->camara->getProjection();
+	//glm::vec3 cameraPosition = Application::getInstance()->getMainScene()->camara->getPosition();
+
+	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPosition", cameraPosition);
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewInverse", glm::inverse(mView));
 	//ShaderManager::getInstance()->getDeferredShading()->setUniform("projectionInverse", glm::inverse(mProj));
 
@@ -182,24 +180,13 @@ void DeferredShadingRender::deferredLightingPass()
 
 	//// Point Light
 	//for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", lightPositions[i]);
+	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", lightPosition[i]);
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Intensity", 10.0f);
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].LightColour", glm::vec3(1.0f));
 	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].AttenuationRadius", 30.0f);
 	//}
 
-	////Spot Light 
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Position", glm::vec3(0.0, 10.0, 5.0));
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.LightDirection", glm::vec3(0.0f, -1.0f, 0.0f));
+	renderQuad();
 
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.Intensity", 100.0f);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.LightColour", glm::vec3(1.0f, 0.52, 0.0));
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.AttenuationRadius", 50.0f);
-
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.CutOff", glm::cos(glm::radians(20.0f)));
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("spotLight.OuterCutOff", glm::cos(glm::radians(0.0f)));
-
-	//renderQuad();
-
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 }

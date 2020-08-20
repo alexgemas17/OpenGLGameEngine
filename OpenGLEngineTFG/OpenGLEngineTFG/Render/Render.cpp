@@ -54,19 +54,18 @@ void Render::Init()
 
 void Render::Draw()
 {
+	if (AlbedoTextures.empty())
+		return;
+
 	// Albedo Texture
-	if (!AlbedoTextures.empty()) {
-		glActiveTexture(GL_TEXTURE0); 
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_albedo", 0);
-		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
-	}
+	glActiveTexture(GL_TEXTURE0);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_albedo", 0);
+	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
 
 	// Normal Texture
-	if (!normalMapTextures.empty()) {
-		glActiveTexture(GL_TEXTURE1);
-		ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 1);
-		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
-	}
+	/*glActiveTexture(GL_TEXTURE1);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 1);
+	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));*/
 
 	//// Normal Texture
 	//if (!MetallicTexture.empty()) {
@@ -98,9 +97,7 @@ void Render::Draw()
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 
-
-	// Lines: GL_LINE_STRIP
-	glDrawElements(GL_TRIANGLE_STRIP, this->dataObj->indices.size(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, this->dataObj->indices.size(), GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 	glActiveTexture(GL_TEXTURE0);
 }
@@ -188,7 +185,6 @@ void Render::InitVAOInterleaved()
 		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, stride, (void*)offset);
 		offset += 3 * sizeof(float);
 	}
-
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

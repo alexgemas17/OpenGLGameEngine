@@ -50,19 +50,22 @@ private:
 
 	void forwardDraw(
 		PagShaderProgram* shader,
-		glm::mat4& ModelViewMatrix,
-		glm::mat4& MVP
+		glm::mat4& modelMatrix,
+		glm::mat4& ViewMatrix,
+		glm::mat4& ProjMatrix
 	);
 
 	void geometryDraw(
 		PagShaderProgram* shader,
 		glm::mat4& ModelViewMatrix,
-		glm::mat4& MVP
+		glm::mat4& ViewMatrix,
+		glm::mat4& ProjMatrix
 	);
 
 	void forwardPlusDraw(
 		PagShaderProgram* shader,
-		glm::mat4& ModelViewMatrix,
-		glm::mat4& MVP
+		glm::mat4& modelMatrix,
+		glm::mat4& ViewMatrix,
+		glm::mat4& ProjMatrix
 	);
 };

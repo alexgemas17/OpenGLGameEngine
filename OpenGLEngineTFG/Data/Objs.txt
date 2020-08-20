@@ -2,8 +2,8 @@
 0.05f,0.05f,0.05f;   //  Scale
 0.0f		  //  AngleRotation
 1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\sponza\\sponza.obj
-D:\\Proyectos\\MODELOS_TFG\\sponza\\textures\\
+D:\\Proyectos\\MODELOS_TFG\\crytek-sponza1\\sponza.obj
+D:\\Proyectos\\MODELOS_TFG\\crytek-sponza1\\textures\\
 no-texture
 no-texture
 no-texture

@@ -15,9 +15,7 @@
 
 void showFPSCounter(int& nbFrames, double& lastTime);
 void setFunctionsCallbacks(GLFWwindow* window);
-void window_refresh_callback(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
@@ -48,8 +46,8 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
-	//glfwWindowHint(GLFW_DOUBLEBUFFER, true);
+	/*glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, true);*/
 	glfwSwapInterval(0); //VSync off
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -103,8 +101,9 @@ int main() {
 
 		isAllTextureLoaded = Application::getInstance()->getTextureManager()->LoadTextures();
 
-		glfwSwapBuffers(window);
-		//glfwPollEvents();
+		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
 	}
 
 	std::cout << "Inicializando la GUI..." << std::endl;
@@ -149,10 +148,8 @@ void showFPSCounter(int &nbFrames, double &lastTime)
 
 void setFunctionsCallbacks(GLFWwindow* window)
 {
-	glfwSetWindowRefreshCallback(window, window_refresh_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	//glfwSetKeyCallback(window, key_callback); --> Se hace en el render loop
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
@@ -160,31 +157,15 @@ void setFunctionsCallbacks(GLFWwindow* window)
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
 }
 
-void window_refresh_callback(GLFWwindow* window) {
-	//Llamamos a la función correspodiente a las acciones al refrescar la ventana.
-	Application::getInstance()->MainLoop(window);
-
-	glfwSwapBuffers(window);
-}
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	Application::getInstance()->getMainScene()->framebuffer_size_callback(width, height);
 
-	window_refresh_callback(window);
-}
-
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
-	if (action == GLFW_PRESS) {
-		//PagRenderer::getInstance()->ratonPress(button);
-	}
-	else if (action == GLFW_RELEASE) {
-		//PagRenderer::getInstance()->ratonRelease(button);
-	}
+	//window_refresh_callback(window);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 	Application::getInstance()->getMainScene()->scroll_callback(xoffset, yoffset);
-	window_refresh_callback(window);
+	//window_refresh_callback(window);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -205,5 +186,5 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 
 	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
 
-	window_refresh_callback(window);
+	//window_refresh_callback(window);
 }

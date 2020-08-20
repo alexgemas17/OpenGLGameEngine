@@ -18,7 +18,6 @@ public:
 	);
 
 private:
-	unsigned int fbID, fbDepthID;
-
+	unsigned int forwardBufferID, forwardBufferDepthID;
 };
 
