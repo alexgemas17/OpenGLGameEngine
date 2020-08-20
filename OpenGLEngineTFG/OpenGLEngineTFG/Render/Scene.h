@@ -10,7 +10,10 @@
 #include "NodoScene.h"
 #include "Cubemap/CubeMap.h"
 
-#include "../BasicElement/Cube.h"
+#include "ForwardRender.h"
+#include "DeferredShadingRender.h"
+#include "ForwardPlusRender.h"
+
 
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
@@ -46,6 +49,9 @@ public:
 	glm::mat4 lightSpaceMatrix;
 
 	std::vector<SceneObj*> objs;
+	std::vector<glm::vec3> lightPositions;
+	std::vector<glm::vec3> lightColors;
+	std::vector<float> lightIntensity;
 
 private:
 	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
@@ -55,16 +61,13 @@ private:
 
 	CubeMap* skybox;
 
-	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 	unsigned int shadowMap, DepthShadowMap;
 	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;
-	unsigned int gBuffer, DepthGBuffer;
-	unsigned int lightBuffer;
 
-
-	/*TESTING*/
-	std::vector<glm::vec3> lightPositions;
-	std::vector<glm::vec3> lightColors;
+	int mode;
+	ForwardRender* forwardRender;
+	DeferredShadingRender* deferredShadingRender;
+	ForwardPlusRender* forwardPlusRender;
 
 	/* ShadowMap */
 	glm::mat4 shadowBias;
@@ -85,14 +88,10 @@ private:
 	// Inits de los buffers correspondientes.
 	void InitShadowMapBuffer();
 	void InitSSAOBuffer();
-	void InitGBuffer();
-	void InitDeferredLightBuffer();
 
 	// Pasadas de las luces.
 	void shadowMapPass();
 	void ssaoPass(glm::mat4& mView, glm::mat4& mProj);
-	void gBufferPass(glm::mat4 &mView, glm::mat4 & mViewProjection);
-	void deferredLightPass(glm::mat4& mView, glm::mat4& mProj);
 	void forwardPass(glm::mat4 mView, glm::mat4 mProj);
 	void postProcessEffectsPass(glm::mat4& mViewProjection);
 };

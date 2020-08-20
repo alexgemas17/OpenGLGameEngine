@@ -14,22 +14,25 @@ ShaderManager* ShaderManager::getInstance()
 }
 
 ShaderManager::ShaderManager(): 
-	basicLightShader(new PagShaderProgram()), 
-	gBufferPass(new PagShaderProgram()),
-	deferredLightingPass(new PagShaderProgram()),
+	forwardLightingShader(new PagShaderProgram()),
+	gBufferShader(new PagShaderProgram()),
+	deferredLightingShader(new PagShaderProgram()),
+	forwardPlusLightingShader(new PagShaderProgram()),
 	shadowMap(new PagShaderProgram()),
-	copyDataPass(new PagShaderProgram()),
 	skybox(new PagShaderProgram()),
 	ssao(new PagShaderProgram()),
 	ssao_blur(new PagShaderProgram()),
-	godRays(new PagShaderProgram()),
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
 	//std::string urlBasicShader = ShaderPath + "Lights\\Light";
 
-	std::string urlgBufferPass = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
-	std::string urldeferredLightingPass = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";
+	std::string urlForwardLightingShader = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
+
+	std::string urlGBufferShader = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
+	std::string urlDeferredLightingShader = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";
+
+	std::string urlForwardPlusLightingShader = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";
 
 	std::string urlshadowMap = ShaderPath+ "Shadow\\shadpwmap";
 
@@ -38,40 +41,59 @@ ShaderManager::ShaderManager():
 	std::string urlssao = ShaderPath+ "Postprocessefects\\SSAO\\ssao";
 	std::string urlssao_blur = ShaderPath+ "Postprocessefects\\SSAO\\ssao_blur";
 
-	std::string urlCopy = ShaderPath + "Postprocessefects\\Copy";
-	std::string urlGodRays = ShaderPath + "Postprocessefects\\God_rays\\God_rays";
-
 	//this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
 
-	this->gBufferPass->createShaderProgram(urlgBufferPass.c_str() );
-	this->deferredLightingPass->createShaderProgram(urldeferredLightingPass.c_str() );
+	this->forwardLightingShader->createShaderProgram(urlForwardLightingShader.c_str() );
+
+	this->gBufferShader->createShaderProgram(urlGBufferShader.c_str() );
+	this->deferredLightingShader->createShaderProgram(urlDeferredLightingShader.c_str() );
+
+	this->forwardPlusLightingShader->createShaderProgram(urlForwardPlusLightingShader.c_str() );
 
 	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
 	this->skybox->createShaderProgram(urlskybox.c_str());
 
 	this->ssao->createShaderProgram(urlssao.c_str());
 	this->ssao_blur->createShaderProgram(urlssao_blur.c_str());
-
-	this->copyDataPass->createShaderProgram(urlCopy.c_str());
-	this->godRays->createShaderProgram(urlGodRays.c_str());
 }
 
 ShaderManager::~ShaderManager()
 {
-	delete basicLightShader;
-	delete gBufferPass;
+	delete forwardLightingShader;
+	delete gBufferShader;
+	delete deferredLightingShader;
+	delete forwardPlusLightingShader;
 	delete shadowMap;
 	delete skybox;
 	delete ssao;
 	delete ssao_blur;
-	delete deferredLightingPass;
-	delete copyDataPass;
 	delete instance;
+}
+
+void ShaderManager::setTypeRender()
+{
+	(typeShader == TYPE_TEXTURE) ? typeShader == TYPE_WIREFRAME : typeShader == TYPE_TEXTURE;
+}
+
+/* -------------- RENDERS --------------  */
+PagShaderProgram* ShaderManager::getForwardLighting()
+{
+	return this->forwardLightingShader;
 }
 
 PagShaderProgram* ShaderManager::getGBuffer()
 {
-	return this->gBufferPass;
+	return this->gBufferShader;
+}
+
+PagShaderProgram* ShaderManager::getDeferredShading()
+{
+	return this->deferredLightingShader;
+}
+
+PagShaderProgram* ShaderManager::getForwardPlusLighting()
+{
+	return this->forwardPlusLightingShader;
 }
 
 PagShaderProgram* ShaderManager::getShadowMap()
@@ -79,14 +101,9 @@ PagShaderProgram* ShaderManager::getShadowMap()
 	return this->shadowMap;
 }
 
-PagShaderProgram* ShaderManager::getCopyDataPass()
+PagShaderProgram* ShaderManager::getSkyBox()
 {
-	return this->copyDataPass;
-}
-
-PagShaderProgram* ShaderManager::getGodRays()
-{
-	return this->godRays;
+	return this->skybox;
 }
 
 PagShaderProgram* ShaderManager::getSSAO()
@@ -97,24 +114,4 @@ PagShaderProgram* ShaderManager::getSSAO()
 PagShaderProgram* ShaderManager::getSSAOBlur()
 {
 	return this->ssao_blur;
-}
-
-PagShaderProgram* ShaderManager::getDeferredShading()
-{
-	return this->deferredLightingPass;
-}
-
-PagShaderProgram* ShaderManager::getBasicLightShader()
-{
-	return this->basicLightShader;
-}
-
-PagShaderProgram* ShaderManager::getSkyBox()
-{
-	return this->skybox;
-}
-
-void ShaderManager::setTypeRender()
-{
-	(typeShader == TYPE_TEXTURE) ? typeShader == TYPE_WIREFRAME : typeShader == TYPE_TEXTURE;
 }

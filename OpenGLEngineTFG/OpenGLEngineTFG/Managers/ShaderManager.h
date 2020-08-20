@@ -12,32 +12,38 @@ public:
 
 	void setTypeRender();
 
-	PagShaderProgram* getBasicLightShader();
+	static ShaderManager* getInstance();
 
-	/* DEFERRED RENDERING */
+	/* RENDERS */
+	PagShaderProgram* getForwardLighting();
 	PagShaderProgram* getGBuffer();
 	PagShaderProgram* getDeferredShading();
+	PagShaderProgram* getForwardPlusLighting();
+
+	/* POSTPROCESS EFFECTS */
 	PagShaderProgram* getShadowMap();
 	PagShaderProgram* getSkyBox();
 	PagShaderProgram* getSSAO();
 	PagShaderProgram* getSSAOBlur();
-	PagShaderProgram* getCopyDataPass();
-	PagShaderProgram* getGodRays();
 
-	static ShaderManager* getInstance();
 
 private:
 	// Instancia singleton.
 	static ShaderManager* instance;
-
+	TypeShader typeShader;
 	std::string ShaderPath;
 
-	PagShaderProgram* basicLightShader;
+	/* FORWARD RENDER */
+	PagShaderProgram* forwardLightingShader;
 
 	/* DEFERRED RENDERING */
-	PagShaderProgram* gBufferPass;
-	PagShaderProgram* deferredLightingPass;
+	PagShaderProgram* gBufferShader;
+	PagShaderProgram* deferredLightingShader;
 
+	/* FORWARD PLUS RENDER */
+	PagShaderProgram* forwardPlusLightingShader;
+
+	// ---------- POSTPROCESS EFFECTS -----------------
 	/* SHADOW MAP */
 	PagShaderProgram* shadowMap;
 
@@ -47,10 +53,4 @@ private:
 	/* SSAO */
 	PagShaderProgram* ssao;
 	PagShaderProgram* ssao_blur;
-
-	/* POSTPROCESS EFFECTS*/
-	PagShaderProgram* copyDataPass;
-	PagShaderProgram* godRays;
-
-	TypeShader typeShader;
 };

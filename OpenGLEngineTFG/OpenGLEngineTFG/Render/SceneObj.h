@@ -11,8 +11,10 @@
 #include "../Managers/ShaderManager.h"
 
 const enum class TypeDraw {
+	ForwardRender,
+	GeometryRender,
+	ForwardPlusRender,
 	ShadowMap,
-	GeometryPass
 };
 
 class SceneObj : public Render, public Model
@@ -46,7 +48,19 @@ private:
 		glm::mat4& MVP
 	);
 
-	void geometryPassDraw(
+	void forwardDraw(
+		PagShaderProgram* shader,
+		glm::mat4& ModelViewMatrix,
+		glm::mat4& MVP
+	);
+
+	void geometryDraw(
+		PagShaderProgram* shader,
+		glm::mat4& ModelViewMatrix,
+		glm::mat4& MVP
+	);
+
+	void forwardPlusDraw(
 		PagShaderProgram* shader,
 		glm::mat4& ModelViewMatrix,
 		glm::mat4& MVP

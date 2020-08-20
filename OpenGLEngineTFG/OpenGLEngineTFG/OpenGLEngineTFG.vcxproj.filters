@@ -76,6 +76,12 @@
     <Filter Include="Archivos de encabezado\Math">
       <UniqueIdentifier>{bc629ec5-b051-4f10-a53b-222438382557}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\World">
+      <UniqueIdentifier>{b015dd67-6f8b-490f-8576-0d7f2ccadda1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\World">
+      <UniqueIdentifier>{7ba4de1d-0ed9-41f4-b844-883c996b4265}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -87,19 +93,10 @@
     <ClCompile Include="Camara\Camara.cpp">
       <Filter>Archivos de origen\Camara</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Model.cpp">
-      <Filter>Archivos de origen\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\NodoScene.cpp">
-      <Filter>Archivos de origen\Render</Filter>
-    </ClCompile>
     <ClCompile Include="Render\Render.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
     <ClCompile Include="Render\Scene.cpp">
-      <Filter>Archivos de origen\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\SceneObj.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
     <ClCompile Include="Loaders\lodepng.cpp">
@@ -141,14 +138,8 @@
     <ClCompile Include="Gui\imgui_demo.cpp">
       <Filter>Archivos de origen\Gui</Filter>
     </ClCompile>
-    <ClCompile Include="PagShaderProgram.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
     <ClCompile Include="Managers\GuiManager.cpp">
       <Filter>Archivos de origen\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\SceneRenderer.cpp">
-      <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
     <ClCompile Include="BasicElement\Plane.cpp">
       <Filter>Archivos de origen\BasicElement</Filter>
@@ -159,8 +150,29 @@
     <ClCompile Include="BasicElement\CPlane.cpp">
       <Filter>Archivos de origen\BasicElement</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Model\AABB.cpp">
+    <ClCompile Include="Render\ForwardRender.cpp">
       <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\DeferredShadingRender.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\ForwardPlusRender.cpp">
+      <Filter>Archivos de origen\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\SceneObj.cpp">
+      <Filter>Archivos de origen\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\NodoScene.cpp">
+      <Filter>Archivos de origen\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Model.cpp">
+      <Filter>Archivos de origen\World</Filter>
+    </ClCompile>
+    <ClCompile Include="Render\Model\AABB.cpp">
+      <Filter>Archivos de origen\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="PagShaderProgram.cpp">
+      <Filter>Archivos de origen\Managers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,19 +185,10 @@
     <ClInclude Include="Camara\Camara.h">
       <Filter>Archivos de encabezado\Camara</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Model.h">
-      <Filter>Archivos de encabezado\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\NodoScene.h">
-      <Filter>Archivos de encabezado\Render</Filter>
-    </ClInclude>
     <ClInclude Include="Render\Render.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render\Scene.h">
-      <Filter>Archivos de encabezado\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\SceneObj.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
     <ClInclude Include="Loaders\lodepng.h">
@@ -239,14 +242,8 @@
     <ClInclude Include="Managers\GuiManager.h">
       <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="PagShaderProgram.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="BasicElement\Plane.h">
       <Filter>Archivos de encabezado\BasicElement</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\SceneRenderer.h">
-      <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
     <ClInclude Include="Render\Cubemap\CubeMap.h">
       <Filter>Archivos de encabezado\Render\Cubemap</Filter>
@@ -254,8 +251,29 @@
     <ClInclude Include="BasicElement\CPlane.h">
       <Filter>Archivos de encabezado\BasicElement</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Model\AABB.h">
+    <ClInclude Include="Render\ForwardRender.h">
       <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\DeferredShadingRender.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\ForwardPlusRender.h">
+      <Filter>Archivos de encabezado\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Model\AABB.h">
+      <Filter>Archivos de encabezado\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\Model.h">
+      <Filter>Archivos de encabezado\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\NodoScene.h">
+      <Filter>Archivos de encabezado\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Render\SceneObj.h">
+      <Filter>Archivos de encabezado\World</Filter>
+    </ClInclude>
+    <ClInclude Include="PagShaderProgram.h">
+      <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

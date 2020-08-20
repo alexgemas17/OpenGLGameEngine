@@ -40,22 +40,27 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 	glm::mat4 ModelViewMatrix = ViewMatrix * modelMatrix;
 	glm::mat4 MVP = ProjMatrix * ModelViewMatrix;
-	
-	//bool isInFrustum = Application::getInstance()->getMainScene()->camara->isPointInFrustum(*this->getAABB(), ModelViewMatrix);
-	//std::cout << "¿Esta el punto en el frustum?: " << isInFrustum << std::endl;
 
-	//shader->use();
-
-	if (type == TypeDraw::ShadowMap) {
-		glm::mat4 lightSpaceMatrix = Application::getInstance()->getMainScene()->lightSpaceMatrix;
-		glm::mat4 matrixShadow = lightSpaceMatrix * modelMatrix;
-		shadowMapDraw(shader, matrixShadow);
-	}
-	else {
-		geometryPassDraw(shader, ModelViewMatrix, MVP);
+	switch (type)
+	{
+	case TypeDraw::ForwardRender:
+		forwardDraw(shader, ModelViewMatrix, MVP);
+		break;
+	case TypeDraw::GeometryRender:
+		geometryDraw(shader, ModelViewMatrix, MVP);
+		break;
+	case TypeDraw::ForwardPlusRender:
+		forwardPlusDraw(shader, ModelViewMatrix, MVP);
+		break;
 	}
 
 	this->Draw();
+
+	/*if (type == TypeDraw::ShadowMap) {
+		glm::mat4 lightSpaceMatrix = Application::getInstance()->getMainScene()->lightSpaceMatrix;
+		glm::mat4 matrixShadow = lightSpaceMatrix * modelMatrix;
+		shadowMapDraw(shader, matrixShadow);
+	}*/
 }
 
 //------------------------------- PRIVATE -------------------------------
@@ -64,13 +69,20 @@ void SceneObj::shadowMapDraw(PagShaderProgram* shader, glm::mat4& MVP)
 	shader->setUniform("ProjLightModelMatrix", MVP);
 }
 
-void SceneObj::geometryPassDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
+void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
 {
-	shader->setUniform("hasNormalTexture", !this->getNormalMapTextures().empty());
-	shader->setUniform("hasMetallicTexture", !this->getMetallicTexture().empty());
-	shader->setUniform("hasRoughnessTexture", !this->getRoughnessTexture().empty());
-	shader->setUniform("hasAOTexture", !this->getAOTexture().empty());
+	shader->setUniform("ModelViewMatrix", ModelViewMatrix);
+	shader->setUniform("MVP", MVP);
+}
 
+void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
+{
+	shader->setUniform("ModelViewMatrix", ModelViewMatrix);
+	shader->setUniform("MVP", MVP);
+}
+
+void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& ModelViewMatrix, glm::mat4& MVP)
+{
 	shader->setUniform("ModelViewMatrix", ModelViewMatrix);
 	shader->setUniform("MVP", MVP);
 }

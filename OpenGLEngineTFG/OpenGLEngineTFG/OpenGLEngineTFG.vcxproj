@@ -156,13 +156,15 @@
     <ClCompile Include="Managers\TextureManager.cpp" />
     <ClCompile Include="PagShaderProgram.cpp" />
     <ClCompile Include="Render\Cubemap\CubeMap.cpp" />
+    <ClCompile Include="Render\DeferredShadingRender.cpp" />
+    <ClCompile Include="Render\ForwardPlusRender.cpp" />
+    <ClCompile Include="Render\ForwardRender.cpp" />
     <ClCompile Include="Render\Model.cpp" />
     <ClCompile Include="Render\Model\AABB.cpp" />
     <ClCompile Include="Render\NodoScene.cpp" />
     <ClCompile Include="Render\Render.cpp" />
     <ClCompile Include="Render\Scene.cpp" />
     <ClCompile Include="Render\SceneObj.cpp" />
-    <ClCompile Include="Render\SceneRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -189,13 +191,15 @@
     <ClInclude Include="Managers\TextureManager.h" />
     <ClInclude Include="PagShaderProgram.h" />
     <ClInclude Include="Render\Cubemap\CubeMap.h" />
+    <ClInclude Include="Render\DeferredShadingRender.h" />
+    <ClInclude Include="Render\ForwardPlusRender.h" />
+    <ClInclude Include="Render\ForwardRender.h" />
     <ClInclude Include="Render\Model.h" />
     <ClInclude Include="Render\Model\AABB.h" />
     <ClInclude Include="Render\NodoScene.h" />
     <ClInclude Include="Render\Render.h" />
     <ClInclude Include="Render\Scene.h" />
     <ClInclude Include="Render\SceneObj.h" />
-    <ClInclude Include="Render\SceneRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicShader-frag.glsl" />
