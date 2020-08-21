@@ -9,7 +9,9 @@
 
 #include <../glm/gtc/type_ptr.hpp>
 
-Scene::Scene(): camara(nullptr), mode(0), forwardRender(new ForwardRender()), deferredShadingRender(new DeferredShadingRender())
+Scene::Scene(): 
+	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
+	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
 {
 	//glPrimitiveRestartIndex(0xFFFFFFFF); //Posible incompatibilidad con los modelos cargados desde Assimp.
 	//glEnable(GL_PRIMITIVE_RESTART);
@@ -44,15 +46,14 @@ void Scene::InitScene()
 	SCR_WIDTH = Application::getInstance()->getWIDHT();
 	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
-	LoadObjs();
-	InitLights();
-
 	/*InitShadowMapBuffer();
 	InitSSAOBuffer();*/
-
 	forwardRender->createFrameBuffer();
 	deferredShadingRender->createFrameBuffer();
-	//forwardPlusRender->createFrameBuffer();
+	forwardPlusRender->createFrameBuffer(NR_POINT_LIGHTS);
+
+	LoadObjs();
+	InitLights();
 
 	this->nodoWorld->InitObjs();
 
@@ -100,7 +101,7 @@ void Scene::LoadObjs()
 void Scene::InitLights()
 {
 	//Cargamos los objetos
-	AssimpLoader* loader = new AssimpLoader();
+	//AssimpLoader* loader = new AssimpLoader();
 
 	// lighting info
 	// -------------
@@ -122,7 +123,9 @@ void Scene::InitLights()
 		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
 
-	delete loader;
+	forwardPlusRender->initBufferLights(lightPositions, lightColors, lightIntensity);
+
+	//delete loader;
 }
 
 /* Buffer para el ShadowMap */
@@ -280,7 +283,7 @@ void Scene::DrawObjs()
 		deferredShadingRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
 	}
 	else if (mode == 2) {
-		//forwardPlusRender->draw();
+		forwardPlusRender->draw(this->nodoWorld);
 	}
 
 	skyboxRender(mView, mProj);

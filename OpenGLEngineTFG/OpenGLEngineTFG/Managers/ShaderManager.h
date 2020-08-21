@@ -18,6 +18,8 @@ public:
 	PagShaderProgram* getForwardLighting();
 	PagShaderProgram* getGBuffer();
 	PagShaderProgram* getDeferredShading();
+	PagShaderProgram* getDepthShader();
+	PagShaderProgram* getLightingCulling();
 	PagShaderProgram* getForwardPlusLighting();
 
 	/* POSTPROCESS EFFECTS */
@@ -41,6 +43,8 @@ private:
 	PagShaderProgram* deferredLightingShader;
 
 	/* FORWARD PLUS RENDER */
+	PagShaderProgram* depthShader;
+	PagShaderProgram* lightingCulling;
 	PagShaderProgram* forwardPlusLightingShader;
 
 	// ---------- POSTPROCESS EFFECTS -----------------

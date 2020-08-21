@@ -18,7 +18,7 @@ struct Light {
 
 uniform sampler2D diffTexture;
 
-const int NR_LIGHTS = 32;
+const int NR_LIGHTS = 150;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 

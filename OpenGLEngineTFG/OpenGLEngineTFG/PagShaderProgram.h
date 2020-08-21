@@ -27,6 +27,13 @@ public:
 	// y otro cuyo nombre sea [filename]-geom.glsl para, con ellos, crear el shader program.
 	GLuint createShaderProgramWithGeometryShader(const char* filename);
 
+	// - Crea un shader program a partir del código fuente que se pasa en
+	// los archivos cuyo nombre genérico se pasa en el argumento filename.
+	// Este método, busca entre los recursos de la aplicación un archivo
+	// cuyo nombre sea [filename]-vert.glsl, otro cuyo nombre sea [filename]-frag.glsl
+	// y otro cuyo nombre sea [filename]-geom.glsl para, con ellos, crear el shader program.
+	GLuint createShaderCompProgram(const char* fileName);
+
 	// - Activa el shader program. A partir de ese momento y hasta que no se
 	// active un shader program distinto, las órdenes de dibujo se
 	// procesarán siguiendo las instrucciones de este programa.

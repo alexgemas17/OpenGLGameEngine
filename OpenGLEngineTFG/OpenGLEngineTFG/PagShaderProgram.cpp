@@ -129,6 +129,52 @@ GLuint PagShaderProgram::createShaderProgramWithGeometryShader(const char* fileN
 	return handler;
 }
 
+GLuint PagShaderProgram::createShaderCompProgram(const char* fileName)
+{
+	// - Creamos el shader program y almacenamos su identificador
+	if (handler <= 0) {
+		handler = glCreateProgram();
+		if (handler == 0) {
+			fprintf(stderr, "Cannot create shader program: %s.\n", fileName);
+			return 0;
+		}
+	}
+
+	// - Cargamos y compilamos cada uno de los shader objects que componen este
+	// comp program
+	char fileNameComplete[256];
+	strcpy_s(fileNameComplete, fileName);
+	strcat_s(fileNameComplete, "-comp.glsl");
+	GLuint vertexShaderObject = compileShader(fileNameComplete, GL_COMPUTE_SHADER);
+	if (vertexShaderObject == 0) {
+		return 0;
+	}
+
+	// - Asociamos los shader objects compilados sin errores al shader program
+	glAttachShader(handler, vertexShaderObject);
+	// - Enlazamos el shader program y comprobamos si hay errores
+	glLinkProgram(handler);
+	GLint linkSuccess = 0;
+	glGetProgramiv(handler, GL_LINK_STATUS, &linkSuccess);
+	if (linkSuccess == GL_FALSE) {
+		GLint logLen = 0;
+		glGetProgramiv(handler, GL_INFO_LOG_LENGTH, &logLen);
+		if (logLen > 0) {
+			char* cLogString = new char[logLen];
+			GLint written = 0;
+			glGetProgramInfoLog(handler, logLen, &written, cLogString);
+			logString.assign(cLogString);
+			delete[] cLogString;
+			std::cout << "Cannot link shader " << fileName << std::endl
+				<< logString << std::endl;
+		}
+		return 0;
+	}
+	else {
+		linked = true;
+	}
+	return handler;
+}
 
 bool PagShaderProgram::use() {
 	// - Antes de activar un shader program para su uso, hay que comprobar

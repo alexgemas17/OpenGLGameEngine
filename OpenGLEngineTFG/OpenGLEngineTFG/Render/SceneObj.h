@@ -14,6 +14,7 @@ const enum class TypeDraw {
 	ForwardRender,
 	GeometryRender,
 	ForwardPlusRender,
+	DepthRender,
 	ShadowMap,
 };
 
@@ -45,6 +46,11 @@ public:
 private:
 	void shadowMapDraw(
 		PagShaderProgram* shader, 
+		glm::mat4& MVP
+	);
+
+	void depthRender(
+		PagShaderProgram* shader,
 		glm::mat4& MVP
 	);
 

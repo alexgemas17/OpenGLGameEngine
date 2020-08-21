@@ -39,6 +39,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 
+
 	switch (type)
 	{
 	case TypeDraw::ForwardRender:
@@ -50,21 +51,24 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	case TypeDraw::ForwardPlusRender:
 		forwardPlusDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
 		break;
+	case TypeDraw::DepthRender:
+		glm::mat4 MVP = ProjMatrix * ViewMatrix * modelMatrix;
+		depthRender(shader, MVP);
+		break;
 	}
 
 	this->Draw();
-
-	/*if (type == TypeDraw::ShadowMap) {
-		glm::mat4 lightSpaceMatrix = Application::getInstance()->getMainScene()->lightSpaceMatrix;
-		glm::mat4 matrixShadow = lightSpaceMatrix * modelMatrix;
-		shadowMapDraw(shader, matrixShadow);
-	}*/
 }
 
 //------------------------------- PRIVATE -------------------------------
 void SceneObj::shadowMapDraw(PagShaderProgram* shader, glm::mat4& MVP)
 {
 	shader->setUniform("ProjLightModelMatrix", MVP);
+}
+
+void SceneObj::depthRender(PagShaderProgram* shader, glm::mat4& MVP)
+{
+	shader->setUniform("MVP", MVP);
 }
 
 void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)

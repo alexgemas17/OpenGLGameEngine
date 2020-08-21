@@ -17,6 +17,8 @@ ShaderManager::ShaderManager():
 	forwardLightingShader(new PagShaderProgram()),
 	gBufferShader(new PagShaderProgram()),
 	deferredLightingShader(new PagShaderProgram()),
+	depthShader(new PagShaderProgram()),
+	lightingCulling(new PagShaderProgram()),
 	forwardPlusLightingShader(new PagShaderProgram()),
 	shadowMap(new PagShaderProgram()),
 	skybox(new PagShaderProgram()),
@@ -32,7 +34,9 @@ ShaderManager::ShaderManager():
 	std::string urlGBufferShader = ShaderPath + "Deferred_Rendering\\gBuffer_Pass";
 	std::string urlDeferredLightingShader = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";
 
-	std::string urlForwardPlusLightingShader = ShaderPath + "Deferred_Rendering\\DeferredLighting_Pass";
+	std::string urlDepthShader = ShaderPath + "Forward_Plus_Rendering\\depth";
+	std::string urlLightingCulling = ShaderPath + "Forward_Plus_Rendering\\light_culling";
+	std::string urlForwardPlusLightingShader = ShaderPath + "Forward_Plus_Rendering\\light_accumulation";
 
 	std::string urlshadowMap = ShaderPath+ "Shadow\\shadpwmap";
 
@@ -48,6 +52,8 @@ ShaderManager::ShaderManager():
 	this->gBufferShader->createShaderProgram(urlGBufferShader.c_str() );
 	this->deferredLightingShader->createShaderProgram(urlDeferredLightingShader.c_str() );
 
+	this->depthShader->createShaderProgram(urlDepthShader.c_str() );
+	this->lightingCulling->createShaderCompProgram(urlLightingCulling.c_str() );
 	this->forwardPlusLightingShader->createShaderProgram(urlForwardPlusLightingShader.c_str() );
 
 	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
@@ -89,6 +95,16 @@ PagShaderProgram* ShaderManager::getGBuffer()
 PagShaderProgram* ShaderManager::getDeferredShading()
 {
 	return this->deferredLightingShader;
+}
+
+PagShaderProgram* ShaderManager::getDepthShader()
+{
+	return this->depthShader;
+}
+
+PagShaderProgram* ShaderManager::getLightingCulling()
+{
+	return this->lightingCulling;
 }
 
 PagShaderProgram* ShaderManager::getForwardPlusLighting()
