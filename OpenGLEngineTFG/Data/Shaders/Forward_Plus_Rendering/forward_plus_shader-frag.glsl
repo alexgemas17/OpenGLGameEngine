@@ -3,8 +3,9 @@
 layout (location = 0) out vec4 FragColor;
 
 in vec3 FragPos; 
-in vec3 Normal; 
+in vec3 VertexNormal; 
 in vec2 TexCoords;
+out mat3 TBN;
 
 struct Light {
 	vec4 Position;
@@ -28,7 +29,11 @@ layout(std430, binding = 1) readonly buffer VisibleLightIndicesBuffer {
 // -------------------------------------------------------------------------------------------
 
 // Uniforms
-uniform sampler2D diffTexture;
+uniform sampler2D texture_albedo;
+uniform sampler2D texture_specular;
+uniform sampler2D texture_normal;
+uniform bool has_texture_normal;
+
 uniform float numberOfTilesX;
 uniform vec3 viewPos;
 uniform int lightCount;
@@ -46,8 +51,16 @@ void main() {
 	// ----------------------------------------------------
 
 	// retrieve data from gbuffer
-    vec3 Diffuse = texture(diffTexture, TexCoords).rgb;
-    //float Specular = texture(gAlbedoSpec, TexCoords).a;
+    vec3 Diffuse = texture(texture_albedo, TexCoords).rgb;
+    float Specular = texture(texture_specular, TexCoords).a;
+
+    vec3 Normal = vec3(0.0f);
+    if(has_texture_normal){
+        Normal = texture(texture_normal, TexCoords).rgb;
+        Normal = normalize(TBN *  normalize(Normal * 2.0 - 1.0));
+    }else{
+        Normal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
+    }
 
     // then calculate lighting as usual
     vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
@@ -62,7 +75,6 @@ void main() {
 	for (uint i = 0; i < lightCount && visibleLightIndicesBuffer.data[offset + i].index != -1; i++) {
 		uint lightIndex = visibleLightIndicesBuffer.data[offset + i].index;
 		Light light = lightBuffer.data[lightIndex];
-	// ----------------------------------------------------
 
 		vec3 lightPosition = light.Position.xyz;
 		vec3 lightDir = normalize(lightPosition - FragPos);
@@ -81,7 +93,8 @@ void main() {
         // combine results
         vec3 ambient = Diffuse;
         vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color.rgb;
-        vec3 specular = light.Color.rgb * spec;
+        //vec3 specular = light.Color.rgb * spec;
+        vec3 specular = light.Color.rgb * spec * Specular;
 
         ambient *= attenuation;
         diffuse *= attenuation;
@@ -89,5 +102,12 @@ void main() {
         lighting += (ambient + diffuse + specular);
 	}
 
-	FragColor = vec4(lighting, 1.0);
+	//FragColor = vec4(lighting, 1.0);
+	const float gamma = 2.2;
+    const float exposure = 1.5f;
+    vec3 result = vec3(1.0) - exp(-lighting * exposure);
+    // also gamma correct while we're at it       
+    result = pow(result, vec3(1.0 / gamma));
+    
+    FragColor = vec4(lighting, 1.0);
 }

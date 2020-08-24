@@ -3,7 +3,7 @@
 #include "../Application.h"
 #include <../glm/gtc/type_ptr.hpp>
 
-void ForwardRender::createFrameBuffer()
+void ForwardRender::createFrameBuffer(int numLights)
 {
 	//int SCR_WIDTH = Application::getInstance()->getWIDHT();
 	//int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
@@ -26,11 +26,28 @@ void ForwardRender::createFrameBuffer()
 	//// attach depth texture as FBO's depth buffer
 	//glBindFramebuffer(GL_FRAMEBUFFER, forwardBufferID);
 	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, forwardBufferDepthID, 0);
+
+	glGenBuffers(1, &lightsShareBuffer);
+
+	// Bind light buffer
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, numLights * sizeof(structLight), 0, GL_DYNAMIC_DRAW);
 }
 
 void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	structLight* pointLights = (structLight*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	// Pasamos toda la información al buffer de luces que hemos creado
+	for (int i = 0; i < lightPosition.size(); i++) {
+		structLight& light = pointLights[i];
+		light.Position = glm::vec4(lightPosition[i], 0.0f);
+		light.Color = glm::vec4(lightColors[i], 0.0f);
+		light.IntensityandRadius = glm::vec4(lightIntensity[i], 25.0f, glm::vec2(0.0f));
+	}
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	//glBindFramebuffer(GL_FRAMEBUFFER, forwardBufferID);
 	glEnable(GL_BLEND);
 	glDepthMask(GL_TRUE);
@@ -39,25 +56,25 @@ void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition,
 
 	ShaderManager::getInstance()->getForwardLighting()->use();
 
-	for (unsigned int i = 0; i < lightPosition.size(); i++)
-	{
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition[i]);
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Intensity", lightIntensity[i]);
+	//for (unsigned int i = 0; i < lightPosition.size() / 2; i++)
+	//{
+	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition[i]);
+	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Intensity", lightIntensity[i]);
 
-		// update attenuation parameters and calculate radius
-		const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-		const float linear = 0.7;
-		const float quadratic = 1.8;
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
+	//	// update attenuation parameters and calculate radius
+	//	const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
+	//	const float linear = 0.7;
+	//	const float quadratic = 1.8;
+	//	/*ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
+	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);*/
+	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Radius", 25.0f);
+	//}
 
-		// then calculate radius of light volume/sphere
-		const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
-		float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Radius", radius);
-	}
-
+	int numLights = lightPosition.size();
+	// Bind shader storage buffer objects for the light and indice buffers
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightsShareBuffer);
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("lightCount", numLights);
 	world->DrawObjs(ShaderManager::getInstance()->getForwardLighting(), TypeDraw::ForwardRender);
 
 	// ¿Dibujamos las bolas?
@@ -65,6 +82,5 @@ void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition,
 		glUseProgram(0);
 		for (unsigned int i = 0; i < nLights; i++) drawLightBillboard(pointLightsArr[i], 0.15f);
 	}*/
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 }

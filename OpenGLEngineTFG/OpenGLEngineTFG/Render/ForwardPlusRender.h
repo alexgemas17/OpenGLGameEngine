@@ -36,7 +36,7 @@ public:
 		std::vector<glm::vec3> lightColors,
 		std::vector<float> lightIntensity
 	);
-	void updateLighst(std::vector<glm::vec3> lightPosition);
+	void updateLights(std::vector<glm::vec3> lightPosition);
 	void draw(NodoScene* world);
 
 private:

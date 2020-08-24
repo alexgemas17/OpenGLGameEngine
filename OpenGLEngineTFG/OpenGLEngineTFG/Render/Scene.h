@@ -19,7 +19,7 @@
 #include "Render.h"
 
 const int NR_DIRECTIONAL_LIGHTS = 1;
-const int NR_POINT_LIGHTS = 256;
+const int NR_POINT_LIGHTS = 1000;
 const int NR_SPOT_LIGHTS = 1;
 const unsigned int SHADOW_WIDTH = 2048 * 2, SHADOW_HEIGHT = 2048 * 2;
 const float NEAR_PLANE = 0.01f, FAR_PLANE = 1000.0f;
@@ -84,6 +84,7 @@ private:
 	// -------- PRIVATE FUNC ------------
 	void LoadObjs();	// Carga desde el objs.txt los objetos que tiene la escena
 	void InitLights();	// Crea luces puntuales aleatoriamente (hardcode: spot y direccional)
+	void UpdateLights(float deltaTime);
 
 	// Inits de los buffers correspondientes.
 	void InitShadowMapBuffer();

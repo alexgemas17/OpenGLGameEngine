@@ -36,7 +36,7 @@ ShaderManager::ShaderManager():
 
 	std::string urlDepthShader = ShaderPath + "Forward_Plus_Rendering\\depth";
 	std::string urlLightingCulling = ShaderPath + "Forward_Plus_Rendering\\light_culling";
-	std::string urlForwardPlusLightingShader = ShaderPath + "Forward_Plus_Rendering\\light_accumulation";
+	std::string urlForwardPlusLightingShader = ShaderPath + "Forward_Plus_Rendering\\forward_plus_shader";
 
 	std::string urlshadowMap = ShaderPath+ "Shadow\\shadowmap";
 

@@ -33,7 +33,7 @@ shared uint maxDepthInt;
 shared uint visibleLightCount;
 shared vec4 frustumPlanes[6];
 // Shared local storage for visible indices, will be written out to the global buffer at the end
-const int numberOfLights = 256;
+const int numberOfLights = 1000;
 shared int visibleLightIndices[numberOfLights];
 //shared int visibleLightIndices[1024];
 shared mat4 viewProjection;

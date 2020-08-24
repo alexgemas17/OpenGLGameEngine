@@ -119,19 +119,14 @@ Plane::Plane(TypeFloor type, float size)
 
 
 	Application::getInstance()->getTextureManager()->addIDTexture(albedoText[0]);
+	Application::getInstance()->getTextureManager()->addIDTexture(specText[0]);
 	Application::getInstance()->getTextureManager()->addIDTexture(normalText[0]);
-	Application::getInstance()->getTextureManager()->addIDTexture(roughess);
-	Application::getInstance()->getTextureManager()->addIDTexture(metallic);
-	Application::getInstance()->getTextureManager()->addIDTexture(ao);
 
 	this->obj = new SceneObj(
 		data, 
 		albedoText,
 		specText, 
-		normalText,
-		metallic,
-		roughess,
-		ao
+		normalText
 	);
 	this->obj->Scale(size, size, size);
 

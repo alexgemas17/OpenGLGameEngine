@@ -27,10 +27,7 @@ public:
 		AssimpData* data,
 		std::vector<std::string> AlbedoTextures,
 		std::vector<std::string> specularTextures,
-		std::vector<std::string> normalMapTextures,
-		std::string MetallicTexture,
-		std::string RoughnessTexture,
-		std::string AOTexture
+		std::vector<std::string> normalMapTextures
 	);
 
 	~SceneObj();

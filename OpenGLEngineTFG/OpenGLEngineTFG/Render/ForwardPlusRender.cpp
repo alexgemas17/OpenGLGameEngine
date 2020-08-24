@@ -65,8 +65,8 @@ void ForwardPlusRender::initBufferLights( std::vector<glm::vec3> lightPosition, 
 	// Pasamos toda la información al buffer de luces que hemos creado
 	for (int i = 0; i < this->numLights; i++) {
 		LightStruct& light = pointLights[i];
-		light.Position = glm::vec4(lightPosition[i], 1.0f);
-		light.Color = glm::vec4(lightColors[i], 1.0f);
+		light.Position = glm::vec4(lightPosition[i], 0.0f);
+		light.Color = glm::vec4(lightColors[i], 0.0f);
 		//light.Intensity = 1.0f;
 
 		// update attenuation parameters and calculate radius
@@ -76,7 +76,7 @@ void ForwardPlusRender::initBufferLights( std::vector<glm::vec3> lightPosition, 
 		//const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b); 
 		
 		//float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-		const float LIGHT_RADIUS = 30.0f; 
+		const float LIGHT_RADIUS = 10.0f; 
 		light.Radius = glm::vec4(glm::vec3(0.0f), LIGHT_RADIUS);
 
 		//light.Linear = linear;
@@ -88,7 +88,7 @@ void ForwardPlusRender::initBufferLights( std::vector<glm::vec3> lightPosition, 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void ForwardPlusRender::updateLighst(std::vector<glm::vec3> lightPosition)
+void ForwardPlusRender::updateLights(std::vector<glm::vec3> lightPosition)
 {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
 	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
@@ -165,7 +165,6 @@ void ForwardPlusRender::lightShader(NodoScene* world)
 	ShaderManager::getInstance()->getForwardPlusLighting()->use();
 
 	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("numberOfTilesX", workGroupsX);
-	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("lightCount", numLights);
 
 	world->DrawObjs(ShaderManager::getInstance()->getForwardPlusLighting(), TypeDraw::ForwardPlusRender);

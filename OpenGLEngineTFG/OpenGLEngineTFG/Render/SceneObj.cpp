@@ -8,20 +8,14 @@ SceneObj::SceneObj(
 	AssimpData* data,
 	std::vector<std::string> AlbedoTextures,
 	std::vector<std::string> specularTextures,
-	std::vector<std::string> normalMapTextures,
-	std::string MetallicTexture,
-	std::string RoughnessTexture,
-	std::string AOTexture
+	std::vector<std::string> normalMapTextures
 ) :
 	Model(),
 	Render(
 		data, 
 		AlbedoTextures, 
 		specularTextures,
-		normalMapTextures,
-		MetallicTexture,
-		RoughnessTexture,
-		AOTexture
+		normalMapTextures
 	)
 {}
 
@@ -39,6 +33,7 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
 
+	shader->use();
 
 	switch (type)
 	{
@@ -57,7 +52,12 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 		break;
 	}
 
-	this->Draw();
+	if (type != TypeDraw::DepthRender) {
+		this->Draw(shader);
+		return;
+	}
+
+	this->DrawDepth();
 }
 
 //------------------------------- PRIVATE -------------------------------
@@ -76,6 +76,7 @@ void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm
 	shader->setUniform("model", modelMatrix);
 	shader->setUniform("view", ViewMatrix);
 	shader->setUniform("projection", ProjMatrix);
+	shader->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 }
 
 void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
@@ -90,4 +91,5 @@ void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& modelMatrix,
 	shader->setUniform("model", modelMatrix);
 	shader->setUniform("view", ViewMatrix);
 	shader->setUniform("projection", ProjMatrix);
+	shader->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 }

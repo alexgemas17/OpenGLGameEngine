@@ -119,22 +119,6 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 			data->indices.push_back(face.mIndices[j]);
 	}
 
-	//for (GLuint i = 0; i < mesh->mNumFaces; i++)
-	//{
-	//	aiFace face = mesh->mFaces[i];
-	//	for (GLuint j = 0; j < face.mNumIndices; j++)
-	//	{
-	//		if (face.mIndices) {
-	//			data->indices.push_back(face.mIndices[j]);
-	//		}
-	//	}
-	//	//Añadimos el primer índice para realizar bien el mapeo de las IBOs.
-	//	if (face.mIndices) {
-	//		data->indices.push_back(face.mIndices[0]);
-	//	}
-	//	data->indices.push_back(0xFFFFFFFF);
-	//}
-
 	std::string path = Application::getInstance()->getPath();
 
 	// process materials
@@ -144,7 +128,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 	std::vector<std::string> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, modelData.textureURL);
 
 	// 2. specular maps
-	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, modelData.textureURL);
+	std::vector<std::string> specularMaps = loadMaterialTextures(material, aiTextureType_AMBIENT, modelData.textureURL);
 
 	// 3. normal maps
 	std::vector<std::string> normalMaps = loadMaterialTextures(material, aiTextureType_NORMALS, modelData.textureURL);
@@ -153,29 +137,7 @@ SceneObj* AssimpLoader::processMeshAssimp(aiMesh* mesh, const aiScene* scene, Ob
 		normalMaps = loadMaterialTextures(material, aiTextureType_HEIGHT, modelData.textureURL);
 	}
 
-	if (modelData.metallic_texture != "no-texture") {
-		addTextureToTextureManager(modelData.metallic_texture);
-	}
-	else {
-		modelData.metallic_texture = "";
-	}
-		
-	if (modelData.roughness_texture != "no-texture"){
-		addTextureToTextureManager(modelData.roughness_texture);
-	}
-	else {
-		modelData.roughness_texture = "";
-	}
-		
-	
-	if (modelData.ao_texture != "no-texture"){
-		addTextureToTextureManager(modelData.ao_texture);
-	}
-	else {
-		modelData.ao_texture = "";
-	}
-
-	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps, modelData.metallic_texture, modelData.roughness_texture, modelData.ao_texture);
+	obj = new SceneObj(data, diffuseMaps, specularMaps, normalMaps);
 
 	return obj;
 }

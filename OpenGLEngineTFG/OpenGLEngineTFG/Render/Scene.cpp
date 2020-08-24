@@ -36,7 +36,7 @@ void Scene::InitScene()
 
 	/*InitShadowMapBuffer();
 	InitSSAOBuffer();*/
-	forwardRender->createFrameBuffer();
+	forwardRender->createFrameBuffer(NR_POINT_LIGHTS);
 	deferredShadingRender->createFrameBuffer();
 	forwardPlusRender->createFrameBuffer(NR_POINT_LIGHTS);
 
@@ -96,12 +96,12 @@ void Scene::InitLights()
 	srand(13);
 	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
 	{
-		lightIntensity.push_back((RandomFloat(0.1, 0.9)));
+		lightIntensity.push_back((RandomFloat(0.2f, 1.5f)));
 
 		// calculate slightly random offsets
-		float xPos = RandomFloat(-20, 20);
+		float xPos = RandomFloat(-40, 40);
 		float yPos = RandomFloat(-20, 20);
-		float zPos = RandomFloat(-20, 20);
+		float zPos = RandomFloat(-60, 60);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
 		// also calculate random color
@@ -246,6 +246,22 @@ void Scene::UpdateObjs(float deltaTime)
 
 	if (InputManager::getInstance()->getInputButtonDown(Key_V)) {
 		nodoWorld->Translate(0.0f,-0.5f,0.0f);
+	}
+
+	UpdateLights(deltaTime);
+	forwardPlusRender->updateLights(this->lightPositions);
+}
+
+void Scene::UpdateLights(float deltaTime)
+{
+	srand(13);
+	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
+	{
+		// calculate slightly random offsets
+		float min = -20.0f;
+		float max = 90.0f;
+
+		lightPositions[i].y = fmod((lightPositions[i].y + (-4.5f * deltaTime) - min + max), max) + min;
 	}
 }
 

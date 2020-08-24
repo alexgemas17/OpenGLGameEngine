@@ -10,27 +10,15 @@ Render::Render(
 	AssimpData* data,
 	std::vector<std::string> AlbedoTextures, 
 	std::vector<std::string> specularTextures, 
-	std::vector<std::string> normalMapTextures,
-	std::string MetallicTexture,
-	std::string RoughnessTexture,
-	std::string AOTexture
+	std::vector<std::string> normalMapTextures
 ) :
-	AlbedoTextures(AlbedoTextures), 
-	specularTextures(specularTextures), 
+	AlbedoTextures(AlbedoTextures),
+	specularTextures(specularTextures),
+	normalMapTextures(normalMapTextures),
+	VAO(0), IBO(0), VBO_Puntos(0), VBO_Normales(0), 
+	CoordTexturaBuffer(0), VBO_Tangentes(0), VBO_Bitangentes(0),
 	dataObj(data)
-{
-	if (!normalMapTextures.empty())
-		this->normalMapTextures = normalMapTextures;
-
-	if (MetallicTexture != "")
-		this->MetallicTexture = MetallicTexture;
-
-	if (RoughnessTexture != "")
-		this->RoughnessTexture = RoughnessTexture;
-
-	if (AOTexture != "")
-		this->AOTexture = AOTexture;
-}
+{}
 
 Render::~Render()
 {
@@ -52,48 +40,41 @@ void Render::Init()
 	InitIBO();
 }
 
-void Render::Draw()
+void Render::DrawDepth()
+{
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glDrawElements(GL_TRIANGLES, this->dataObj->indices.size(), GL_UNSIGNED_INT, nullptr);
+	glBindVertexArray(0);
+}
+
+void Render::Draw(PagShaderProgram* shader)
 {
 	if (AlbedoTextures.empty())
 		return;
 
 	// Albedo Texture
 	glActiveTexture(GL_TEXTURE0);
-	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_albedo", 0);
+	shader->setUniform("texture_albedo", 0);
 	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
 
-	// Normal Texture
-	/*glActiveTexture(GL_TEXTURE1);
-	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 1);
-	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));*/
+	// Specular Texture
+	if (!specularTextures.empty()) {
+		glActiveTexture(GL_TEXTURE1);
+		shader->setUniform("texture_specular", 1);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(specularTextures[0]));
+	}
 
-	//// Normal Texture
-	//if (!MetallicTexture.empty()) {
-	//	glActiveTexture(GL_TEXTURE2);
-	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_metallic", 2);
-	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(MetallicTexture));
-	//}
-
-	//// Normal Texture
-	//if (!RoughnessTexture.empty()) {
-	//	glActiveTexture(GL_TEXTURE3);
-	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_roughness", 3);
-	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(RoughnessTexture));
-	//}
-
-	//// Normal Texture
-	//if (!AOTexture.empty()) {
-	//	glActiveTexture(GL_TEXTURE4);
-	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_ao", 4);
-	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AOTexture));
-	//}
-
-	//// Specular Texture
-	//if (!specularTextures.empty()) {
-	//	glActiveTexture(GL_TEXTURE2);
-	//	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_AO_Met_Rough", 2);
-	//	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(specularTextures[0]));
-	//}
+	if (!normalMapTextures.empty()) {
+		// Normal Texture
+		shader->setUniform("has_texture_normal", true);
+		glActiveTexture(GL_TEXTURE2);
+		shader->setUniform("texture_normal", 2);
+		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
+	}
+	else {
+		shader->setUniform("has_texture_normal", false);
+	}
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); 

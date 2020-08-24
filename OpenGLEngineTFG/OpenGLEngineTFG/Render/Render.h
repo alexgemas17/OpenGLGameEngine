@@ -6,6 +6,7 @@
 #include <GL\glew.h>
 
 #include "../Loaders/AssimpLoader.h"
+#include "../PagShaderProgram.h"
 
 class Render {
 public:
@@ -15,23 +16,18 @@ public:
 		AssimpData* data,
 		std::vector<std::string> AlbedoTextures,
 		std::vector<std::string> specularTextures,
-		std::vector<std::string> normalMapTextures,
-		std::string MetallicTexture,
-		std::string RoughnessTexture,
-		std::string AOTexture
+		std::vector<std::string> normalMapTextures
 		);
 
 	~Render();
 
-	void Init();
-	void Draw();
+	void Init(); 
+	void DrawDepth();
+	void Draw(PagShaderProgram* shader);
 
 	std::vector<std::string> getAlbedoTextures() { return this->AlbedoTextures; }
 	std::vector<std::string> getSpecularTextures() { return this->specularTextures; }
 	std::vector<std::string> getNormalMapTextures() { return this->normalMapTextures; }
-	std::string getMetallicTexture() { return this->MetallicTexture; }
-	std::string getRoughnessTexture() { return this->RoughnessTexture; }
-	std::string getAOTexture() { return this->AOTexture; }
 
 	AssimpData* dataObj;
 
@@ -48,9 +44,6 @@ private:
 	std::vector<std::string> AlbedoTextures;
 	std::vector<std::string> specularTextures;
 	std::vector<std::string> normalMapTextures;
-	std::string MetallicTexture;
-	std::string RoughnessTexture;
-	std::string AOTexture;
 
 	//Inits según el tipo que se haya especificado
 	void InitVAOInterleaved();
