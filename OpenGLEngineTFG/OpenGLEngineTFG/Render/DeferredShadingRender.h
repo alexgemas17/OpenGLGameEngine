@@ -6,16 +6,22 @@
 
 #include "NodoScene.h"
 
+struct structDRLight {
+	glm::vec4 Position;
+	glm::vec4 Color;
+	glm::vec4 IntensityandRadius;
+};
+
 class DeferredShadingRender
 {
 public:
-	void createFrameBuffer();
+	void createFrameBuffer(int numLights);
 	void draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
 
 	unsigned int getGBufferID() { return this->fbID; }
 
 private:
-	unsigned int fbID, fbDepthID;
+	unsigned int fbID, fbDepthID, lightsShareBuffer;
 	unsigned int quadVAO = 0, quadVBO = 0;
 	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 

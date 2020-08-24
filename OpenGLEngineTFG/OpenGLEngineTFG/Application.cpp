@@ -49,7 +49,17 @@ void Application::MainLoop(GLFWwindow* window)
 	//--------------- GUI INIT -------------
 	//guiManager->StartGUI();
 
-	//showFPSCounter(nbFrames, lastTime);
+	// ----------------------------- FPS ----------------------
+	double currentTime = glfwGetTime();
+	nbFrames++;
+	if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+		// printf and reset timer
+		printf("---------------\n");
+		printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+		printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
+		nbFrames = 0;
+		lastTime += 1.0;
+	}
 
 	// ----------------------------- INPUTS ----------------------
 	//processInput(window);

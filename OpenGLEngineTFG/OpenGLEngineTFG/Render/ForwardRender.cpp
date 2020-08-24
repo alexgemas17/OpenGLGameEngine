@@ -43,7 +43,7 @@ void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition,
 		structLight& light = pointLights[i];
 		light.Position = glm::vec4(lightPosition[i], 0.0f);
 		light.Color = glm::vec4(lightColors[i], 0.0f);
-		light.IntensityandRadius = glm::vec4(lightIntensity[i], 25.0f, glm::vec2(0.0f));
+		light.IntensityandRadius = glm::vec4(lightIntensity[i], 10.0f, glm::vec2(0.0f));
 	}
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -55,21 +55,6 @@ void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition,
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	ShaderManager::getInstance()->getForwardLighting()->use();
-
-	//for (unsigned int i = 0; i < lightPosition.size() / 2; i++)
-	//{
-	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition[i]);
-	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
-	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Intensity", lightIntensity[i]);
-
-	//	// update attenuation parameters and calculate radius
-	//	const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-	//	const float linear = 0.7;
-	//	const float quadratic = 1.8;
-	//	/*ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
-	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);*/
-	//	ShaderManager::getInstance()->getForwardLighting()->setUniform("lights[" + std::to_string(i) + "].Radius", 25.0f);
-	//}
 
 	int numLights = lightPosition.size();
 	// Bind shader storage buffer objects for the light and indice buffers

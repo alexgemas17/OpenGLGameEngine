@@ -10,7 +10,7 @@
 #include <../glm/gtc/type_ptr.hpp>
 
 Scene::Scene(): 
-	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
+	camara(nullptr), mode(1), forwardRender(new ForwardRender()), 
 	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
 {}
 
@@ -37,7 +37,7 @@ void Scene::InitScene()
 	/*InitShadowMapBuffer();
 	InitSSAOBuffer();*/
 	forwardRender->createFrameBuffer(NR_POINT_LIGHTS);
-	deferredShadingRender->createFrameBuffer();
+	deferredShadingRender->createFrameBuffer(NR_POINT_LIGHTS);
 	forwardPlusRender->createFrameBuffer(NR_POINT_LIGHTS);
 
 	LoadObjs();

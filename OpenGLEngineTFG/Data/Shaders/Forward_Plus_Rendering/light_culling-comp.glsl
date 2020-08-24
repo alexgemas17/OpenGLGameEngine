@@ -3,7 +3,7 @@
 struct Light {
 	vec4 Position;
 	vec4 Color;
-	vec4 Radius;
+	vec4 IntensityandRadius;
 };
 
 struct VisibleIndex {
@@ -33,7 +33,7 @@ shared uint maxDepthInt;
 shared uint visibleLightCount;
 shared vec4 frustumPlanes[6];
 // Shared local storage for visible indices, will be written out to the global buffer at the end
-const int numberOfLights = 1000;
+const int numberOfLights = 1024;
 shared int visibleLightIndices[numberOfLights];
 //shared int visibleLightIndices[1024];
 shared mat4 viewProjection;
@@ -121,7 +121,7 @@ void main() {
 		}
 
 		vec4 position = lightBuffer.data[lightIndex].Position;
-		float radius = lightBuffer.data[lightIndex].Radius.w;
+		float radius = lightBuffer.data[lightIndex].IntensityandRadius.y;
 
 		// We check if the light exists in our frustum
 		float distance = 0.0;

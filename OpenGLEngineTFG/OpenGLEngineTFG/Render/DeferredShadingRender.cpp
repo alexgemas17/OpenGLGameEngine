@@ -3,7 +3,7 @@
 #include "../Application.h"
 #include <../glm/gtc/type_ptr.hpp>
 
-void DeferredShadingRender::createFrameBuffer()
+void DeferredShadingRender::createFrameBuffer(int numLights)
 {
 	int SCR_WIDTH = Application::getInstance()->getWIDHT();
 	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
@@ -60,6 +60,11 @@ void DeferredShadingRender::createFrameBuffer()
 		std::cout << "Framebuffer not complete!" << std::endl;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glGenBuffers(1, &lightsShareBuffer);
+	// Bind light buffer
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, numLights * sizeof(structDRLight), 0, GL_DYNAMIC_DRAW);
 }
 
 void DeferredShadingRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
@@ -123,6 +128,18 @@ void DeferredShadingRender::geometryBufferPass(NodoScene* world)
 
 void DeferredShadingRender::deferredLightingPass(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
 {
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	structLight* pointLights = (structLight*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	// Pasamos toda la información al buffer de luces que hemos creado
+	for (int i = 0; i < lightPosition.size(); i++) {
+		structLight& light = pointLights[i];
+		light.Position = glm::vec4(lightPosition[i], 0.0f);
+		light.Color = glm::vec4(lightColors[i], 0.0f);
+		light.IntensityandRadius = glm::vec4(lightIntensity[i], 10.0f, glm::vec2(0.0f));
+	}
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 	//No hacemos glBindFramebuffer porque estamos usando el deafult buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);
@@ -142,51 +159,15 @@ void DeferredShadingRender::deferredLightingPass(NodoScene* world, std::vector<g
 	glBindTexture(GL_TEXTURE_2D, gAlbedo);
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
 
-	for (unsigned int i = 0; i < lightPosition.size(); i++)
-	{
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Position", lightPosition[i]);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Color", lightColors[i]);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 
-		// update attenuation parameters and calculate radius
-		const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-		const float linear = 0.7;
-		const float quadratic = 1.8;
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Linear", linear);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Quadratic", quadratic);
-
-		// then calculate radius of light volume/sphere
-		const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
-		float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-		ShaderManager::getInstance()->getDeferredShading()->setUniform("lights[" + std::to_string(i) + "].Radius", 30.0f);
-	}
-
-
-	//glm::mat4 mView = Application::getInstance()->getMainScene()->camara->getView();
-	//glm::mat4 mProj = Application::getInstance()->getMainScene()->camara->getProjection();
-	//glm::vec3 cameraPosition = Application::getInstance()->getMainScene()->camara->getPosition();
-
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPosition", cameraPosition);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("viewInverse", glm::inverse(mView));
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("projectionInverse", glm::inverse(mProj));
-
-	//// ------------------------ Light Pass ------------------------
-	////NOTA: Las luces están dentro del shader. TO-DO: Ver como pasarla aquí para ir de una en una.
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("NumPointLights", NR_POINT_LIGHTS);
-
-	//// Directional Light 
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightDirection", glm::vec3(-1.0f, -1.0f, -1.0f));
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.Intensity", 2.0f);
-	//ShaderManager::getInstance()->getDeferredShading()->setUniform("DirLight.LightColour", glm::vec3(1.0f));
-
-	//// Point Light
-	//for (int i = 0; i < NR_POINT_LIGHTS; i++) {
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Position", lightPosition[i]);
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].Intensity", 10.0f);
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].LightColour", glm::vec3(1.0f));
-	//	ShaderManager::getInstance()->getDeferredShading()->setUniform("pointLights[" + std::to_string(i) + "].AttenuationRadius", 30.0f);
-	//}
+	// Bind shader storage buffer objects for the light and indice buffers
+	int numLights = lightPosition.size();
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("lightCount", numLights);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightsShareBuffer);
 
 	renderQuad();
 
 	glEnable(GL_DEPTH_TEST);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 }

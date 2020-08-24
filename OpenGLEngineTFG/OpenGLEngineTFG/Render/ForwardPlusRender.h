@@ -20,7 +20,7 @@
 struct LightStruct {
 	glm::vec4 Position;
 	glm::vec4 Color;
-	glm::vec4 Radius;
+	glm::vec4 IntensityandRadius;
 };
 
 struct VisibleIndex {

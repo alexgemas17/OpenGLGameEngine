@@ -10,7 +10,7 @@ out mat3 TBN;
 struct Light {
 	vec4 Position;
 	vec4 Color;
-	vec4 Radius;
+	vec4 IntensityandRadius;
 };
 
 struct VisibleIndex {
@@ -76,7 +76,7 @@ void main() {
 		uint lightIndex = visibleLightIndicesBuffer.data[offset + i].index;
 		Light light = lightBuffer.data[lightIndex];
 
-		vec3 lightPosition = light.Position.xyz;
+		/*vec3 lightPosition = light.Position.xyz;
 		vec3 lightDir = normalize(lightPosition - FragPos);
         // diffuse shading
         //float diff = max(dot(normal, lightDir), 0.0);
@@ -99,7 +99,38 @@ void main() {
         ambient *= attenuation;
         diffuse *= attenuation;
         specular *= attenuation;
-        lighting += (ambient + diffuse + specular);
+        lighting += (ambient + diffuse + specular);*/
+        vec3 lightPosition = light.Position.xyz;
+        float radius = light.IntensityandRadius.y;
+
+        float distance = length(lightPosition - FragPos);
+        vec3 lightColor = light.Color.rgb;
+        float intensity = light.IntensityandRadius.x;
+
+        vec3 lightDir = normalize(lightPosition - FragPos);
+
+        // specular shading
+        vec3 reflectDir = reflect(-lightDir, Normal);
+
+        // attenuation
+        float attenuation = 1.0 / (1.0f + Linear * distance + Quadratic * (distance * distance)); 
+
+        // combine results
+        vec3 ambient = lightColor * intensity;
+        
+        vec3 diffuse = vec3(0.0f);
+        float dotL = dot(Normal, lightDir);
+        if ( dotL > 0.0f){
+            diffuse = max(dotL, 0.0) * Diffuse * lightColor * intensity;
+        }
+
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
+        vec3 specular = lightColor * spec * Specular;
+
+        ambient *= attenuation;
+        diffuse *= attenuation;
+        specular *= attenuation;
+        lighting += (ambient + diffuse + specular); 
 	}
 
 	//FragColor = vec4(lighting, 1.0);

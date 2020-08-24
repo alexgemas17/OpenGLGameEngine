@@ -67,21 +67,7 @@ void ForwardPlusRender::initBufferLights( std::vector<glm::vec3> lightPosition, 
 		LightStruct& light = pointLights[i];
 		light.Position = glm::vec4(lightPosition[i], 0.0f);
 		light.Color = glm::vec4(lightColors[i], 0.0f);
-		//light.Intensity = 1.0f;
-
-		// update attenuation parameters and calculate radius
-		//const float constant = 1.0; // note that we don't send this to the shader, we assume it is always 1.0 (in our case)
-		//const float linear = 0.7;
-		//const float quadratic = 1.8;
-		//const float maxBrightness = std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b); 
-		
-		//float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (constant - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-		const float LIGHT_RADIUS = 10.0f; 
-		light.Radius = glm::vec4(glm::vec3(0.0f), LIGHT_RADIUS);
-
-		//light.Linear = linear;
-		//light.Quadratic = quadratic;
-		//light.Radius = radius;
+		light.IntensityandRadius = glm::vec4(lightIntensity[i], 10.0f, glm::vec2(0.0f));
 	}
 
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
@@ -139,7 +125,6 @@ void ForwardPlusRender::lightCullingRender()
 
 	int SCR_WIDTH = Application::getInstance()->getWIDHT();
 	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-	//glm::ivec2 screenResolution = glm::ivec2(SCR_WIDTH, SCR_HEIGHT);
 	ShaderManager::getInstance()->getLightingCulling()->setUniform("screenSize", glm::vec2(SCR_WIDTH, SCR_HEIGHT));
 
 	// Bind depth map texture to texture location 4 (which will not be used by any model texture)
@@ -156,6 +141,9 @@ void ForwardPlusRender::lightCullingRender()
 	// Unbind the depth map
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, 0);
 }
 
 void ForwardPlusRender::lightShader(NodoScene* world)
@@ -167,6 +155,9 @@ void ForwardPlusRender::lightShader(NodoScene* world)
 	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("numberOfTilesX", workGroupsX);
 	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("lightCount", numLights);
 
+	// Bind shader storage buffer objects for the light and indice buffers
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightsShareBuffer);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, visibleLightIndicesBuffer);
 	world->DrawObjs(ShaderManager::getInstance()->getForwardPlusLighting(), TypeDraw::ForwardPlusRender);
 
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
