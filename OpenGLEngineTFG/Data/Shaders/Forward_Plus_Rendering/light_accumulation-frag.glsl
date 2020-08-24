@@ -7,13 +7,9 @@ in vec3 Normal;
 in vec2 TexCoords;
 
 struct Light {
-    vec3 Position;
-    vec3 Color;
-    float Intensity;
-    
-    float Linear;
-    float Quadratic;
-    float Radius;
+	vec4 Position;
+	vec4 Color;
+	vec4 Radius;
 };
 
 struct VisibleIndex {
@@ -33,15 +29,20 @@ layout(std430, binding = 1) readonly buffer VisibleLightIndicesBuffer {
 
 // Uniforms
 uniform sampler2D diffTexture;
-uniform int numberOfTilesX;
+uniform float numberOfTilesX;
 uniform vec3 viewPos;
+uniform int lightCount;
+
+const float Linear =  0.7f;
+const float Quadratic = 1.8f;
 
 void main() {
 	// ----------------------------------------------------
 	// Determine which tile this pixel belongs to
 	ivec2 location = ivec2(gl_FragCoord.xy);
 	ivec2 tileID = location / ivec2(16, 16);
-	uint index = tileID.y * numberOfTilesX + tileID.x;
+	int numTilesX = int(numberOfTilesX);
+	uint index = tileID.y * numTilesX + tileID.x;
 	// ----------------------------------------------------
 
 	// retrieve data from gbuffer
@@ -56,13 +57,15 @@ void main() {
 	// Loop through all these indices until we hit max number of lights or the end (indicated by an index of -1)
 	// Calculate the lighting contribution from each visible point light
 	// ----------------------------------------------------
-	uint offset = index * 1024;
-	for (uint i = 0; i < 1024 && visibleLightIndicesBuffer.data[offset + i].index != -1; i++) {
+	//uint offset = index * 1024; lightCount
+	uint offset = index * lightCount;
+	for (uint i = 0; i < lightCount && visibleLightIndicesBuffer.data[offset + i].index != -1; i++) {
 		uint lightIndex = visibleLightIndicesBuffer.data[offset + i].index;
 		Light light = lightBuffer.data[lightIndex];
 	// ----------------------------------------------------
 
-		vec3 lightDir = normalize(light.Position - FragPos);
+		vec3 lightPosition = light.Position.xyz;
+		vec3 lightDir = normalize(lightPosition - FragPos);
         // diffuse shading
         //float diff = max(dot(normal, lightDir), 0.0);
 
@@ -71,14 +74,14 @@ void main() {
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
 
         // attenuation
-        float distance = length(light.Position - FragPos);
+        float distance = length(lightPosition - FragPos);
         //float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance); 
-        float attenuation = 1.0 / (1.0f + light.Linear * distance + light.Quadratic * (distance * distance)); 
+        float attenuation = 1.0 / (1.0f + Linear * distance + Quadratic * (distance * distance)); 
 
         // combine results
         vec3 ambient = Diffuse;
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color;
-        vec3 specular = light.Color * spec;
+        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color.rgb;
+        vec3 specular = light.Color.rgb * spec;
 
         ambient *= attenuation;
         diffuse *= attenuation;

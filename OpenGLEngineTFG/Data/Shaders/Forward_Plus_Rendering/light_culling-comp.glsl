@@ -1,9 +1,9 @@
 #version 430
 
 struct Light {
-	vec4 color;
-	vec4 position;
-	vec4 paddingAndRadius;
+	vec4 Position;
+	vec4 Color;
+	vec4 Radius;
 };
 
 struct VisibleIndex {
@@ -23,7 +23,8 @@ layout(std430, binding = 1) writeonly buffer VisibleLightIndicesBuffer {
 uniform sampler2D depthMap;
 uniform mat4 view;
 uniform mat4 projection;
-uniform ivec2 screenSize;
+//uniform ivec2 screenSize;
+uniform vec2 screenSize;
 uniform int lightCount;
 
 // Shared values between all the threads in the group
@@ -32,7 +33,9 @@ shared uint maxDepthInt;
 shared uint visibleLightCount;
 shared vec4 frustumPlanes[6];
 // Shared local storage for visible indices, will be written out to the global buffer at the end
-shared int visibleLightIndices[1024];
+const int numberOfLights = 256;
+shared int visibleLightIndices[numberOfLights];
+//shared int visibleLightIndices[1024];
 shared mat4 viewProjection;
 
 // Took some light culling guidance from Dice's deferred renderer
@@ -59,6 +62,7 @@ void main() {
 
 	// Step 1: Calculate the minimum and maximum depth values (from the depth buffer) for this group's tile
 	float maxDepth, minDepth;
+	ivec2 resolution = ivec2(screenSize.x, screenSize.y);
 	vec2 text = vec2(location) / screenSize;
 	float depth = texture(depthMap, text).r;
 	// Linearize the depth value from depth buffer (must do this because we created it using projection)
@@ -116,8 +120,8 @@ void main() {
 			break;
 		}
 
-		vec4 position = lightBuffer.data[lightIndex].position;
-		float radius = lightBuffer.data[lightIndex].paddingAndRadius.w;
+		vec4 position = lightBuffer.data[lightIndex].Position;
+		float radius = lightBuffer.data[lightIndex].Radius.w;
 
 		// We check if the light exists in our frustum
 		float distance = 0.0;
@@ -142,12 +146,12 @@ void main() {
 
 	// One thread should fill the global light buffer
 	if (gl_LocalInvocationIndex == 0) {
-		uint offset = index * 1024; // Determine bosition in global buffer
+		uint offset = index * numberOfLights; // Determine bosition in global buffer
 		for (uint i = 0; i < visibleLightCount; i++) {
 			visibleLightIndicesBuffer.data[offset + i].index = visibleLightIndices[i];
 		}
 
-		if (visibleLightCount != 1024) {
+		if (visibleLightCount != numberOfLights) {
 			// Unless we have totally filled the entire array, mark it's end with -1
 			// Final shader step will use this to determine where to stop (without having to pass the light count)
 			visibleLightIndicesBuffer.data[offset + visibleLightCount].index = -1;

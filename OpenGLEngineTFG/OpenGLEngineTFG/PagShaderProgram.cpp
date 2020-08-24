@@ -189,7 +189,7 @@ bool PagShaderProgram::use() {
 	}
 }
 
-bool PagShaderProgram::setUniform(std::string name, GLint value) {
+bool PagShaderProgram::setUniform(std::string name, int value) {
 	// - Para asignar valor a un uniform, primero hay que buscar si en el shader
 	// program existe alguna variable de tipo uniform cuyo nombre coincida con
 	// el que pasamos como argumento
@@ -206,6 +206,24 @@ bool PagShaderProgram::setUniform(std::string name, GLint value) {
 		return false;
 	}
 }
+//
+//bool PagShaderProgram::setUniform(std::string name, GLint value) {
+//	// - Para asignar valor a un uniform, primero hay que buscar si en el shader
+//	// program existe alguna variable de tipo uniform cuyo nombre coincida con
+//	// el que pasamos como argumento
+//	GLint location = glGetUniformLocation(handler, name.c_str());
+//	// - Si location es un valor positivo, es que existe el uniform y podemos
+//// asignarlo
+//	if (location >= 0) {
+//		// - Aquí usamos la función glUniform que recibe un argumento de tipo GLint
+//		glUniform1i(location, value);
+//		return true;
+//	}
+//	else {
+//		std::cout << "Cannot find localization for: " << name << std::endl;
+//		return false;
+//	}
+//}
 
 bool PagShaderProgram::setUniform(std::string name, GLfloat value) {
 	GLint location = glGetUniformLocation(handler, name.c_str());

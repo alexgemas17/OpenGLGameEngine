@@ -12,19 +12,7 @@
 Scene::Scene(): 
 	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
 	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
-{
-	//glPrimitiveRestartIndex(0xFFFFFFFF); //Posible incompatibilidad con los modelos cargados desde Assimp.
-	//glEnable(GL_PRIMITIVE_RESTART);
-	//glEnable(GL_PROGRAM_POINT_SIZE);
-
-	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
-	//glEnable(GL_MULTISAMPLE);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	glDisable(GL_BLEND); //Activar despues del Deferred rendering si se quiere usar
-}
+{}
 
 Scene::~Scene() {}
 
@@ -274,9 +262,8 @@ void Scene::DrawObjs()
 	glm::mat4 mProj = camara->getProjection();
 	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
 
-	ShaderManager::getInstance()->getForwardLighting()->setUniform("viewPos", camara->getPosition());
-
 	if (mode == 0) {
+		ShaderManager::getInstance()->getForwardLighting()->setUniform("viewPos", camara->getPosition());
 		forwardRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
 	}
 	else if (mode == 1) {

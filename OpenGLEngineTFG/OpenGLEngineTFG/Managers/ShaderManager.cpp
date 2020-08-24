@@ -38,7 +38,7 @@ ShaderManager::ShaderManager():
 	std::string urlLightingCulling = ShaderPath + "Forward_Plus_Rendering\\light_culling";
 	std::string urlForwardPlusLightingShader = ShaderPath + "Forward_Plus_Rendering\\light_accumulation";
 
-	std::string urlshadowMap = ShaderPath+ "Shadow\\shadpwmap";
+	std::string urlshadowMap = ShaderPath+ "Shadow\\shadowmap";
 
 	std::string urlskybox = ShaderPath+ "Skybox\\skybox";
 

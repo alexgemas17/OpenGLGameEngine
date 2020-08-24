@@ -43,11 +43,10 @@ int main() {
 
 	//  -------------------- Configuramos GLFW -------------------- 
 	glfwWindowHint(GLFW_SAMPLES, 4); // Activa antialiasing con 4 muestras.
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-	/*glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_FALSE);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, true);*/
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 	glfwSwapInterval(0); //VSync off
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -59,20 +58,18 @@ int main() {
 		return -3;
 	}
 
-	// Especificamos la versión de GLEW para poder usar el Voxel Cone tracing.
-	std::vector<std::pair<GLuint, std::string>> requiredGLEWExtensions = {
-		{ GLEW_ARB_shader_image_load_store,		"ARB_shader_image_load_store"},
-		{ GLEW_VERSION_4_5,						"GLEW_VERSION_4_5 (OpenGL 4.5)"},
-		{ GL_ARB_multisample,					"GLFW MSAA" }
-	};
-
-	for (const auto& ext : requiredGLEWExtensions) {
-		if (!ext.first) {
-			std::cerr << "ERROR: " << ext.second << " not supported! Expect unexpected behaviour." << std::endl;
-			std::cerr << "Press any key to continue ... " << std::endl;
-			getchar();
-		}
+	// Make sure OpenGL version 4.5 API is available
+	if (!GLEW_VERSION_4_5) {
+		throw std::runtime_error("OpenGL 4.5 API is not available.");
 	}
+
+	Application::getInstance()->getInfoHardware();
+
+	// Enable any OpenGL features we want to use
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
 
 	glViewport(0, 0, WIDHT, HEIGHT);
 

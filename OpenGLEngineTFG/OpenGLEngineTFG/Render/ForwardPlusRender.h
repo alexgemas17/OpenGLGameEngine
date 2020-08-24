@@ -7,13 +7,20 @@
 #include "NodoScene.h"
 
 // Estructura que usa nuestros shaders para poder compartirlo
-struct Light {
-	glm::vec3 Position;
-	glm::vec3 Color;
+//struct LightStruct {
+//	glm::vec3 Position;
+//	glm::vec3 Color;
+//	float Intensity;
+//
+//	float Linear;
+//	float Quadratic;
+//	float Radius;
+//};
 
-	float Linear;
-	float Quadratic;
-	float Radius;
+struct LightStruct {
+	glm::vec4 Position;
+	glm::vec4 Color;
+	glm::vec4 Radius;
 };
 
 struct VisibleIndex {
@@ -36,8 +43,8 @@ private:
 	unsigned int lightsShareBuffer, visibleLightIndicesBuffer, dephtFrambuffer, depthText;
 
 	// X and Y work group dimension variables for compute shader
-	int workGroupsX = 0;
-	int workGroupsY = 0;
+	float workGroupsX = 0;
+	float workGroupsY = 0;
 
 	int numLights;
 
