@@ -4,6 +4,9 @@ layout (location = 0) out vec4 FragColor;
 
 in vec2 TexCoords;
 
+const float Linear =  0.7f;
+const float Quadratic = 1.8f;
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D gAlbedoSpec;
@@ -14,18 +17,13 @@ struct Light {
     vec4 IntensityandRadius;
 };
 
-//const int NR_LIGHTS = 150;
-//uniform Light lights[NR_LIGHTS];
-uniform vec3 viewPos;
-
 // Shader storage buffer objects
 layout(std430, binding = 0) readonly buffer LightsBuffer {
     Light data[];
 } lightsBuffer;
-uniform int lightCount;
 
-const float Linear =  0.7f;
-const float Quadratic = 1.8f;
+uniform int lightCount;
+uniform vec3 viewPos;
 
 void main()
 {   
@@ -46,13 +44,14 @@ void main()
         vec3 lightPosition = light.Position.xyz;
         float radius = light.IntensityandRadius.y;
 
-        float distance = length(lightPosition - FragPos);
+        vec3 lDir = lightPosition - FragPos;
+        float distance = length(lDir);
         if(distance < radius)
         {
             vec3 lightColor = light.Color.rgb;
             float intensity = light.IntensityandRadius.x;
 
-            vec3 lightDir = normalize(lightPosition - FragPos);
+            vec3 lightDir = normalize(lDir);
 
             // specular shading
             vec3 reflectDir = reflect(-lightDir, Normal);

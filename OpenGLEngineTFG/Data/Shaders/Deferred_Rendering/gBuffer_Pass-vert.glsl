@@ -11,29 +11,23 @@ out vec3 VertexNormal;
 out vec2 TexCoords;
 out mat3 TBN;
 
-//uniform mat4 ModelViewMatrix; //view * model
-//uniform mat3 NormalMatrix;
-//uniform mat4 MVP; //projection * view * model
-
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 ModelMatrix;
+uniform mat4 ProjectionMatrix;
+uniform mat4 ViewMatrix;
 
 void main()
 {
-    vec4 worldPos = model * vec4(vPosition, 1.0);
+    vec4 worldPos = ModelMatrix * vec4(vPosition, 1.0);
     FragPos = worldPos.xyz; 
     TexCoords = vTexCoords;
     
-    mat3 normalMatrix = transpose(inverse(mat3(model)));
-    VertexNormal = normalMatrix * vNormal;
+    mat3 NormalMatrix = transpose(inverse(mat3(ModelMatrix)));
+    VertexNormal = NormalMatrix * vNormal;
 
-    // Use the normal matrix to maintain the orthogonal property of a vector when it is scaled non-uniformly
-    vec3 T = normalize(normalMatrix * vTangent);
-    vec3 B = normalize(normalMatrix * vBitangent);
-    vec3 N = normalize(normalMatrix * vNormal);
+    vec3 T = normalize(NormalMatrix * vTangent);
+    vec3 B = normalize(NormalMatrix * vBitangent);
+    vec3 N = normalize(NormalMatrix * vNormal);
     TBN = mat3(T, B, N);
 
-    gl_Position = projection * view * worldPos;
-    //gl_Position = MVP * vec4(vPosition, 1.0);
+    gl_Position = ProjectionMatrix * ViewMatrix * worldPos;
 }

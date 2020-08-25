@@ -23,7 +23,6 @@ layout(std430, binding = 1) writeonly buffer VisibleLightIndicesBuffer {
 uniform sampler2D depthMap;
 uniform mat4 view;
 uniform mat4 projection;
-//uniform ivec2 screenSize;
 uniform vec2 screenSize;
 uniform int lightCount;
 
@@ -33,9 +32,8 @@ shared uint maxDepthInt;
 shared uint visibleLightCount;
 shared vec4 frustumPlanes[6];
 // Shared local storage for visible indices, will be written out to the global buffer at the end
-const int numberOfLights = 1024;
+const int numberOfLights = 2048;
 shared int visibleLightIndices[numberOfLights];
-//shared int visibleLightIndices[1024];
 shared mat4 viewProjection;
 
 // Took some light culling guidance from Dice's deferred renderer

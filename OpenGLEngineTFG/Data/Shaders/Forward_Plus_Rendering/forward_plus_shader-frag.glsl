@@ -76,43 +76,20 @@ void main() {
 		uint lightIndex = visibleLightIndicesBuffer.data[offset + i].index;
 		Light light = lightBuffer.data[lightIndex];
 
-		/*vec3 lightPosition = light.Position.xyz;
-		vec3 lightDir = normalize(lightPosition - FragPos);
-        // diffuse shading
-        //float diff = max(dot(normal, lightDir), 0.0);
-
-        // specular shading
-        vec3 reflectDir = reflect(-lightDir, Normal);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
-
-        // attenuation
-        float distance = length(lightPosition - FragPos);
-        //float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance); 
-        float attenuation = 1.0 / (1.0f + Linear * distance + Quadratic * (distance * distance)); 
-
-        // combine results
-        vec3 ambient = Diffuse;
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color.rgb;
-        //vec3 specular = light.Color.rgb * spec;
-        vec3 specular = light.Color.rgb * spec * Specular;
-
-        ambient *= attenuation;
-        diffuse *= attenuation;
-        specular *= attenuation;
-        lighting += (ambient + diffuse + specular);*/
-        vec3 lightPosition = light.Position.xyz;
+		vec3 lightPosition = light.Position.xyz;
         float radius = light.IntensityandRadius.y;
 
-        float distance = length(lightPosition - FragPos);
+        vec3 lDir = lightPosition - FragPos;
         vec3 lightColor = light.Color.rgb;
         float intensity = light.IntensityandRadius.x;
 
-        vec3 lightDir = normalize(lightPosition - FragPos);
+        vec3 lightDir = normalize(lDir);
 
         // specular shading
         vec3 reflectDir = reflect(-lightDir, Normal);
 
         // attenuation
+        float distance = length(lDir);
         float attenuation = 1.0 / (1.0f + Linear * distance + Quadratic * (distance * distance)); 
 
         // combine results
@@ -133,11 +110,9 @@ void main() {
         lighting += (ambient + diffuse + specular); 
 	}
 
-	//FragColor = vec4(lighting, 1.0);
 	const float gamma = 2.2;
     const float exposure = 1.5f;
     vec3 result = vec3(1.0) - exp(-lighting * exposure);
-    // also gamma correct while we're at it       
     result = pow(result, vec3(1.0 / gamma));
     
     FragColor = vec4(lighting, 1.0);
