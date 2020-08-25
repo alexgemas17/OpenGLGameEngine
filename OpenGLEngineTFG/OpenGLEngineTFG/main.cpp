@@ -106,6 +106,8 @@ int main() {
 	std::cout << "Inicializando la GUI..." << std::endl;
 	Application::getInstance()->InitGUI();
 
+	Application::getInstance()->SetUniforms();
+
 	// -------------------- RENDER LOOP --------------------  
 	while (!glfwWindowShouldClose(window)) {
 

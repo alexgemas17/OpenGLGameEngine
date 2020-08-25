@@ -98,7 +98,6 @@ void ForwardPlusRender::draw(NodoScene* world)
 
 	// 3. Iluminamos como siempre la escena usando la información del paso anterior.
 	lightShader(world);
-
 }
 
 // -------------------------------------------------------------------------------
@@ -107,7 +106,6 @@ void ForwardPlusRender::depthRender(NodoScene* world)
 	// Bind the depth map's frame buffer and draw the depth map to it
 	glBindFramebuffer(GL_FRAMEBUFFER, dephtFrambuffer);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	ShaderManager::getInstance()->getDepthShader()->use();
 	world->DrawObjs(ShaderManager::getInstance()->getDepthShader(), TypeDraw::DepthRender);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -121,15 +119,8 @@ void ForwardPlusRender::lightCullingRender()
 	ShaderManager::getInstance()->getLightingCulling()->setUniform("projection", mView);
 	ShaderManager::getInstance()->getLightingCulling()->setUniform("view", mProj);
 
-	ShaderManager::getInstance()->getLightingCulling()->setUniform("lightCount", numLights);
-
-	int SCR_WIDTH = Application::getInstance()->getWIDHT();
-	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-	ShaderManager::getInstance()->getLightingCulling()->setUniform("screenSize", glm::vec2(SCR_WIDTH, SCR_HEIGHT));
-
 	// Bind depth map texture to texture location 4 (which will not be used by any model texture)
 	glActiveTexture(GL_TEXTURE4);
-	ShaderManager::getInstance()->getLightingCulling()->setUniform("depthMap", 4);
 	glBindTexture(GL_TEXTURE_2D, depthText);
 
 	// Bind shader storage buffer objects for the light and indice buffers
@@ -149,11 +140,6 @@ void ForwardPlusRender::lightCullingRender()
 void ForwardPlusRender::lightShader(NodoScene* world)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	ShaderManager::getInstance()->getForwardPlusLighting()->use();
-
-	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("numberOfTilesX", workGroupsX);
-	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("lightCount", numLights);
 
 	// Bind shader storage buffer objects for the light and indice buffers
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightsShareBuffer);

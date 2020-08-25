@@ -28,7 +28,25 @@ void SceneObj::UpdateObj(float deltaTime)
 	//Actualiza el objeto según nuestra intención.
 }
 
-void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const TypeDraw& type)
+void SceneObj::SetUniforms(glm::mat4& modelMatrix)
+{
+	// --------------------------- FORWARD  RENDERING ----------------------------
+	ShaderManager::getInstance()->getForwardLighting()->use();
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("model", modelMatrix);
+
+	// --------------------------- DEFERRED RENDERING ----------------------------
+	ShaderManager::getInstance()->getGBuffer()->use();
+	ShaderManager::getInstance()->getGBuffer()->setUniform("ModelMatrix", modelMatrix);
+
+	// --------------------------- FORWARD PLUS RENDERING ----------------------------
+	ShaderManager::getInstance()->getDepthShader()->use();
+	ShaderManager::getInstance()->getDepthShader()->setUniform("ModelMatrix", modelMatrix);
+
+	ShaderManager::getInstance()->getForwardPlusLighting()->use();
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("ModelMatrix", modelMatrix);
+}
+
+void SceneObj::DrawObj(PagShaderProgram* shader, const TypeDraw& type)
 {
 	glm::mat4 ViewMatrix = Application::getInstance()->getMainScene()->camara->getView();
 	glm::mat4 ProjMatrix = Application::getInstance()->getMainScene()->camara->getProjection();
@@ -38,17 +56,16 @@ void SceneObj::DrawObj(PagShaderProgram* shader, glm::mat4& modelMatrix, const T
 	switch (type)
 	{
 	case TypeDraw::ForwardRender:
-		forwardDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
+		forwardDraw(shader, ViewMatrix, ProjMatrix);
 		break;
 	case TypeDraw::GeometryRender:
-		geometryDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
+		geometryDraw(shader, ViewMatrix, ProjMatrix);
 		break;
 	case TypeDraw::ForwardPlusRender:
-		forwardPlusDraw(shader, modelMatrix, ViewMatrix, ProjMatrix);
+		forwardPlusDraw(shader, ViewMatrix, ProjMatrix);
 		break;
 	case TypeDraw::DepthRender:
-		glm::mat4 MVP = ProjMatrix * ViewMatrix * modelMatrix;
-		depthRender(shader, MVP);
+		depthRender(shader, ViewMatrix, ProjMatrix);
 		break;
 	}
 
@@ -66,30 +83,28 @@ void SceneObj::shadowMapDraw(PagShaderProgram* shader, glm::mat4& MVP)
 	shader->setUniform("ProjLightModelMatrix", MVP);
 }
 
-void SceneObj::depthRender(PagShaderProgram* shader, glm::mat4& MVP)
+void SceneObj::depthRender(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("MVP", MVP);
+	shader->setUniform("ViewMatrix", ViewMatrix);
+	shader->setUniform("ProjectionMatrix", ProjMatrix);
 }
 
-void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
+void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("model", modelMatrix);
 	shader->setUniform("view", ViewMatrix);
 	shader->setUniform("projection", ProjMatrix);
 	shader->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 }
 
-void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
+void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("model", modelMatrix);
-	shader->setUniform("view", ViewMatrix);
-	shader->setUniform("projection", ProjMatrix);
+	shader->setUniform("ViewMatrix", ViewMatrix);
+	shader->setUniform("ProjectionMatrix", ProjMatrix);
 }
 
-void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& modelMatrix, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
+void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("model", modelMatrix);
-	shader->setUniform("view", ViewMatrix);
-	shader->setUniform("projection", ProjMatrix);
+	shader->setUniform("ViewMatrix", ViewMatrix);
+	shader->setUniform("ProjectionMatrix", ProjMatrix);
 	shader->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 }

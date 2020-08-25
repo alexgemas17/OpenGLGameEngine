@@ -10,7 +10,7 @@
 #include <../glm/gtc/type_ptr.hpp>
 
 Scene::Scene(): 
-	camara(nullptr), mode(1), forwardRender(new ForwardRender()), 
+	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
 	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
 {}
 
@@ -73,14 +73,14 @@ void Scene::LoadObjs()
 	}
 
 	//Data from floor
-	Plane* floor = new Plane(Narrow1, 20.0f);
+	/*Plane* floor = new Plane(Narrow1, 20.0f);
 	SceneObj* obj = floor->getSceneObj();
 
 	NodoScene* nodo = new NodoScene();
 	nodo->Translate(0.0f, -1.5f, 0.0f);
 	nodo->addObj(obj);
 
-	nodoWorld->addNodo(nodo);
+	nodoWorld->addNodo(nodo);*/
 
 	delete loader;
 }
@@ -112,8 +112,7 @@ void Scene::InitLights()
 	}
 
 	forwardPlusRender->initBufferLights(lightPositions, lightColors, lightIntensity);
-
-	//delete loader;
+	deferredShadingRender->initBufferLights(lightPositions, lightColors, lightIntensity);
 }
 
 /* Buffer para el ShadowMap */
@@ -250,6 +249,7 @@ void Scene::UpdateObjs(float deltaTime)
 
 	UpdateLights(deltaTime);
 	forwardPlusRender->updateLights(this->lightPositions);
+	deferredShadingRender->UpdateLights(this->lightPositions);
 }
 
 void Scene::UpdateLights(float deltaTime)
@@ -265,31 +265,64 @@ void Scene::UpdateLights(float deltaTime)
 	}
 }
 
+void Scene::SetUniforms()
+{
+	float workGroupsX = Application::getInstance()->getMainScene()->forwardPlusRender->getWorkGroupsX();
+	int numLights = NR_POINT_LIGHTS;
+	int SCR_WIDTH = Application::getInstance()->getWIDHT();
+	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
+
+	// --------------------------- FORWARD  RENDERING ----------------------------
+	ShaderManager::getInstance()->getForwardLighting()->use();
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("lightCount", numLights);
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("texture_albedo", 0);
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("texture_specular", 1);
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("texture_normal", 2);
+
+	// --------------------------- DEFERRED RENDERING ----------------------------
+	ShaderManager::getInstance()->getGBuffer()->use();
+	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_albedo", 0);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_specular", 1);
+	ShaderManager::getInstance()->getGBuffer()->setUniform("texture_normal", 2);
+
+	ShaderManager::getInstance()->getDeferredShading()->use();
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("lightCount", numLights);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
+
+	// --------------------------- FORWARD PLUS RENDERING ----------------------------
+	ShaderManager::getInstance()->getLightingCulling()->use();
+	ShaderManager::getInstance()->getLightingCulling()->setUniform("screenSize", glm::vec2(SCR_WIDTH, SCR_HEIGHT));
+	ShaderManager::getInstance()->getLightingCulling()->setUniform("depthMap", 4);
+	ShaderManager::getInstance()->getLightingCulling()->setUniform("lightCount", numLights);
+
+	ShaderManager::getInstance()->getForwardPlusLighting()->use();
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("lightCount", numLights);
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("numberOfTilesX", workGroupsX);
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("texture_albedo", 0);
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("texture_specular", 1);
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("texture_normal", 2);
+
+	this->nodoWorld->setUniforms();
+}
+
 /* ---------------------------------------	RENDERING PASS	----------------------------------------- */
 
 /* Llamada principal que llama a las distintas pasadas dentro del rendering */
 void Scene::DrawObjs()
-{
-	//Datos necesarios
-	SCR_WIDTH = Application::getInstance()->getWIDHT();
-	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
-
-	glm::mat4 mView = camara->getView();
-	glm::mat4 mProj = camara->getProjection();
-	glm::mat4 mViewProjection = camara->getMatrixViewProjection();
-
+{	
 	if (mode == 0) {
-		ShaderManager::getInstance()->getForwardLighting()->setUniform("viewPos", camara->getPosition());
 		forwardRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
 	}
 	else if (mode == 1) {
-		deferredShadingRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
+		deferredShadingRender->draw(this->nodoWorld);
 	}
 	else if (mode == 2) {
 		forwardPlusRender->draw(this->nodoWorld);
 	}
 
-	skyboxRender(mView, mProj);
+	skyboxRender();
 }
 
 /* Posiciona la escena según el punto de vista de la luz direccional y la dibuja */
@@ -387,8 +420,11 @@ void Scene::ssaoPass(glm::mat4& mView, glm::mat4& mProj)
 }
 
 /* Pasasa de los objetos que no se han podido incluir dentro del deferred rendering: transparecias, skymap, etc... */
-void Scene::skyboxRender(glm::mat4 mView, glm::mat4 mProj)
+void Scene::skyboxRender()
 {
+	glm::mat4 mView = camara->getView();
+	glm::mat4 mProj = camara->getProjection();
+
 	if (mode == 1) {
 		// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
 		// ----------------------------------------------------------------------------------
@@ -410,15 +446,12 @@ void Scene::skyboxRender(glm::mat4 mView, glm::mat4 mProj)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	//for (int i = 0; i < NR_LIGHTS; i++) {
-	//this->nodoLight->DrawObjs(mView, mViewProjection);
-	//}
-
 	glDepthFunc(GL_LEQUAL);
 	ShaderManager::getInstance()->getSkyBox()->use();
-	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewProjMatrix", mProj * glm::mat4(glm::mat3(mView)));
+	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewMatrix", mView);
+	ShaderManager::getInstance()->getSkyBox()->setUniform("ProjMatrix", mProj);
 	skybox->Draw();
-	glDepthFunc(GL_LESS); // set depth function back to default
+	glDepthFunc(GL_LESS);
 }
 
 /* Pasasa de efectos */

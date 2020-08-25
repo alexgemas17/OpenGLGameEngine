@@ -18,6 +18,7 @@ public:
 
 	void InitObjs();
 	void UpdateObjs(float deltaTime);
+	void setUniforms();
 	void DrawObjs( PagShaderProgram* shader, const TypeDraw& type );
 
 	SceneObj* getObj(int index) { return this->objs[index]; }
@@ -37,10 +38,14 @@ private:
 		float deltaTime
 	);
 
+	void SetUniformsRecursive(
+		NodoScene* nodo,
+		glm::mat4& modelMatrix
+	);
+	
 	void DrawObjsRecursive(
 		PagShaderProgram* shader,
 		NodoScene* nodo,
-		glm::mat4& modelMatrix,
 		const TypeDraw& type
 	);
 };

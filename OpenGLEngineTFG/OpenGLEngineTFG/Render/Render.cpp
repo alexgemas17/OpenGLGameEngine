@@ -55,13 +55,11 @@ void Render::Draw(PagShaderProgram* shader)
 
 	// Albedo Texture
 	glActiveTexture(GL_TEXTURE0);
-	shader->setUniform("texture_albedo", 0);
 	glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(AlbedoTextures[0]));
 
 	// Specular Texture
 	if (!specularTextures.empty()) {
 		glActiveTexture(GL_TEXTURE1);
-		shader->setUniform("texture_specular", 1);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(specularTextures[0]));
 	}
 
@@ -69,7 +67,6 @@ void Render::Draw(PagShaderProgram* shader)
 		// Normal Texture
 		shader->setUniform("has_texture_normal", true);
 		glActiveTexture(GL_TEXTURE2);
-		shader->setUniform("texture_normal", 2);
 		glBindTexture(GL_TEXTURE_2D, Application::getInstance()->getTextureManager()->getIDTexture(normalMapTextures[0]));
 	}
 	else {

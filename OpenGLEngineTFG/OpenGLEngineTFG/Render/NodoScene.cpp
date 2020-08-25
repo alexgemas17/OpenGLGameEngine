@@ -18,8 +18,7 @@ void NodoScene::addObj(SceneObj* obj)
 
 void NodoScene::DrawObjs(PagShaderProgram* shader, const TypeDraw& type)
 {
-	glm::mat4 model = this->getModelMatrix();
-	DrawObjsRecursive(shader, this, model, type);
+	DrawObjsRecursive(shader, this, type);
 }
 
 void NodoScene::InitObjs()
@@ -30,6 +29,12 @@ void NodoScene::InitObjs()
 void NodoScene::UpdateObjs(float deltaTime)
 {
 	UpdateObjsRecursive(this, deltaTime);
+}
+
+void NodoScene::setUniforms()
+{
+	glm::mat4 model = this->getModelMatrix();
+	SetUniformsRecursive(this, model);
 }
 
 /* --------------------- PRIVATE FUNCIONS ---------------------*/
@@ -81,27 +86,50 @@ void NodoScene::UpdateObjsRecursive(NodoScene* nodo, float deltaTime)
 	}
 }
 
-//Draw genérico donde se especifica el tipo de shader
-void NodoScene::DrawObjsRecursive(PagShaderProgram* shader, NodoScene* nodo, glm::mat4& _modelMatrix, const TypeDraw& type)
+//Set uniforms
+void NodoScene::SetUniformsRecursive(NodoScene* nodo, glm::mat4& _modelMatrix)
 {
 	if (nodo->nodos.empty()) {
 		if (!nodo->objs.empty()) {
 			for (int i = 0; i < nodo->objs.size(); i++) {
 				glm::mat4 model = _modelMatrix * nodo->objs[i]->getModelMatrix();
-				nodo->objs[i]->DrawObj(shader, model, type);
+				nodo->objs[i]->SetUniforms(model);
 			}
 		}
 	}
 	else {
 		for (int i = 0; i < nodo->nodos.size(); i++) {
 			glm::mat4 model = _modelMatrix * nodo->nodos[i]->getModelMatrix();
-			DrawObjsRecursive(shader, nodo->nodos[i], model, type);
+			SetUniformsRecursive(nodo->nodos[i], model);
 		}
 
 		if (!nodo->objs.empty()) {
 			for (int i = 0; i < nodo->objs.size(); i++) {
 				glm::mat4 model = _modelMatrix * nodo->objs[i]->getModelMatrix();
-				nodo->objs[i]->DrawObj(shader, model, type);
+				nodo->objs[i]->SetUniforms(model);
+			}
+		}
+	}
+}
+
+//Draw genérico donde se especifica el tipo de shader
+void NodoScene::DrawObjsRecursive(PagShaderProgram* shader, NodoScene* nodo, const TypeDraw& type)
+{
+	if (nodo->nodos.empty()) {
+		if (!nodo->objs.empty()) {
+			for (int i = 0; i < nodo->objs.size(); i++) {
+				nodo->objs[i]->DrawObj(shader, type);
+			}
+		}
+	}
+	else {
+		for (int i = 0; i < nodo->nodos.size(); i++) {
+			DrawObjsRecursive(shader, nodo->nodos[i], type);
+		}
+
+		if (!nodo->objs.empty()) {
+			for (int i = 0; i < nodo->objs.size(); i++) {
+				nodo->objs[i]->DrawObj(shader, type);
 			}
 		}
 	}

@@ -15,8 +15,10 @@ struct structDRLight {
 class DeferredShadingRender
 {
 public:
-	void createFrameBuffer(int numLights);
-	void draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
+	void createFrameBuffer(int numLights); 
+	void initBufferLights(std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
+	void UpdateLights(std::vector<glm::vec3> lightPosition);
+	void draw(NodoScene* world);
 
 	unsigned int getGBufferID() { return this->fbID; }
 
@@ -27,6 +29,6 @@ private:
 
 	void renderQuad();
 	void geometryBufferPass(NodoScene* world);
-	void deferredLightingPass(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
+	void deferredLightingPass(NodoScene* world);
 };
 

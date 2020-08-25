@@ -87,6 +87,11 @@ void Application::InitTextures()
 	this->textureManager->LoadTextures();
 }
 
+void Application::SetUniforms()
+{
+	this->world->SetUniforms();
+}
+
 void Application::InitGUI() 
 {
 	//Añadimos los objetos a la gui.

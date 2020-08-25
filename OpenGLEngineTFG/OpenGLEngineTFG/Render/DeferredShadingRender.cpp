@@ -67,7 +67,42 @@ void DeferredShadingRender::createFrameBuffer(int numLights)
 	glBufferData(GL_SHADER_STORAGE_BUFFER, numLights * sizeof(structDRLight), 0, GL_DYNAMIC_DRAW);
 }
 
-void DeferredShadingRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
+void DeferredShadingRender::initBufferLights(std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
+{
+	if (lightsShareBuffer == 0) {
+		return;
+	}
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+
+	// Pasamos toda la información al buffer de luces que hemos creado
+	for (int i = 0; i < lightPosition.size(); i++) {
+		LightStruct& light = pointLights[i];
+		light.Position = glm::vec4(lightPosition[i], 0.0f);
+		light.Color = glm::vec4(lightColors[i], 0.0f);
+		light.IntensityandRadius = glm::vec4(lightIntensity[i], 10.0f, glm::vec2(0.0f));
+	}
+
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+void DeferredShadingRender::UpdateLights(std::vector<glm::vec3> lightPosition)
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+
+	for (int i = 0; i < lightPosition.size(); i++) {
+		LightStruct& light = pointLights[i];
+		light.Position = glm::vec4(lightPosition[i], 1.0f);
+	}
+
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+void DeferredShadingRender::draw(NodoScene* world)
 {
 	// 1. geometry pass: render scene's geometry/color data into gbuffer
 	// -----------------------------------------------------------------
@@ -75,7 +110,7 @@ void DeferredShadingRender::draw(NodoScene* world, std::vector<glm::vec3> lightP
 
 	// 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 	// -----------------------------------------------------------------------------------------------------------------------
-	deferredLightingPass(world, lightPosition, lightColors, lightIntensity);
+	deferredLightingPass(world);
 }
 
 // renderQuad() renders a 1x1 XY quad in NDC
@@ -117,7 +152,6 @@ void DeferredShadingRender::geometryBufferPass(NodoScene* world)
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	ShaderManager::getInstance()->getGBuffer()->use();
 	world->DrawObjs(ShaderManager::getInstance()->getGBuffer(), TypeDraw::GeometryRender);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -126,20 +160,8 @@ void DeferredShadingRender::geometryBufferPass(NodoScene* world)
 	glDisable(GL_CULL_FACE);
 }
 
-void DeferredShadingRender::deferredLightingPass(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
+void DeferredShadingRender::deferredLightingPass(NodoScene* world)
 {
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
-	structLight* pointLights = (structLight*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-	// Pasamos toda la información al buffer de luces que hemos creado
-	for (int i = 0; i < lightPosition.size(); i++) {
-		structLight& light = pointLights[i];
-		light.Position = glm::vec4(lightPosition[i], 0.0f);
-		light.Color = glm::vec4(lightColors[i], 0.0f);
-		light.IntensityandRadius = glm::vec4(lightIntensity[i], 10.0f, glm::vec2(0.0f));
-	}
-	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
 	//No hacemos glBindFramebuffer porque estamos usando el deafult buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDisable(GL_DEPTH_TEST);
@@ -149,21 +171,14 @@ void DeferredShadingRender::deferredLightingPass(NodoScene* world, std::vector<g
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, gPosition);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gPosition", 0);
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, gNormal);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gNormal", 1);
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, gAlbedo);
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("gAlbedoSpec", 2);
 
 	ShaderManager::getInstance()->getDeferredShading()->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
-
-	// Bind shader storage buffer objects for the light and indice buffers
-	int numLights = lightPosition.size();
-	ShaderManager::getInstance()->getDeferredShading()->setUniform("lightCount", numLights);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, lightsShareBuffer);
 
 	renderQuad();

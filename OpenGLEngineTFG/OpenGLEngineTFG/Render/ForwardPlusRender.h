@@ -39,6 +39,8 @@ public:
 	void updateLights(std::vector<glm::vec3> lightPosition);
 	void draw(NodoScene* world);
 
+	float getWorkGroupsX() { return this->workGroupsX; }
+
 private:
 	unsigned int lightsShareBuffer, visibleLightIndicesBuffer, dephtFrambuffer, depthText;
 
