@@ -24,6 +24,7 @@ ShaderManager::ShaderManager():
 	skybox(new PagShaderProgram()),
 	ssao(new PagShaderProgram()),
 	ssao_blur(new PagShaderProgram()),
+	transparentObj(new PagShaderProgram()),
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
@@ -41,6 +42,7 @@ ShaderManager::ShaderManager():
 	std::string urlshadowMap = ShaderPath+ "Shadow\\shadowmap";
 
 	std::string urlskybox = ShaderPath+ "Skybox\\skybox";
+	std::string urlcube = ShaderPath+ "cube";
 
 	std::string urlssao = ShaderPath+ "Postprocessefects\\SSAO\\ssao";
 	std::string urlssao_blur = ShaderPath+ "Postprocessefects\\SSAO\\ssao_blur";
@@ -58,6 +60,7 @@ ShaderManager::ShaderManager():
 
 	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
 	this->skybox->createShaderProgram(urlskybox.c_str());
+	this->transparentObj->createShaderProgram(urlcube.c_str());
 
 	this->ssao->createShaderProgram(urlssao.c_str());
 	this->ssao_blur->createShaderProgram(urlssao_blur.c_str());
@@ -71,6 +74,7 @@ ShaderManager::~ShaderManager()
 	delete forwardPlusLightingShader;
 	delete shadowMap;
 	delete skybox;
+	delete transparentObj;
 	delete ssao;
 	delete ssao_blur;
 	delete instance;
@@ -115,6 +119,11 @@ PagShaderProgram* ShaderManager::getForwardPlusLighting()
 PagShaderProgram* ShaderManager::getShadowMap()
 {
 	return this->shadowMap;
+}
+
+PagShaderProgram* ShaderManager::getTransparentObj()
+{
+	return this->transparentObj;
 }
 
 PagShaderProgram* ShaderManager::getSkyBox()

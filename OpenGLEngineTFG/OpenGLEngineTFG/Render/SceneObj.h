@@ -37,6 +37,8 @@ public:
 	void SetUniforms(
 		glm::mat4 &modelMatrix
 	);
+
+	void setAlbedo(std::string urlImg) { Render::setAlbedo(urlImg); }
 	
 	void DrawObj(
 		PagShaderProgram* shader,

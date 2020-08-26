@@ -6,11 +6,12 @@
 #include <random>
 
 #include "../BasicElement/Plane.h"
+#include "../BasicElement/Cube.h"
 
 #include <../glm/gtc/type_ptr.hpp>
 
 Scene::Scene(): 
-	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
+	camara(nullptr), mode(0), forwardRender(new ForwardRender()), 
 	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
 {}
 
@@ -44,8 +45,10 @@ void Scene::InitScene()
 	InitLights();
 
 	this->nodoWorld->InitObjs();
+	this->transparentObj->InitObjs();
 
-	skybox = new CubeMap(Type1);
+	skybox = new CubeMap(Type1); 
+	cube = new Cube(10.0f);
 }
 
 void Scene::LoadObjs()
@@ -54,6 +57,7 @@ void Scene::LoadObjs()
 	AssimpLoader* loader = new AssimpLoader();
 
 	this->nodoWorld = new NodoScene();
+	this->transparentObj = new NodoScene();
 
 	FileLoader fileLoader;
 	fileLoader.readFromFile(Application::getInstance()->getPath() + "Data\\Objs.txt");
@@ -72,25 +76,12 @@ void Scene::LoadObjs()
 		nodoWorld->addNodo(nodo);
 	}
 
-	//Data from floor
-	/*Plane* floor = new Plane(Narrow1, 20.0f);
-	SceneObj* obj = floor->getSceneObj();
-
-	NodoScene* nodo = new NodoScene();
-	nodo->Translate(0.0f, -1.5f, 0.0f);
-	nodo->addObj(obj);
-
-	nodoWorld->addNodo(nodo);*/
-
 	delete loader;
 }
 
 /* Crea aleatoriamente un número determinado de luces*/
 void Scene::InitLights()
 {
-	//Cargamos los objetos
-	//AssimpLoader* loader = new AssimpLoader();
-
 	// lighting info
 	// -------------
 	srand(13);
@@ -111,8 +102,9 @@ void Scene::InitLights()
 		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
 
-	forwardPlusRender->initBufferLights(lightPositions, lightColors, lightIntensity);
+	forwardRender->initBufferLights(lightPositions, lightColors, lightIntensity);
 	deferredShadingRender->initBufferLights(lightPositions, lightColors, lightIntensity);
+	forwardPlusRender->initBufferLights(lightPositions, lightColors, lightIntensity);
 }
 
 /* Buffer para el ShadowMap */
@@ -248,8 +240,9 @@ void Scene::UpdateObjs(float deltaTime)
 	}
 
 	UpdateLights(deltaTime);
-	forwardPlusRender->updateLights(this->lightPositions);
+	forwardRender->UpdateLights(this->lightPositions);
 	deferredShadingRender->UpdateLights(this->lightPositions);
+	forwardPlusRender->updateLights(this->lightPositions);
 }
 
 void Scene::UpdateLights(float deltaTime)
@@ -313,7 +306,7 @@ void Scene::SetUniforms()
 void Scene::DrawObjs()
 {	
 	if (mode == 0) {
-		forwardRender->draw(this->nodoWorld, this->lightPositions, this->lightColors, this->lightIntensity);
+		forwardRender->draw(this->nodoWorld);
 	}
 	else if (mode == 1) {
 		deferredShadingRender->draw(this->nodoWorld);
@@ -446,6 +439,21 @@ void Scene::skyboxRender()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+
+	// --------------------------- Transparent objs ----------------------------
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glm::mat4 model = glm::mat4(1.0f);
+	ShaderManager::getInstance()->getTransparentObj()->use();
+	ShaderManager::getInstance()->getTransparentObj()->setUniform("texture1", 0);
+	ShaderManager::getInstance()->getTransparentObj()->setUniform("view", mView);
+	ShaderManager::getInstance()->getTransparentObj()->setUniform("projection", mProj);
+	ShaderManager::getInstance()->getTransparentObj()->setUniform("model", model);
+	cube->Draw();
+	glDisable(GL_BLEND);
+
+	// ------------------------------- Skybox ------------------------------------------
 	glDepthFunc(GL_LEQUAL);
 	ShaderManager::getInstance()->getSkyBox()->use();
 	ShaderManager::getInstance()->getSkyBox()->setUniform("ViewMatrix", mView);

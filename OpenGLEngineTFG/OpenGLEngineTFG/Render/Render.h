@@ -25,6 +25,7 @@ public:
 	void DrawDepth();
 	void Draw(PagShaderProgram* shader);
 
+	void setAlbedo(std::string urlImg) { this->AlbedoTextures.push_back(urlImg); }
 	std::vector<std::string> getAlbedoTextures() { return this->AlbedoTextures; }
 	std::vector<std::string> getSpecularTextures() { return this->specularTextures; }
 	std::vector<std::string> getNormalMapTextures() { return this->normalMapTextures; }

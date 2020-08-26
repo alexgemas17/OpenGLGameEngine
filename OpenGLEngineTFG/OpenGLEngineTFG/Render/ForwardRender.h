@@ -16,12 +16,10 @@ class ForwardRender
 {
 public:
 	void createFrameBuffer(int numLights);
-	void draw(
-		NodoScene* world, 
-		std::vector<glm::vec3> lightPosition,
-		std::vector<glm::vec3> lightColors,
-		std::vector<float> lightIntensity
-	);
+	void initBufferLights(std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
+	void UpdateLights(std::vector<glm::vec3> lightPosition);
+	void draw(NodoScene* world);
+	unsigned int getLightShareBuffer() { return this->lightsShareBuffer; }
 
 private:
 	unsigned int forwardBufferID, forwardBufferDepthID, lightsShareBuffer;

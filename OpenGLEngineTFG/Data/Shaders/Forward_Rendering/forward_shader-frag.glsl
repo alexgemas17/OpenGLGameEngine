@@ -89,46 +89,11 @@ void main()
         }  
     }
 
-    const float gamma = 2.2;
-    const float exposure = 1.5f;
+    const float gamma = 0.8f; //0.8
+    const float exposure = 1.0f;
     vec3 result = vec3(1.0) - exp(-lighting * exposure);
     // also gamma correct while we're at it       
     result = pow(result, vec3(1.0 / gamma));
     
-    FragColor = vec4(lighting, 1.0);
+    FragColor = vec4(result, 1.0);
 }
-
-/*for(int i = 0; i < NR_LIGHTS; ++i)
-    {
-        float distance = length(lights[i].Position - FragPos);
-        if(distance < lights[i].Radius)
-        {
-            vec3 lightDir = normalize(lights[i].Position - FragPos);
-
-            // specular shading
-            vec3 reflectDir = reflect(-lightDir, Normal);
-
-            // attenuation
-            float distance = length(lights[i].Position - FragPos);
-            float attenuation = 1.0 / (1.0f + Linear * distance + Quadratic * (distance * distance)); 
-
-            // combine results
-            vec3 ambient = lights[i].Color * lights[i].Intensity;
-            
-            vec3 diffuse = vec3(0.0f);
-            float dotL = dot(Normal, lightDir);
-            if ( dotL > 0.0f){
-                diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * lights[i].Color * lights[i].Intensity;
-            }
-
-            float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0f);
-            vec3 specular = lights[i].Color * spec * Specular;
-
-            ambient *= attenuation;
-            diffuse *= attenuation;
-            specular *= attenuation;
-            lighting += (ambient + diffuse + specular);
-
-
-        }        
-    }*/

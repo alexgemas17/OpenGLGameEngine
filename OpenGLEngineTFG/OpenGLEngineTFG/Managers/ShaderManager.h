@@ -25,6 +25,7 @@ public:
 	/* POSTPROCESS EFFECTS */
 	PagShaderProgram* getShadowMap();
 	PagShaderProgram* getSkyBox();
+	PagShaderProgram* getTransparentObj();
 	PagShaderProgram* getSSAO();
 	PagShaderProgram* getSSAOBlur();
 
@@ -53,6 +54,8 @@ private:
 
 	/* SkyBox */
 	PagShaderProgram* skybox;
+
+	PagShaderProgram* transparentObj;
 
 	/* SSAO */
 	PagShaderProgram* ssao;

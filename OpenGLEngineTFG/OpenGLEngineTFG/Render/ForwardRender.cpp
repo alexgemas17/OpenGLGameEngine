@@ -12,20 +12,43 @@ void ForwardRender::createFrameBuffer(int numLights)
 	glBufferData(GL_SHADER_STORAGE_BUFFER, numLights * sizeof(structLight), 0, GL_DYNAMIC_DRAW);
 }
 
-void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
+void ForwardRender::initBufferLights(std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity)
 {
+	if (lightsShareBuffer == 0) {
+		return;
+	}
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
-	structLight* pointLights = (structLight*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+
 	// Pasamos toda la información al buffer de luces que hemos creado
 	for (int i = 0; i < lightPosition.size(); i++) {
-		structLight& light = pointLights[i];
+		LightStruct& light = pointLights[i];
 		light.Position = glm::vec4(lightPosition[i], 0.0f);
 		light.Color = glm::vec4(lightColors[i], 0.0f);
 		light.IntensityandRadius = glm::vec4(lightIntensity[i], 10.0f, glm::vec2(0.0f));
 	}
+
 	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
 
+void ForwardRender::UpdateLights(std::vector<glm::vec3> lightPosition)
+{
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
+	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
+
+	for (int i = 0; i < lightPosition.size(); i++) {
+		LightStruct& light = pointLights[i];
+		light.Position = glm::vec4(lightPosition[i], 1.0f);
+	}
+
+	glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+void ForwardRender::draw(NodoScene* world)
+{
 	//glBindFramebuffer(GL_FRAMEBUFFER, forwardBufferID);
 	glEnable(GL_BLEND);
 	glDepthMask(GL_TRUE);
@@ -41,5 +64,6 @@ void ForwardRender::draw(NodoScene* world, std::vector<glm::vec3> lightPosition,
 		glUseProgram(0);
 		for (unsigned int i = 0; i < nLights; i++) drawLightBillboard(pointLightsArr[i], 0.15f);
 	}*/
+
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, 0);
 }

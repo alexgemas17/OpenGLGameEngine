@@ -10,18 +10,14 @@ class Cube
 {
 public:
 	Cube(float size);
-	~Cube();
-
-	SceneObj* getSceneObj();
+	void Draw();
 
 private:
-	//Datos del objeto
-	std::vector<glm::vec3> puntos;
-	std::vector<glm::vec3> normales;
-	std::vector<glm::vec2> coord_textura;
-	std::vector<GLuint> indices;
+	unsigned int cubeVAO, cubeVBO;
+	unsigned int cubeTexture;
 
-	//Obj
-	SceneObj* obj;
+	std::string texture = "Data\\Textures\\transparent_window.png";
+
+	void LoadCubeMap();
 };
 

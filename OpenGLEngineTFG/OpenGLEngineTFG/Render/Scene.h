@@ -9,6 +9,7 @@
 #include "SceneObj.h"
 #include "NodoScene.h"
 #include "Cubemap/CubeMap.h"
+#include "../BasicElement/Cube.h"
 
 #include "ForwardRender.h"
 #include "DeferredShadingRender.h"
@@ -19,7 +20,7 @@
 #include "Render.h"
 
 const int NR_DIRECTIONAL_LIGHTS = 1;
-const int NR_POINT_LIGHTS = 2048;
+const int NR_POINT_LIGHTS = 50;
 const int NR_SPOT_LIGHTS = 1;
 const unsigned int SHADOW_WIDTH = 2048 * 2, SHADOW_HEIGHT = 2048 * 2;
 const float NEAR_PLANE = 0.01f, FAR_PLANE = 1000.0f;
@@ -60,11 +61,13 @@ public:
 
 private:
 	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
-	NodoScene* nodoWorld; 
+	NodoScene* nodoWorld;
+	NodoScene* transparentObj;
 	NodoScene* nodoLight;
 	glm::vec3 lightPosition;
 
 	CubeMap* skybox;
+	Cube* cube;
 
 	unsigned int shadowMap, DepthShadowMap;
 	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;

@@ -32,7 +32,7 @@ SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL, std::string tex
 {
 	// Leemmos los datos del archivo mediante el importer de assimp
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(modelURL, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(modelURL, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -40,9 +40,12 @@ SceneObj* AssimpLoader::loadModelAssimpObj(std::string modelURL, std::string tex
 		return nullptr;
 	}
 
-	std::cout << "ASSIMP::Loaded successfully" << std::endl;
+	std::cout << "ASSIMP::" + modelURL + " Loaded successfully" << std::endl;
 	NodoScene* root = new NodoScene();
-	//loadRecursivo(scene->mRootNode, scene, root, modelData);
+	ObjFile modelData;
+	modelData.textureURL = "";
+
+	loadRecursivo(scene->mRootNode, scene, root, modelData);
 
 	return root->getNode(0)->getObj(0);
 }
