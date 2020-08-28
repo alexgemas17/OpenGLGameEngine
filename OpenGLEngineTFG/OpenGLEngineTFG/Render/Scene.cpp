@@ -11,7 +11,7 @@
 #include <../glm/gtc/type_ptr.hpp>
 
 Scene::Scene(): 
-	camara(nullptr), mode(0), forwardRender(new ForwardRender()), 
+	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
 	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
 {}
 
@@ -24,22 +24,17 @@ float RandomFloat(float a, float b) {
 	return a + r;
 }
 
-float lerp(float a, float b, float f)
-{
-	return a + f * (b - a);
-}
-
 /* ---------------------------------------	INITS	----------------------------------------- */
 void Scene::InitScene()
 {
 	SCR_WIDTH = Application::getInstance()->getWIDHT();
 	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
-	/*InitShadowMapBuffer();
-	InitSSAOBuffer();*/
-	forwardRender->createFrameBuffer(NR_POINT_LIGHTS);
-	deferredShadingRender->createFrameBuffer(NR_POINT_LIGHTS);
-	forwardPlusRender->createFrameBuffer(NR_POINT_LIGHTS);
+	this->NUM_LIGHTS = 20;
+
+	forwardRender->createFrameBuffer(MAX_LIGHTS);
+	deferredShadingRender->createFrameBuffer(MAX_LIGHTS);
+	forwardPlusRender->createFrameBuffer(MAX_LIGHTS);
 
 	LoadObjs();
 	InitLights();
@@ -85,13 +80,13 @@ void Scene::InitLights()
 	// lighting info
 	// -------------
 	srand(13);
-	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
+	for (unsigned int i = 0; i < MAX_LIGHTS; i++)
 	{
 		lightIntensity.push_back((RandomFloat(0.2f, 1.5f)));
 
 		// calculate slightly random offsets
 		float xPos = RandomFloat(-40, 40);
-		float yPos = RandomFloat(-20, 20);
+		float yPos = RandomFloat(-20, 70);
 		float zPos = RandomFloat(-60, 60);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
@@ -105,118 +100,6 @@ void Scene::InitLights()
 	forwardRender->initBufferLights(lightPositions, lightColors, lightIntensity);
 	deferredShadingRender->initBufferLights(lightPositions, lightColors, lightIntensity);
 	forwardPlusRender->initBufferLights(lightPositions, lightColors, lightIntensity);
-}
-
-/* Buffer para el ShadowMap */
-void Scene::InitShadowMapBuffer()
-{
-	// configure depth map FBO
-	// -----------------------
-	glGenFramebuffers(1, &shadowMap);
-
-	// create depth texture
-	glGenTextures(1, &DepthShadowMap);
-	glBindTexture(GL_TEXTURE_2D, DepthShadowMap);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-
-	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LESS);
-
-
-	// attach depth texture as FBO's depth buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DepthShadowMap, 0);
-
-	GLenum drawBuffers[] = { GL_NONE };
-	glDrawBuffers(1, drawBuffers);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// Set shadow bias
-	this->shadowBias = glm::mat4(
-		glm::vec4(0.5f, 0.0f, 0.0f, 0.0f),
-		glm::vec4(0.0f, 0.5f, 0.0f, 0.0f),
-		glm::vec4(0.0f, 0.0f, 0.5f, 0.0f),
-		glm::vec4(0.5f, 0.5f, 0.5f, 1.0f)
-	);
-}
-
-/* Buffer para el SSAO */
-void Scene::InitSSAOBuffer()
-{
-	glGenFramebuffers(1, &ssaoFBO);  
-	glGenFramebuffers(1, &ssaoBlurFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-
-	// SSAO color buffer
-	glGenTextures(1, &ssaoColorBuffer);
-	glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
-	
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "SSAO Framebuffer not complete!" << std::endl;
-	
-	// and blur stage
-	glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-
-	glGenTextures(1, &ssaoColorBufferBlur);
-	glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
-	
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
-	
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// ---------------------- generate sample kernel ----------------------
-	std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
-	std::default_random_engine generator;
-	for (unsigned int i = 0; i < 64; ++i)
-	{
-		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator));
-		sample = glm::normalize(sample);
-		sample *= randomFloats(generator);
-		float scale = float(i) / 64.0;
-
-		// scale samples s.t. they're more aligned to center of kernel
-		scale = lerp(0.1f, 1.0f, scale * scale);
-		sample *= scale;
-		ssaoKernel.push_back(sample);
-	}
-
-	// ---------------------- generate noise texture ----------------------
-	for (unsigned int i = 0; i < 16; i++)
-	{
-		glm::vec3 noise(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, 0.0f); // rotate around z-axis (in tangent space)
-		ssaoNoise.push_back(noise);
-	}
-	glGenTextures(1, &noiseTexture);
-	glBindTexture(GL_TEXTURE_2D, noiseTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
 /* Inicializa la cámara */
@@ -240,28 +123,57 @@ void Scene::UpdateObjs(float deltaTime)
 	}
 
 	UpdateLights(deltaTime);
-	forwardRender->UpdateLights(this->lightPositions);
-	deferredShadingRender->UpdateLights(this->lightPositions);
-	forwardPlusRender->updateLights(this->lightPositions);
+	forwardRender->UpdateLights(this->lightPositions, NUM_LIGHTS);
+	deferredShadingRender->UpdateLights(this->lightPositions, NUM_LIGHTS);
+	forwardPlusRender->UpdateLights(this->lightPositions, NUM_LIGHTS);
 }
 
 void Scene::UpdateLights(float deltaTime)
 {
-	srand(13);
-	for (unsigned int i = 0; i < NR_POINT_LIGHTS; i++)
-	{
-		// calculate slightly random offsets
-		float min = -20.0f;
-		float max = 90.0f;
+	// calculate slightly random offsets
+	float min = -20.0f;
+	float max = 90.0f;
+	float velocidad = 5.5f;
 
-		lightPositions[i].y = fmod((lightPositions[i].y + (-4.5f * deltaTime) - min + max), max) + min;
+	srand(13);
+	for (unsigned int i = 0; i < this->NUM_LIGHTS; i++)
+	{
+		lightPositions[i].y = lightPositions[i].y - velocidad * deltaTime;
+
+		if (lightPositions[i].y < min)
+			lightPositions[i].y = max;
+
+		//lightPositions[i].y = fmod((lightPositions[i].y + (-4.5f * deltaTime) - min + max), max) + min;
 	}
+}
+
+void Scene::AddNewNumLights(int numLight)
+{
+	if (numLight > 2500 || numLight < 1)
+		return;
+
+	this->NUM_LIGHTS = numLight;
+
+	// --------------------------- FORWARD  RENDERING ----------------------------
+	ShaderManager::getInstance()->getForwardLighting()->use();
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("lightCount", NUM_LIGHTS);
+
+	// --------------------------- DEFERRED RENDERING ----------------------------
+	ShaderManager::getInstance()->getDeferredShading()->use();
+	ShaderManager::getInstance()->getDeferredShading()->setUniform("lightCount", NUM_LIGHTS);
+
+	// --------------------------- FORWARD PLUS RENDERING ----------------------------
+	ShaderManager::getInstance()->getLightingCulling()->use();
+	ShaderManager::getInstance()->getLightingCulling()->setUniform("lightCount", NUM_LIGHTS);
+
+	ShaderManager::getInstance()->getForwardPlusLighting()->use();
+	ShaderManager::getInstance()->getForwardPlusLighting()->setUniform("lightCount", NUM_LIGHTS);
 }
 
 void Scene::SetUniforms()
 {
 	float workGroupsX = Application::getInstance()->getMainScene()->forwardPlusRender->getWorkGroupsX();
-	int numLights = NR_POINT_LIGHTS;
+	int numLights = this->NUM_LIGHTS;
 	int SCR_WIDTH = Application::getInstance()->getWIDHT();
 	int SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
@@ -316,100 +228,6 @@ void Scene::DrawObjs()
 	}
 
 	skyboxRender();
-}
-
-/* Posiciona la escena según el punto de vista de la luz direccional y la dibuja */
-void Scene::shadowMapPass()
-{
-	//glm::mat4 lightProjection, lightView;
-	//float near_plane = 1.0f, far_plane = 400.5f;
-	////lightProjection = glm::perspective(glm::radians(60.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane);
-	//lightProjection = glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, near_plane, far_plane);
-	//glm::vec3 Position = glm::vec3(0.0, 150.0f, 0.0f);
-	//glm::vec3 UP = glm::vec3(0.0, 1.0, 0.0);
-
-	//glm::vec3 directionalLight = glm::vec3(-0.25f, -1.0f, -0.25f);
-
-	//lightView = this->camara->getNewLookAt(Position, directionalLight + Position, UP);
-	//lightSpaceMatrix = shadowBias * lightProjection * lightView;
-
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LESS);
-	//glEnable(GL_BLEND);
-
-	//// render scene from light's point of view
-	//glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	//glBindFramebuffer(GL_FRAMEBUFFER, shadowMap);
-	//glClear(GL_DEPTH_BUFFER_BIT);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
-	//ShaderManager::getInstance()->getShadowMap()->use();
-	//this->nodoWorld->DrawObjs(ShaderManager::getInstance()->getShadowMap(), TypeDraw::ShadowMap);
-	//glCullFace(GL_BACK);
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//// reset viewport
-	//glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
-}
-
-/* Pasasa del SSAO */
-void Scene::ssaoPass(glm::mat4& mView, glm::mat4& mProj)
-{
-	//glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-	//glDisable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-
-	//ShaderManager::getInstance()->getSSAO()->use();
-
-	//ShaderManager::getInstance()->getSSAO()->setUniform("ssaoStrength", 3.0f);
-	//ShaderManager::getInstance()->getSSAO()->setUniform("sampleRadius", 2.0f);
-	//ShaderManager::getInstance()->getSSAO()->setUniform("sampleRadius2", 4.0f); //sampleRadius * sampleRadius
-	//ShaderManager::getInstance()->getSSAO()->setUniform("numKernelSamples", 64); //samples.size()
-	//ShaderManager::getInstance()->getSSAO()->setUniform("samples", 64, &ssaoKernel[0]);
-
-	//ShaderManager::getInstance()->getSSAO()->setUniform("mViewProj", mProj * mView);
-	//ShaderManager::getInstance()->getSSAO()->setUniform("viewInverse", glm::inverse(mView));
-	//ShaderManager::getInstance()->getSSAO()->setUniform("projectionInverse", glm::inverse(mProj));
-
-	//ShaderManager::getInstance()->getSSAO()->setUniform("noiseScale", glm::vec2(SCR_WIDTH * 0.25f, SCR_HEIGHT * 0.25f));
-	//
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, DepthGBuffer);
-	//ShaderManager::getInstance()->getSSAO()->setUniform("depthTexture", 0);
-	//
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, gNormal);
-	//ShaderManager::getInstance()->getSSAO()->setUniform("gNormal", 1);
-	//
-	//glActiveTexture(GL_TEXTURE2);
-	//glBindTexture(GL_TEXTURE_2D, noiseTexture);
-	//ShaderManager::getInstance()->getSSAO()->setUniform("texNoise", 2);
-	//
-	//renderQuad();
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//// 3. blur SSAO texture to remove noise
-	//// ------------------------------------
-	//glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-	//glClear(GL_COLOR_BUFFER_BIT);
-
-	//ShaderManager::getInstance()->getSSAOBlur()->use();
-
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-	//ShaderManager::getInstance()->getSSAOBlur()->setUniform("ssaoInput", 0); 
-
-	//ShaderManager::getInstance()->getSSAOBlur()->setUniform("numSamplesAroundTexel", 2); // 5x5 kernel blur
-	//renderQuad();
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//glEnable(GL_DEPTH_TEST);
 }
 
 /* Pasasa de los objetos que no se han podido incluir dentro del deferred rendering: transparecias, skymap, etc... */

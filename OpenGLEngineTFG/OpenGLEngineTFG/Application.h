@@ -36,6 +36,8 @@ public:
 
 	void MainLoop(GLFWwindow* window);
 
+	bool wrappRaton;
+
 	std::string getPath();
 	void getInfoHardware();
 	Scene* getMainScene();
@@ -50,7 +52,6 @@ public:
 	void DestroyInstance();
 
 private:
-	bool wrappRaton;
 	std::string url_Path;
 	Scene* world;
 	TextureManager* textureManager;

@@ -71,7 +71,7 @@ void TextureManager::InitTextura(TextureInfo &textInf)
 		else if (nrComponents == 3)
 			formatImg = GL_RGB;
 		else if (nrComponents == 4)
-			formatImg = GL_RGBA;
+			formatImg = GL_RGBA16F;
 	}
 	else {
 		std::cout << textInf.urlImg << " cannot be loaded" << std::endl;

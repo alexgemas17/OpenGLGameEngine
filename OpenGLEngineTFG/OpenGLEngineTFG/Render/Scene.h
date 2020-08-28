@@ -19,10 +19,7 @@
 //---------- INCLUDE PRUEBAS --------------
 #include "Render.h"
 
-const int NR_DIRECTIONAL_LIGHTS = 1;
-const int NR_POINT_LIGHTS = 50;
-const int NR_SPOT_LIGHTS = 1;
-const unsigned int SHADOW_WIDTH = 2048 * 2, SHADOW_HEIGHT = 2048 * 2;
+const int MAX_LIGHTS = 2500;
 const float NEAR_PLANE = 0.01f, FAR_PLANE = 1000.0f;
 
 class Scene
@@ -33,11 +30,12 @@ public:
 
 	void InitScene();
 	void InitCamara(float fov, int width, int height, float zNear, float zFar);
+	void AddNewNumLights(int numLights);
 	void UpdateObjs(float deltaTime);
 	void SetUniforms();
 	void DrawObjs();
 
-	Camara* camara;
+	NodoScene* getNodesScene() { return this->nodoWorld; }
 
 	/* Funciones callbacks */
 	void framebuffer_size_callback(int width, int height); 
@@ -45,42 +43,31 @@ public:
 	void cursor_position_callback(double xpos, double ypos);
 	void scroll_callback(double xoffset, double yoffset);
 
-	NodoScene* getNodesScene() { return this->nodoWorld; }
-
-	/* Shadow map data*/
-	glm::mat4 lightSpaceMatrix;
-
-	std::vector<SceneObj*> objs;
+	/* Datos de las luces */
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
 	std::vector<float> lightIntensity;
 
+	/* Cámara */
+	Camara* camara;
+
+	/* Renders */
 	ForwardRender* forwardRender;
 	DeferredShadingRender* deferredShadingRender;
 	ForwardPlusRender* forwardPlusRender;
 
+	std::vector<SceneObj*> objs;
+
+	int NUM_LIGHTS;
+
 private:
-	std::vector<NodoScene*> objetosScena; //Nota: Para cuando carge de texto
+	int mode;
+
 	NodoScene* nodoWorld;
 	NodoScene* transparentObj;
-	NodoScene* nodoLight;
-	glm::vec3 lightPosition;
 
 	CubeMap* skybox;
 	Cube* cube;
-
-	unsigned int shadowMap, DepthShadowMap;
-	unsigned int ssaoFBO, ssaoBlurFBO, ssaoColorBuffer, ssaoColorBufferBlur;
-
-	int mode;
-
-	/* ShadowMap */
-	glm::mat4 shadowBias;
-
-	/* SSAO and BLUR dada*/
-	unsigned int noiseTexture;
-	std::vector<glm::vec3> ssaoKernel; 
-	std::vector<glm::vec3> ssaoNoise;
 
 	/* Screen Data */
 	int SCR_WIDTH;
@@ -91,13 +78,7 @@ private:
 	void InitLights();	// Crea luces puntuales aleatoriamente (hardcode: spot y direccional)
 	void UpdateLights(float deltaTime);
 
-	// Inits de los buffers correspondientes.
-	void InitShadowMapBuffer();
-	void InitSSAOBuffer();
-
 	// Pasadas de las luces.
-	void shadowMapPass();
-	void ssaoPass(glm::mat4& mView, glm::mat4& mProj);
 	void skyboxRender();
 	void postProcessEffectsPass(glm::mat4& mViewProjection);
 };

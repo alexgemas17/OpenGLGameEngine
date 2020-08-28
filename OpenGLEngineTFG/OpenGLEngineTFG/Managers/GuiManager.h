@@ -11,21 +11,6 @@
 // Debe ponerse después de él.
 #include <GLFW\glfw3.h>
 
-struct ObjSceneInfo {
-	SceneObj* obj;
-
-	std::string NameObj;
-	std::string NameTextureDiff;
-	std::string NameTextureSpec;
-	std::string NameTextureNormal;
-
-	glm::vec3 Position;
-	glm::vec3 RotationX;
-	glm::vec3 RotationY;
-	glm::vec3 RotationZ;
-	glm::vec3 Scale;
-};
-
 class GuiManager
 {
 public:
@@ -42,8 +27,6 @@ private:
 	bool show_demo_window = true;
 	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-	std::vector<ObjSceneInfo> objsInfoGUI;
 
 	void showMenu();
 

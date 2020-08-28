@@ -41,25 +41,20 @@ void Application::MainLoop(GLFWwindow* window)
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
-	// Comprobamos si debemos bloquear o no el ratón para el uso de la GUI.
-	/*if (InputManager::getInstance()->getInputButtonDown(Key_F1)) {
-		this->wrappRaton = !this->wrappRaton;
-	}*/
-
 	//--------------- GUI INIT -------------
-	//guiManager->StartGUI();
+	guiManager->StartGUI();
 
 	// ----------------------------- FPS ----------------------
-	double currentTime = glfwGetTime();
-	nbFrames++;
-	if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
-		// printf and reset timer
-		printf("---------------\n");
-		printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-		printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
-		nbFrames = 0;
-		lastTime += 1.0;
-	}
+	//double currentTime = glfwGetTime();
+	//nbFrames++;
+	//if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
+	//	// printf and reset timer
+	//	printf("---------------\n");
+	//	printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+	//	printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
+	//	nbFrames = 0;
+	//	lastTime += 1.0;
+	//}
 
 	// ----------------------------- INPUTS ----------------------
 	//processInput(window);
@@ -72,7 +67,7 @@ void Application::MainLoop(GLFWwindow* window)
 	DrawMainScene();
 
 	//--------------- GUI RENDER -------------
-	//guiManager->showGUI(); TO-DO: ARREGLAR
+	guiManager->showGUI(); //TO-DO: ARREGLAR
 }
 
 void Application::InitMainScene()
@@ -100,6 +95,10 @@ void Application::InitGUI()
 
 void Application::UpdateMainScene(float deltaTime)
 {
+	if (InputManager::getInstance()->getInputButtonDown(Key_C)) {
+		world->AddNewNumLights(0);
+	}
+
 	world->UpdateObjs(deltaTime);
 }
 

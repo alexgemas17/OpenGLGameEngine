@@ -32,7 +32,7 @@ void DeferredShadingRender::createFrameBuffer(int numLights)
 	// color + specular color buffer
 	glGenTextures(1, &gAlbedo);
 	glBindTexture(GL_TEXTURE_2D, gAlbedo);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
@@ -88,12 +88,12 @@ void DeferredShadingRender::initBufferLights(std::vector<glm::vec3> lightPositio
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void DeferredShadingRender::UpdateLights(std::vector<glm::vec3> lightPosition)
+void DeferredShadingRender::UpdateLights(std::vector<glm::vec3> lightPosition, int numLights)
 {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
 	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
 
-	for (int i = 0; i < lightPosition.size(); i++) {
+	for (int i = 0; i < numLights; i++) {
 		LightStruct& light = pointLights[i];
 		light.Position = glm::vec4(lightPosition[i], 1.0f);
 	}

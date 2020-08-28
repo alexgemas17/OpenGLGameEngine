@@ -24,7 +24,7 @@ void GuiManager::InitGUI(GLFWwindow* window)
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 400");
+    ImGui_ImplOpenGL3_Init("#version 430");
 
     // Load Fonts
     // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
@@ -63,93 +63,30 @@ void GuiManager::showGUI()
 	//showMenu();
 
     //ImGui::ShowDemoWindow(&show_demo_window);
-
+    static int numLights = Application::getInstance()->getMainScene()->NUM_LIGHTS;
     //TO-DO: HACER FUNCIONES DE LA UI
-    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-    //{
-    //	static float f = 0.0f;
-    //	static int counter = 0;
-
-    //	ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-    //	ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-    //	ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-    //	ImGui::Checkbox("Another Window", &show_another_window);
-
-    //    static float translation[] = { 0.0, 0.0 };
-    //    static float translation2[] = { 0.0, 0.0 };
-    //    static float translation3[] = { 0.0, 0.0 };
-
-    //    if (ImGui::CollapsingHeader("Objetos??"))
-    //    {
-    //        ImGui::Text("Objetos del mundo:");
-    //        ImGui::Separator();
-
-    //        if (ImGui::CollapsingHeader("Nodo 1"))
-    //        {
-    //            if (ImGui::CollapsingHeader("Hijo"))
-    //            {
-    //                //ImGui::Image();
-    //            }
-    //        }
-
-    //        if (ImGui::CollapsingHeader("Nodo 2"))
-    //        {
-    //            if (ImGui::CollapsingHeader("Hijo 1"))
-    //            {
-    //                ImGui::Separator();
-    //                if (ImGui::SliderFloat2("position 2", translation2, -1.0, 1.0)) {
-    //                    std::cout << "Modificado 2" << std::endl;
-    //                }
-    //            }
-    //            if (ImGui::CollapsingHeader("Hijo 2"))
-    //            {
-    //                ImGui::Separator();
-    //                if (ImGui::SliderFloat2("position 3", translation3, -1.0, 1.0)) {
-    //                    std::cout << "Modificado 3" << std::endl;
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //	ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-    //	ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-    //	if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-    //		counter++;
-    //	ImGui::SameLine();
-    //	ImGui::Text("counter = %d", counter);
-
-    //	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    //	ImGui::End();
-    //}
-
+    //2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
     {
-        ImGui::Begin("Objetos en escena"); 
-        ImGui::Text("Lista de los objetos que existen en escena:");
+    	ImGui::Begin("TFG!");
 
-        if (ImGui::CollapsingHeader("Sponza"))
-        {
-            for (int i = 0; i < objsInfoGUI.size(); i++) {
-                const std::string name = objsInfoGUI[i].NameObj.append("" + i);
-                if (ImGui::CollapsingHeader("Hijo"))
-                {
-                    ImGui::Text(objsInfoGUI[i].NameObj.c_str());
-                    if (objsInfoGUI[i].NameTextureDiff != "") {
-                        if(ImGui::CollapsingHeader(objsInfoGUI[i].NameTextureDiff.c_str())) {
-                            ImGui::Text("Aqui va una imagen");
-                        }
-                    }
-                    else {
-                        ImGui::Text(objsInfoGUI[i].NameTextureDiff.c_str());
-                    }
-                    ImGui::Text(objsInfoGUI[i].NameTextureSpec.c_str());
-                    ImGui::Text(objsInfoGUI[i].NameTextureNormal.c_str());
-                }
-            }
+    	ImGui::Text("Numero de luces en la escena:");
+        if (ImGui::SliderInt("", &numLights, 1, 2500)) {
+            Application::getInstance()->getMainScene()->AddNewNumLights(numLights);
         }
 
-        ImGui::End();
+        //ImGui::Checkbox("Demo Window", &show_demo_window);
+        //ImGui::Checkbox("Another Window", &show_another_window);
+    	
+        //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+    	//if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+    	//	counter++;
+    	//ImGui::SameLine();
+    	//ImGui::Text("counter = %d", counter);
+        ImGui::Spacing();
+    	ImGui::Text("%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
+    	ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
+    	ImGui::End();
     }
 
     // Rendering
@@ -165,107 +102,90 @@ void GuiManager::addNodoSceneToGUI(NodoScene* nodo, std::string name)
 // --------------------------- FUNCIONES PRIVADAS ----------------------------
 void GuiManager::showMenu()
 {
-    //IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!"); // Exceptionally add an extra assert here for people confused with initial dear imgui setup
+    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!"); // Exceptionally add an extra assert here for people confused with initial dear imgui setup
 
-    //// Main body of the Demo window starts here.
-    //if (!ImGui::Begin("Dear ImGui Demo"))
-    //{
-    //    // Early out if the window is collapsed, as an optimization.
-    //    ImGui::End();
-    //    return;
-    //}
+    // Main body of the Demo window starts here.
+    if (!ImGui::Begin("Dear ImGui Demo"))
+    {
+        // Early out if the window is collapsed, as an optimization.
+        ImGui::End();
+        return;
+    }
 
-    //// Menu Bar
-    //if (ImGui::BeginMenuBar())
-    //{
-    //    if (ImGui::BeginMenu("Menu"))
-    //    {
-    //        //ShowExampleMenuFile();
-    //        ImGui::EndMenu();
-    //    }
-    //    if (ImGui::BeginMenu("Examples"))
-    //    {
-    //        /*ImGui::MenuItem("Main menu bar", NULL, &show_app_main_menu_bar);
-    //        ImGui::MenuItem("Console", NULL, &show_app_console);
-    //        ImGui::MenuItem("Log", NULL, &show_app_log);
-    //        ImGui::MenuItem("Simple layout", NULL, &show_app_layout);
-    //        ImGui::MenuItem("Property editor", NULL, &show_app_property_editor);
-    //        ImGui::MenuItem("Long text display", NULL, &show_app_long_text);
-    //        ImGui::MenuItem("Auto-resizing window", NULL, &show_app_auto_resize);
-    //        ImGui::MenuItem("Constrained-resizing window", NULL, &show_app_constrained_resize);
-    //        ImGui::MenuItem("Simple overlay", NULL, &show_app_simple_overlay);
-    //        ImGui::MenuItem("Manipulating window titles", NULL, &show_app_window_titles);
-    //        ImGui::MenuItem("Custom rendering", NULL, &show_app_custom_rendering);
-    //        ImGui::MenuItem("Documents", NULL, &show_app_documents);*/
-    //        ImGui::EndMenu();
-    //    }
-    //    if (ImGui::BeginMenu("Tools"))
-    //    {
-    //        /*ImGui::MenuItem("Metrics", NULL, &show_app_metrics);
-    //        ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
-    //        ImGui::MenuItem("About Dear ImGui", NULL, &show_app_about);*/
-    //        ImGui::EndMenu();
-    //    }
-    //    ImGui::EndMenuBar();
-    //}
+    // Menu Bar
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("Menu"))
+        {
+            //ShowExampleMenuFile();
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Examples"))
+        {
+            /*ImGui::MenuItem("Main menu bar", NULL, &show_app_main_menu_bar);
+            ImGui::MenuItem("Console", NULL, &show_app_console);
+            ImGui::MenuItem("Log", NULL, &show_app_log);
+            ImGui::MenuItem("Simple layout", NULL, &show_app_layout);
+            ImGui::MenuItem("Property editor", NULL, &show_app_property_editor);
+            ImGui::MenuItem("Long text display", NULL, &show_app_long_text);
+            ImGui::MenuItem("Auto-resizing window", NULL, &show_app_auto_resize);
+            ImGui::MenuItem("Constrained-resizing window", NULL, &show_app_constrained_resize);
+            ImGui::MenuItem("Simple overlay", NULL, &show_app_simple_overlay);
+            ImGui::MenuItem("Manipulating window titles", NULL, &show_app_window_titles);
+            ImGui::MenuItem("Custom rendering", NULL, &show_app_custom_rendering);
+            ImGui::MenuItem("Documents", NULL, &show_app_documents);*/
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Tools"))
+        {
+            /*ImGui::MenuItem("Metrics", NULL, &show_app_metrics);
+            ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
+            ImGui::MenuItem("About Dear ImGui", NULL, &show_app_about);*/
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
 
-    //ImGui::Text("dear imgui says hello. (%s)", IMGUI_VERSION);
-    //ImGui::Spacing();
+    ImGui::Text("dear imgui says hello. (%s)", IMGUI_VERSION);
+    ImGui::Spacing();
+
+    /*
+    
+        if (ImGui::CollapsingHeader("Objetos??"))
+        {
+            ImGui::Text("Objetos del mundo:");
+            ImGui::Separator();
+
+            if (ImGui::CollapsingHeader("Nodo 1"))
+            {
+                if (ImGui::CollapsingHeader("Hijo"))
+                {
+                    //ImGui::Image();
+                }
+            }
+
+            if (ImGui::CollapsingHeader("Nodo 2"))
+            {
+                if (ImGui::CollapsingHeader("Hijo 1"))
+                {
+                    ImGui::Separator();
+                    if (ImGui::SliderFloat2("position 2", translation2, -1.0, 1.0)) {
+                        std::cout << "Modificado 2" << std::endl;
+                    }
+                }
+                if (ImGui::CollapsingHeader("Hijo 2"))
+                {
+                    ImGui::Separator();
+                    if (ImGui::SliderFloat2("position 3", translation3, -1.0, 1.0)) {
+                        std::cout << "Modificado 3" << std::endl;
+                    }
+                }
+            }
+        }
+    */
 }
 
 void GuiManager::recursiveAddNodoSceneToGUI(NodoScene* nodo)
 {
-    //Si no hay más nodos, nos recorremos sus hijos.
-    if (nodo->getNodos().empty()) {
-
-        if (!nodo->getObjs().empty()) { 
-            for (int i = 0; i < nodo->getObjs().size(); i++) {
-                ObjSceneInfo obj;
-                obj.NameObj = "Hijo " + i + 1;
-                obj.NameTextureDiff = "";
-                obj.NameTextureSpec = "";
-                obj.NameTextureNormal = "";
-
-                if(!nodo->getObj(i)->getAlbedoTextures().empty())
-                    obj.NameTextureDiff = nodo->getObj(i)->getAlbedoTextures()[0];
-
-                if (!nodo->getObj(i)->getSpecularTextures().empty())
-                    obj.NameTextureSpec = nodo->getObj(i)->getSpecularTextures()[0];
-
-                if (!nodo->getObj(i)->getNormalMapTextures().empty())
-                    obj.NameTextureNormal = nodo->getObj(i)->getNormalMapTextures()[0];
-
-                objsInfoGUI.push_back(obj);
-            }
-        }
-    }
-    //Nos recurremos sus nodos
-    else {
-        //Sus nodos
-        for (int i = 0; i < nodo->getNodos().size(); i++) {
-            recursiveAddNodoSceneToGUI(nodo->getNodos()[i]);
-        }
-
-        //Cuano hayamos terminado, nos recorremos sus hijos.
-        if (!nodo->getObjs().empty()) {
-            for (int i = 0; i < nodo->getNodos().size(); i++) {
-                ObjSceneInfo obj;
-                obj.NameObj = "Hijo " + i + 1;
-                obj.NameTextureDiff = "";
-                obj.NameTextureSpec = "";
-                obj.NameTextureNormal = "";
-
-                if (!nodo->getObj(i)->getAlbedoTextures().empty())
-                    obj.NameTextureDiff = nodo->getObj(i)->getAlbedoTextures()[0];
-
-                if (!nodo->getObj(i)->getSpecularTextures().empty())
-                    obj.NameTextureSpec = nodo->getObj(i)->getSpecularTextures()[0];
-
-                if (!nodo->getObj(i)->getNormalMapTextures().empty())
-                    obj.NameTextureNormal = nodo->getObj(i)->getNormalMapTextures()[0];
-
-                objsInfoGUI.push_back(obj);
-            }
-        }
-    }
+    
 }

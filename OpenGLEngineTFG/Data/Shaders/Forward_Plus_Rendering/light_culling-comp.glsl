@@ -32,7 +32,7 @@ shared uint maxDepthInt;
 shared uint visibleLightCount;
 shared vec4 frustumPlanes[6];
 // Shared local storage for visible indices, will be written out to the global buffer at the end
-const int numberOfLights = 2048;
+const int numberOfLights = 2500;
 shared int visibleLightIndices[numberOfLights];
 shared mat4 viewProjection;
 
@@ -144,12 +144,13 @@ void main() {
 
 	// One thread should fill the global light buffer
 	if (gl_LocalInvocationIndex == 0) {
-		uint offset = index * numberOfLights; // Determine bosition in global buffer
+		//uint offset = index * numberOfLights; // Determine position in global buffer 
+		uint offset = index * lightCount;
 		for (uint i = 0; i < visibleLightCount; i++) {
 			visibleLightIndicesBuffer.data[offset + i].index = visibleLightIndices[i];
 		}
 
-		if (visibleLightCount != numberOfLights) {
+		if (visibleLightCount != lightCount) {
 			// Unless we have totally filled the entire array, mark it's end with -1
 			// Final shader step will use this to determine where to stop (without having to pass the light count)
 			visibleLightIndicesBuffer.data[offset + visibleLightCount].index = -1;

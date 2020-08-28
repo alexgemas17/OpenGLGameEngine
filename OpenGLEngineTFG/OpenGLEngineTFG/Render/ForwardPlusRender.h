@@ -6,17 +6,6 @@
 
 #include "NodoScene.h"
 
-// Estructura que usa nuestros shaders para poder compartirlo
-//struct LightStruct {
-//	glm::vec3 Position;
-//	glm::vec3 Color;
-//	float Intensity;
-//
-//	float Linear;
-//	float Quadratic;
-//	float Radius;
-//};
-
 struct LightStruct {
 	glm::vec4 Position;
 	glm::vec4 Color;
@@ -36,7 +25,7 @@ public:
 		std::vector<glm::vec3> lightColors,
 		std::vector<float> lightIntensity
 	);
-	void updateLights(std::vector<glm::vec3> lightPosition);
+	void UpdateLights(std::vector<glm::vec3> lightPosition, int numLights);
 	void draw(NodoScene* world);
 
 	float getWorkGroupsX() { return this->workGroupsX; }

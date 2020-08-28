@@ -109,7 +109,20 @@ int main() {
 	Application::getInstance()->SetUniforms();
 
 	// -------------------- RENDER LOOP --------------------  
-	while (!glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(window)) 
+	{
+		// Comprobamos si debemos bloquear o no el ratón para el uso de la GUI.
+		if (InputManager::getInstance()->getInputButtonDown(Key_F1)) {
+			Application::getInstance()->wrappRaton = !Application::getInstance()->wrappRaton;
+		}
+
+		if (Application::getInstance()->getWrappRaton()) {
+			//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+		else {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		}
 
  		Application::getInstance()->MainLoop(window);
 		
@@ -169,21 +182,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	//if (Application::getInstance()->getWrappRaton()) {
-	//	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
-	//	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	//	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
-
-	//	window_refresh_callback(window);
-	//}
-	//else {
-	//	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	//}
-	//Hacemos que el cursor se quede bloqueado en medio y desaparezca.
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
+	if (Application::getInstance()->getWrappRaton()) {
+		Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
+	}
 
 	//window_refresh_callback(window);
 }

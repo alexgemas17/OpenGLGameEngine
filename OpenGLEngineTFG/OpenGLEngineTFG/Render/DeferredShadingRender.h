@@ -17,7 +17,7 @@ class DeferredShadingRender
 public:
 	void createFrameBuffer(int numLights); 
 	void initBufferLights(std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
-	void UpdateLights(std::vector<glm::vec3> lightPosition);
+	void UpdateLights(std::vector<glm::vec3> lightPosition, int numLights);
 	void draw(NodoScene* world);
 
 	unsigned int getGBufferID() { return this->fbID; }

@@ -33,12 +33,12 @@ void ForwardRender::initBufferLights(std::vector<glm::vec3> lightPosition, std::
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void ForwardRender::UpdateLights(std::vector<glm::vec3> lightPosition)
+void ForwardRender::UpdateLights(std::vector<glm::vec3> lightPosition, int numLights)
 {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, lightsShareBuffer);
 	LightStruct* pointLights = (LightStruct*)glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
 
-	for (int i = 0; i < lightPosition.size(); i++) {
+	for (int i = 0; i < numLights; i++) {
 		LightStruct& light = pointLights[i];
 		light.Position = glm::vec4(lightPosition[i], 1.0f);
 	}
