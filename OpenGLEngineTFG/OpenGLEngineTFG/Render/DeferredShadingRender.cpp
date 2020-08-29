@@ -102,11 +102,11 @@ void DeferredShadingRender::UpdateLights(std::vector<glm::vec3> lightPosition, i
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void DeferredShadingRender::draw(NodoScene* world)
+void DeferredShadingRender::draw(NodoScene* world, unsigned int sceneFBO)
 {
 	// 1. geometry pass: render scene's geometry/color data into gbuffer
 	// -----------------------------------------------------------------
-	geometryBufferPass(world);
+	geometryBufferPass(world, sceneFBO);
 
 	// 2. lighting pass: calculate lighting by iterating over a screen filled quad pixel-by-pixel using the gbuffer's content.
 	// -----------------------------------------------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ void DeferredShadingRender::renderQuad()
 	glBindVertexArray(0);
 }
 
-void DeferredShadingRender::geometryBufferPass(NodoScene* world)
+void DeferredShadingRender::geometryBufferPass(NodoScene* world, unsigned int sceneFBO)
 {
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
@@ -154,7 +154,7 @@ void DeferredShadingRender::geometryBufferPass(NodoScene* world)
 	glCullFace(GL_BACK);
 	world->DrawObjs(ShaderManager::getInstance()->getGBuffer(), TypeDraw::GeometryRender);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);

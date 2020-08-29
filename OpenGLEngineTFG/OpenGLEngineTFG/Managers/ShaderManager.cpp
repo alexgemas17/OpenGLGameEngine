@@ -20,11 +20,9 @@ ShaderManager::ShaderManager():
 	depthShader(new PagShaderProgram()),
 	lightingCulling(new PagShaderProgram()),
 	forwardPlusLightingShader(new PagShaderProgram()),
-	shadowMap(new PagShaderProgram()),
 	skybox(new PagShaderProgram()),
-	ssao(new PagShaderProgram()),
-	ssao_blur(new PagShaderProgram()),
 	transparentObj(new PagShaderProgram()),
+	hdrgamma(new PagShaderProgram()),
 	ShaderPath(Application::getInstance()->getPath().append("Data\\Shaders\\")),
 	typeShader(TYPE_TEXTURE)
 {
@@ -39,13 +37,9 @@ ShaderManager::ShaderManager():
 	std::string urlLightingCulling = ShaderPath + "Forward_Plus_Rendering\\light_culling";
 	std::string urlForwardPlusLightingShader = ShaderPath + "Forward_Plus_Rendering\\forward_plus_shader";
 
-	std::string urlshadowMap = ShaderPath+ "Shadow\\shadowmap";
-
 	std::string urlskybox = ShaderPath+ "Skybox\\skybox";
 	std::string urlcube = ShaderPath+ "cube";
-
-	std::string urlssao = ShaderPath+ "Postprocessefects\\SSAO\\ssao";
-	std::string urlssao_blur = ShaderPath+ "Postprocessefects\\SSAO\\ssao_blur";
+	std::string urlhdrgamma = ShaderPath+ "Postprocessefects\\HDR\\HDR_GAMMA";
 
 	//this->basicLightShader->createShaderProgram(urlBasicShader.c_str() ); //CAMBIAR!
 
@@ -58,12 +52,9 @@ ShaderManager::ShaderManager():
 	this->lightingCulling->createShaderCompProgram(urlLightingCulling.c_str() );
 	this->forwardPlusLightingShader->createShaderProgram(urlForwardPlusLightingShader.c_str() );
 
-	this->shadowMap->createShaderProgram(urlshadowMap.c_str());
 	this->skybox->createShaderProgram(urlskybox.c_str());
 	this->transparentObj->createShaderProgram(urlcube.c_str());
-
-	this->ssao->createShaderProgram(urlssao.c_str());
-	this->ssao_blur->createShaderProgram(urlssao_blur.c_str());
+	this->hdrgamma->createShaderProgram(urlhdrgamma.c_str());
 }
 
 ShaderManager::~ShaderManager()
@@ -72,11 +63,8 @@ ShaderManager::~ShaderManager()
 	delete gBufferShader;
 	delete deferredLightingShader;
 	delete forwardPlusLightingShader;
-	delete shadowMap;
 	delete skybox;
 	delete transparentObj;
-	delete ssao;
-	delete ssao_blur;
 	delete instance;
 }
 
@@ -116,27 +104,17 @@ PagShaderProgram* ShaderManager::getForwardPlusLighting()
 	return this->forwardPlusLightingShader;
 }
 
-PagShaderProgram* ShaderManager::getShadowMap()
-{
-	return this->shadowMap;
-}
-
 PagShaderProgram* ShaderManager::getTransparentObj()
 {
 	return this->transparentObj;
 }
 
+PagShaderProgram* ShaderManager::getHDRGAMMA()
+{
+	return this->hdrgamma;
+}
+
 PagShaderProgram* ShaderManager::getSkyBox()
 {
 	return this->skybox;
-}
-
-PagShaderProgram* ShaderManager::getSSAO()
-{
-	return this->ssao;
-}
-
-PagShaderProgram* ShaderManager::getSSAOBlur()
-{
-	return this->ssao_blur;
 }

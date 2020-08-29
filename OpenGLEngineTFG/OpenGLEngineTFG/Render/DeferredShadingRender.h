@@ -18,7 +18,8 @@ public:
 	void createFrameBuffer(int numLights); 
 	void initBufferLights(std::vector<glm::vec3> lightPosition, std::vector<glm::vec3> lightColors, std::vector<float> lightIntensity);
 	void UpdateLights(std::vector<glm::vec3> lightPosition, int numLights);
-	void draw(NodoScene* world);
+	void draw(NodoScene* world, unsigned int sceneFBO);
+	void renderQuad();
 
 	unsigned int getGBufferID() { return this->fbID; }
 
@@ -27,8 +28,7 @@ private:
 	unsigned int quadVAO = 0, quadVBO = 0;
 	unsigned int gPosition, gNormal, gAlbedo, gMaterialInfo;
 
-	void renderQuad();
-	void geometryBufferPass(NodoScene* world);
+	void geometryBufferPass(NodoScene* world, unsigned int sceneFBO);
 	void deferredLightingPass(NodoScene* world);
 };
 

@@ -47,7 +47,6 @@ void ForwardPlusRender::createFrameBuffer(int numLights)
 
 	// Bind visible light indices buffer
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, visibleLightIndicesBuffer);
-	//glBufferData(GL_SHADER_STORAGE_BUFFER, numberOfTiles * sizeof(VisibleIndex) * 1024, 0, GL_STATIC_DRAW);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, numberOfTiles * sizeof(VisibleIndex) * numLights, 0, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
@@ -88,10 +87,10 @@ void ForwardPlusRender::UpdateLights(std::vector<glm::vec3> lightPosition, int n
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
-void ForwardPlusRender::draw(NodoScene* world)
+void ForwardPlusRender::draw(NodoScene* world, unsigned int sceneFBO)
 {
 	// 1. Hacemos una pasada para almanecar la posición de los objetos
-	depthRender(world);
+	depthRender(world, sceneFBO);
 
 	// Calculamos el impacto de las luces sobre la escena según los grid
 	lightCullingRender();
@@ -101,13 +100,13 @@ void ForwardPlusRender::draw(NodoScene* world)
 }
 
 // -------------------------------------------------------------------------------
-void ForwardPlusRender::depthRender(NodoScene* world)
+void ForwardPlusRender::depthRender(NodoScene* world, unsigned int sceneFBO)
 {
 	// Bind the depth map's frame buffer and draw the depth map to it
 	glBindFramebuffer(GL_FRAMEBUFFER, dephtFrambuffer);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	world->DrawObjs(ShaderManager::getInstance()->getDepthShader(), TypeDraw::DepthRender);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 }
 
 void ForwardPlusRender::lightCullingRender()

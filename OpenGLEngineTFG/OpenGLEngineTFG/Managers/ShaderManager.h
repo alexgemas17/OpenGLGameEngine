@@ -23,12 +23,9 @@ public:
 	PagShaderProgram* getForwardPlusLighting();
 
 	/* POSTPROCESS EFFECTS */
-	PagShaderProgram* getShadowMap();
 	PagShaderProgram* getSkyBox();
-	PagShaderProgram* getTransparentObj();
-	PagShaderProgram* getSSAO();
-	PagShaderProgram* getSSAOBlur();
-
+	PagShaderProgram* getTransparentObj(); 
+	PagShaderProgram* getHDRGAMMA();
 
 private:
 	// Instancia singleton.
@@ -49,15 +46,9 @@ private:
 	PagShaderProgram* forwardPlusLightingShader;
 
 	// ---------- POSTPROCESS EFFECTS -----------------
-	/* SHADOW MAP */
-	PagShaderProgram* shadowMap;
-
 	/* SkyBox */
 	PagShaderProgram* skybox;
 
 	PagShaderProgram* transparentObj;
-
-	/* SSAO */
-	PagShaderProgram* ssao;
-	PagShaderProgram* ssao_blur;
+	PagShaderProgram* hdrgamma;
 };

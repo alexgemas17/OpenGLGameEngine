@@ -12,7 +12,8 @@
 
 Scene::Scene(): 
 	camara(nullptr), mode(0), forwardRender(new ForwardRender()), 
-	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
+	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender()),
+	NUM_LIGHTS(200), NUM_TRANSP_OBJS(10), gamma(0.8f), exposure(1.0f)
 {}
 
 Scene::~Scene() {}
@@ -30,7 +31,31 @@ void Scene::InitScene()
 	SCR_WIDTH = Application::getInstance()->getWIDHT();
 	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
-	this->NUM_LIGHTS = 200;
+	// ---------------------------------------------------------------------------------------------------
+	// configure floating point framebuffer
+	// -----------------------------------
+	glGenFramebuffers(1, &sceneFBO);
+
+	// create floating point color buffer
+	glGenTextures(1, &sceneColorBuffer);
+	glBindTexture(GL_TEXTURE_2D, sceneColorBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// create depth buffer (renderbuffer)
+	unsigned int rboDepth;
+	glGenRenderbuffers(1, &rboDepth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+	// attach buffers
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColorBuffer, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "Framebuffer not complete!" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// ---------------------------------------------------------------------------------------------------
 
 	forwardRender->createFrameBuffer(MAX_LIGHTS);
 	deferredShadingRender->createFrameBuffer(MAX_LIGHTS);
@@ -69,6 +94,14 @@ void Scene::LoadObjs()
 		nodo->Translate(mainObjs[i].position.x, mainObjs[i].position.y, mainObjs[i].position.z);
 
 		nodoWorld->addNodo(nodo);
+	}
+
+	for (int i = 0; i < MAX_TRANSP_OBJS; i++) {
+		// calculate slightly random offsets
+		float xPos = RandomFloat(-40, 40);
+		float yPos = RandomFloat(-20, 70);
+		float zPos = RandomFloat(-60, 60);
+		transparentObjPositions.push_back(glm::vec3(xPos, yPos, zPos));
 	}
 
 	delete loader;
@@ -221,14 +254,15 @@ void Scene::setMode(int mode)
 /* Llamada principal que llama a las distintas pasadas dentro del rendering */
 void Scene::DrawObjs()
 {	
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sceneFBO);
 	if (mode == 0) {
 		forwardRender->draw(this->nodoWorld);
 	}
 	else if (mode == 1) {
-		deferredShadingRender->draw(this->nodoWorld);
+		deferredShadingRender->draw(this->nodoWorld, sceneFBO);
 	}
 	else if (mode == 2) {
-		forwardPlusRender->draw(this->nodoWorld);
+		forwardPlusRender->draw(this->nodoWorld, sceneFBO);
 	}
 
 	skyboxRender();
@@ -244,7 +278,7 @@ void Scene::skyboxRender()
 		// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
 		// ----------------------------------------------------------------------------------
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, deferredShadingRender->getGBufferID());
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sceneFBO);
 		// write to default framebuffer
 		// blit to default framebuffer. Note that this may or may not work as the internal 
 		//formats of both the FBO and default framebuffer have to match.
@@ -258,9 +292,8 @@ void Scene::skyboxRender()
 			0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 	}
-
 
 	// --------------------------- Transparent objs ----------------------------
 	glEnable(GL_DEPTH_TEST);
@@ -282,6 +315,18 @@ void Scene::skyboxRender()
 	ShaderManager::getInstance()->getSkyBox()->setUniform("ProjMatrix", mProj);
 	skybox->Draw();
 	glDepthFunc(GL_LESS);
+
+	// ----------------------------- HDR AND GAMMA -----------------------------------------
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// 2. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+	// --------------------------------------------------------------------------------------------------------------------------
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	ShaderManager::getInstance()->getHDRGAMMA()->use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, sceneColorBuffer);
+	ShaderManager::getInstance()->getHDRGAMMA()->setUniform("exposure", exposure);
+	ShaderManager::getInstance()->getHDRGAMMA()->setUniform("gamma", gamma);
+	this->deferredShadingRender->renderQuad();
 }
 
 /* Pasasa de efectos */

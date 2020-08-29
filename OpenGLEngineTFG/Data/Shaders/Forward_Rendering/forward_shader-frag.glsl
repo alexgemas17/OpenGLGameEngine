@@ -92,11 +92,11 @@ void main()
         }  
     }
 
-    const float gamma = 0.8f; //0.8
+    /*const float gamma = 0.8f; //0.8
     const float exposure = 1.0f;
     vec3 result = vec3(1.0) - exp(-lighting * exposure);
     // also gamma correct while we're at it       
-    result = pow(result, vec3(1.0 / gamma));
+    result = pow(result, vec3(1.0 / gamma));*/
     
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(lighting, 1.0);
 }

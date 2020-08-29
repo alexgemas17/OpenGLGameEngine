@@ -20,6 +20,7 @@
 #include "Render.h"
 
 const int MAX_LIGHTS = 2500;
+const int MAX_TRANSP_OBJS = 500;
 const float NEAR_PLANE = 0.01f, FAR_PLANE = 1000.0f;
 
 class Scene
@@ -36,6 +37,8 @@ public:
 	void DrawObjs();
 
 	NodoScene* getNodesScene() { return this->nodoWorld; }
+	unsigned int getSceneFBO() { return this->sceneFBO; }
+	unsigned int getSceneColorBuffer() { return this->sceneColorBuffer; }
 	void setMode(int mode);
 
 	/* Funciones callbacks */
@@ -46,6 +49,9 @@ public:
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
 	std::vector<float> lightIntensity;
+
+	/* Datos de los objetos transparentes */
+	std::vector<glm::vec3> transparentObjPositions;
 
 	/* Cámara */
 	Camara* camara;
@@ -58,9 +64,13 @@ public:
 	std::vector<SceneObj*> objs;
 
 	int NUM_LIGHTS;
+	int NUM_TRANSP_OBJS;
+	float exposure;
+	float gamma;
 
 private:
 	int mode;
+	unsigned int sceneFBO, sceneColorBuffer;
 
 	NodoScene* nodoWorld;
 	NodoScene* transparentObj;

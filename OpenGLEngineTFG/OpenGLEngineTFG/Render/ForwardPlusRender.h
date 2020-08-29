@@ -26,7 +26,7 @@ public:
 		std::vector<float> lightIntensity
 	);
 	void UpdateLights(std::vector<glm::vec3> lightPosition, int numLights);
-	void draw(NodoScene* world);
+	void draw(NodoScene* world, unsigned int sceneFBO);
 
 	float getWorkGroupsX() { return this->workGroupsX; }
 
@@ -39,7 +39,7 @@ private:
 
 	int numLights;
 
-	void depthRender(NodoScene* world);
+	void depthRender(NodoScene* world, unsigned int sceneFBO);
 	void lightCullingRender();
 	void lightShader(NodoScene* world);
 };
