@@ -11,7 +11,7 @@
 #include <../glm/gtc/type_ptr.hpp>
 
 Scene::Scene(): 
-	camara(nullptr), mode(2), forwardRender(new ForwardRender()), 
+	camara(nullptr), mode(0), forwardRender(new ForwardRender()), 
 	deferredShadingRender(new DeferredShadingRender()), forwardPlusRender(new ForwardPlusRender())
 {}
 
@@ -30,7 +30,7 @@ void Scene::InitScene()
 	SCR_WIDTH = Application::getInstance()->getWIDHT();
 	SCR_HEIGHT = Application::getInstance()->getHEIGHT();
 
-	this->NUM_LIGHTS = 20;
+	this->NUM_LIGHTS = 200;
 
 	forwardRender->createFrameBuffer(MAX_LIGHTS);
 	deferredShadingRender->createFrameBuffer(MAX_LIGHTS);
@@ -212,8 +212,12 @@ void Scene::SetUniforms()
 	this->nodoWorld->setUniforms();
 }
 
-/* ---------------------------------------	RENDERING PASS	----------------------------------------- */
+void Scene::setMode(int mode)
+{
+	this->mode = mode;
+}
 
+/* ---------------------------------------	RENDERING PASS	----------------------------------------- */
 /* Llamada principal que llama a las distintas pasadas dentro del rendering */
 void Scene::DrawObjs()
 {	
@@ -311,17 +315,7 @@ void Scene::framebuffer_size_callback(int width, int height)
 	this->camara->SetProjection(width, height);
 }
 
-void Scene::mouse_button_callback(int button, int action, int mods)
-{
-	//TODO
-}
-
 void Scene::cursor_position_callback(double xpos, double ypos)
 {
 	this->camara->moveCamara(xpos, ypos);
-}
-
-void Scene::scroll_callback(double xoffset, double yoffset)
-{
-	//TODO
 }

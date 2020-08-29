@@ -1,11 +1,17 @@
-#version 430
+// ------------------ FORWARD PLUS RENDERING ------------------
+#version 430 core
 
 layout (location = 0) out vec4 FragColor;
 
-in vec3 FragPos; 
-in vec3 VertexNormal; 
-in vec2 TexCoords;
-out mat3 TBN;
+const float Linear =  0.7f;
+const float Quadratic = 1.8f;
+
+in VS_OUT {
+    in vec3 FragPos; 
+    in vec3 VertexNormal; 
+    in vec2 TexCoords;
+    in mat3 TBN;
+} fragment_in;
 
 struct Light {
 	vec4 Position;
@@ -17,7 +23,6 @@ struct VisibleIndex {
 	int index;
 };
 
-// -------------------------------------- LO IMPORTANTE --------------------------------------
 // Shader storage buffer objects
 layout(std430, binding = 0) readonly buffer LightBuffer {
 	Light data[];
@@ -26,7 +31,6 @@ layout(std430, binding = 0) readonly buffer LightBuffer {
 layout(std430, binding = 1) readonly buffer VisibleLightIndicesBuffer {
 	VisibleIndex data[];
 } visibleLightIndicesBuffer;
-// -------------------------------------------------------------------------------------------
 
 // Uniforms
 uniform sampler2D texture_albedo;
@@ -38,9 +42,6 @@ uniform float numberOfTilesX;
 uniform vec3 viewPos;
 uniform int lightCount;
 
-const float Linear =  0.7f;
-const float Quadratic = 1.8f;
-
 void main() {
 	// ----------------------------------------------------
 	// Determine which tile this pixel belongs to
@@ -51,20 +52,22 @@ void main() {
 	// ----------------------------------------------------
 
 	// retrieve data from gbuffer
-    vec3 Diffuse = texture(texture_albedo, TexCoords).rgb;
-    float Specular = texture(texture_specular, TexCoords).a;
+    vec3 Diffuse = texture(texture_albedo, fragment_in.TexCoords).rgb;
+    float Specular = texture(texture_specular, fragment_in.TexCoords).a;
 
+    // Bump Mappgin or classic normal
     vec3 Normal = vec3(0.0f);
     if(has_texture_normal){
-        Normal = texture(texture_normal, TexCoords).rgb;
-        Normal = normalize(TBN *  normalize(Normal * 2.0 - 1.0));
+        Normal = texture(texture_normal, fragment_in.TexCoords).rgb;
+        Normal = Normal * 2.0 - 1.0;
+        Normal = normalize(fragment_in.TBN * Normal);
     }else{
-        Normal = (gl_FrontFacing) ? normalize(VertexNormal) : normalize(-VertexNormal);
+        Normal = (gl_FrontFacing) ? normalize(fragment_in.VertexNormal) : normalize(-fragment_in.VertexNormal);
     }
 
     // then calculate lighting as usual
     vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
-    vec3 viewDir  = normalize(viewPos - FragPos);
+    vec3 viewDir  = normalize(viewPos - fragment_in.FragPos);
 
 	// The offset is this tile's position in the global array of valid light indices.
 	// Loop through all these indices until we hit max number of lights or the end (indicated by an index of -1)
@@ -79,7 +82,7 @@ void main() {
 		vec3 lightPosition = light.Position.xyz;
         float radius = light.IntensityandRadius.y;
 
-        vec3 lDir = lightPosition - FragPos;
+        vec3 lDir = lightPosition - fragment_in.FragPos;
         vec3 lightColor = light.Color.rgb;
         float intensity = light.IntensityandRadius.x;
 

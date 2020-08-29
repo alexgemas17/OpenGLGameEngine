@@ -14,8 +14,7 @@ const enum class TypeDraw {
 	ForwardRender,
 	GeometryRender,
 	ForwardPlusRender,
-	DepthRender,
-	ShadowMap,
+	DepthRender
 };
 
 class SceneObj : public Render, public Model
@@ -46,24 +45,7 @@ public:
 	);
 
 private:
-	void shadowMapDraw(
-		PagShaderProgram* shader, 
-		glm::mat4& MVP
-	);
-
-	void depthRender(
-		PagShaderProgram* shader,
-		glm::mat4& ViewMatrix,
-		glm::mat4& ProjMatrix
-	);
-
 	void forwardDraw(
-		PagShaderProgram* shader,
-		glm::mat4& ViewMatrix,
-		glm::mat4& ProjMatrix
-	);
-
-	void geometryDraw(
 		PagShaderProgram* shader,
 		glm::mat4& ViewMatrix,
 		glm::mat4& ProjMatrix

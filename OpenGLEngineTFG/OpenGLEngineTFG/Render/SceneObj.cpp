@@ -32,7 +32,7 @@ void SceneObj::SetUniforms(glm::mat4& modelMatrix)
 {
 	// --------------------------- FORWARD  RENDERING ----------------------------
 	ShaderManager::getInstance()->getForwardLighting()->use();
-	ShaderManager::getInstance()->getForwardLighting()->setUniform("model", modelMatrix);
+	ShaderManager::getInstance()->getForwardLighting()->setUniform("ModelMatrix", modelMatrix);
 
 	// --------------------------- DEFERRED RENDERING ----------------------------
 	ShaderManager::getInstance()->getGBuffer()->use();
@@ -53,19 +53,16 @@ void SceneObj::DrawObj(PagShaderProgram* shader, const TypeDraw& type)
 
 	shader->use();
 
+	shader->setUniform("ViewMatrix", ViewMatrix);
+	shader->setUniform("ProjectionMatrix", ProjMatrix);
+
 	switch (type)
 	{
 	case TypeDraw::ForwardRender:
 		forwardDraw(shader, ViewMatrix, ProjMatrix);
 		break;
-	case TypeDraw::GeometryRender:
-		geometryDraw(shader, ViewMatrix, ProjMatrix);
-		break;
 	case TypeDraw::ForwardPlusRender:
 		forwardPlusDraw(shader, ViewMatrix, ProjMatrix);
-		break;
-	case TypeDraw::DepthRender:
-		depthRender(shader, ViewMatrix, ProjMatrix);
 		break;
 	}
 
@@ -78,33 +75,12 @@ void SceneObj::DrawObj(PagShaderProgram* shader, const TypeDraw& type)
 }
 
 //------------------------------- PRIVATE -------------------------------
-void SceneObj::shadowMapDraw(PagShaderProgram* shader, glm::mat4& MVP)
-{
-	shader->setUniform("ProjLightModelMatrix", MVP);
-}
-
-void SceneObj::depthRender(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
-{
-	shader->setUniform("ViewMatrix", ViewMatrix);
-	shader->setUniform("ProjectionMatrix", ProjMatrix);
-}
-
 void SceneObj::forwardDraw(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("view", ViewMatrix);
-	shader->setUniform("projection", ProjMatrix);
 	shader->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
-}
-
-void SceneObj::geometryDraw(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
-{
-	shader->setUniform("ViewMatrix", ViewMatrix);
-	shader->setUniform("ProjectionMatrix", ProjMatrix);
 }
 
 void SceneObj::forwardPlusDraw(PagShaderProgram* shader, glm::mat4& ViewMatrix, glm::mat4& ProjMatrix)
 {
-	shader->setUniform("ViewMatrix", ViewMatrix);
-	shader->setUniform("ProjectionMatrix", ProjMatrix);
 	shader->setUniform("viewPos", Application::getInstance()->getMainScene()->camara->getPosition());
 }

@@ -60,29 +60,25 @@ void GuiManager::DestroyGUI()
 
 void GuiManager::showGUI()
 {
-	//showMenu();
-
     //ImGui::ShowDemoWindow(&show_demo_window);
     static int numLights = Application::getInstance()->getMainScene()->NUM_LIGHTS;
-    //TO-DO: HACER FUNCIONES DE LA UI
-    //2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
+    static int item_current = 0;
+
     {
-    	ImGui::Begin("TFG!");
+    	ImGui::Begin("Info data");
 
     	ImGui::Text("Numero de luces en la escena:");
-        if (ImGui::SliderInt("", &numLights, 1, 2500)) {
+        if (ImGui::SliderInt("", &numLights, 1, 2500)) 
+        {
             Application::getInstance()->getMainScene()->AddNewNumLights(numLights);
         }
+        ImGui::Spacing();
 
-        //ImGui::Checkbox("Demo Window", &show_demo_window);
-        //ImGui::Checkbox("Another Window", &show_another_window);
-    	
-        //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+        if (ImGui::Combo("Type Render", &item_current, "Forward Rendering\0Deferred Rendering\0Forward Plus Rendering\0\0"))
+        {
+            Application::getInstance()->getMainScene()->setMode(item_current);
+        }
 
-    	//if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-    	//	counter++;
-    	//ImGui::SameLine();
-    	//ImGui::Text("counter = %d", counter);
         ImGui::Spacing();
     	ImGui::Text("%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
     	ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);

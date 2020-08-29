@@ -1,4 +1,5 @@
-#version 430
+// ------------------ FORWARD PLUS RENDERING ------------------
+#version 430 core
 
 struct Light {
 	vec4 Position;
@@ -32,8 +33,7 @@ shared uint maxDepthInt;
 shared uint visibleLightCount;
 shared vec4 frustumPlanes[6];
 // Shared local storage for visible indices, will be written out to the global buffer at the end
-const int numberOfLights = 2500;
-shared int visibleLightIndices[numberOfLights];
+shared int visibleLightIndices[4096];
 shared mat4 viewProjection;
 
 // Took some light culling guidance from Dice's deferred renderer

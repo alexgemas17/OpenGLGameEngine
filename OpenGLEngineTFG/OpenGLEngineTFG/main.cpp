@@ -13,10 +13,8 @@
 #include "Managers/ShaderManager.h"
 #include "Application.h"
 
-void showFPSCounter(int& nbFrames, double& lastTime);
 void setFunctionsCallbacks(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 float FloatAleatorio(float a, float b);
@@ -143,26 +141,10 @@ float FloatAleatorio(float a, float b) {
 	return a + r;
 }
 
-void showFPSCounter(int &nbFrames, double &lastTime)
-{
-	// ----------------------------- FPS ----------------------
-	double currentTime = glfwGetTime();
-	nbFrames++;
-	if (currentTime - lastTime >= 1.0) { // If last prinf() was more than 1 sec ago
-		// printf and reset timer
-		printf("---------------\n");
-		printf("%f ms/frame\n", 1000.0 / double(nbFrames));
-		printf("%f n/frame\n", 1 / (0.001 * (1000.0 / double(nbFrames))));
-		nbFrames = 0;
-		lastTime += 1.0;
-	}
-}
-
 void setFunctionsCallbacks(GLFWwindow* window)
 {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	//glfwSetKeyCallback(window, key_callback); --> Se hace en el render loop
-	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	//Hace que mientras se pulse una tecla, ésta devolverá GL_PRESS todo el rato.
@@ -171,13 +153,6 @@ void setFunctionsCallbacks(GLFWwindow* window)
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	Application::getInstance()->getMainScene()->framebuffer_size_callback(width, height);
-
-	//window_refresh_callback(window);
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
-	Application::getInstance()->getMainScene()->scroll_callback(xoffset, yoffset);
-	//window_refresh_callback(window);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -185,6 +160,4 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	if (Application::getInstance()->getWrappRaton()) {
 		Application::getInstance()->getMainScene()->cursor_position_callback(xpos, ypos);
 	}
-
-	//window_refresh_callback(window);
 }

@@ -36,12 +36,11 @@ public:
 	void DrawObjs();
 
 	NodoScene* getNodesScene() { return this->nodoWorld; }
+	void setMode(int mode);
 
 	/* Funciones callbacks */
 	void framebuffer_size_callback(int width, int height); 
-	void mouse_button_callback(int button, int action, int mods);
 	void cursor_position_callback(double xpos, double ypos);
-	void scroll_callback(double xoffset, double yoffset);
 
 	/* Datos de las luces */
 	std::vector<glm::vec3> lightPositions;
@@ -75,7 +74,7 @@ private:
 
 	// -------- PRIVATE FUNC ------------
 	void LoadObjs();	// Carga desde el objs.txt los objetos que tiene la escena
-	void InitLights();	// Crea luces puntuales aleatoriamente (hardcode: spot y direccional)
+	void InitLights();	// Crea luces puntuales aleatoriamente
 	void UpdateLights(float deltaTime);
 
 	// Pasadas de las luces.
