@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Render/Scene.h"
+#include "Scene/Scene.h"
 #include "Managers/TextureManager.h"
 #include "Managers/GuiManager.h"
 

@@ -1,0 +1,9 @@
+0.0f,0.0f,0.0f;   //  Position
+1.0f,1.0f,1.0f;   //  Scale
+45.0f		  //  AngleRotation
+1.0f,0.0f,0.0f;   //  AngleRDirection
+C:\\Users\\Alex\\Desktop\\conference\\conference.obj
+C:\\Users\\Alex\\Desktop\\conference\\
+C:\\Users\\Alex\\Desktop\\sibenik\\
+C:\\Users\\Alex\\Desktop\\sibenik\\sibenik.obj
+C:\\Users\\Alex\\Desktop\\sibenik\\

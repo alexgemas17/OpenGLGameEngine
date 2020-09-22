@@ -45,7 +45,6 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 			if (!nodo->objs.empty()) {
 				for (int i = 0; i < nodo->objs.size(); i++) {
 					nodo->objs[i]->Init();
-					Application::getInstance()->getMainScene()->objs.push_back(nodo->objs[i]);
 				}
 			}
 		}
@@ -57,7 +56,6 @@ void NodoScene::InitObjsRecursive(NodoScene* nodo)
 			if (!nodo->objs.empty()) {
 				for (int i = 0; i < nodo->objs.size(); i++) {
 					nodo->objs[i]->Init();
-					Application::getInstance()->getMainScene()->objs.push_back(nodo->objs[i]);
 				}
 			}
 		}

@@ -48,9 +48,11 @@ void GuiManager::showGUI()
     //ImGui::ShowDemoWindow(&show_demo_window);
 
     static int numLights = Application::getInstance()->getMainScene()->NUM_LIGHTS;
+    static int numObjTransp = Application::getInstance()->getMainScene()->NUM_TRANSP_OBJS;
     static float gamma = Application::getInstance()->getMainScene()->gamma;
     static float exposure = Application::getInstance()->getMainScene()->exposure;
     static int item_current = 0;
+    static bool rotateObj = false;
 
     {
     	ImGui::Begin("Info data");
@@ -79,6 +81,14 @@ void GuiManager::showGUI()
         }
 
         ImGui::Spacing();
+        ImGui::Text("Objetos transparentes:");
+        if (ImGui::SliderInt("Objs", &numObjTransp, 0, 50))
+        {
+            Application::getInstance()->getMainScene()->NUM_TRANSP_OBJS = numObjTransp;
+        }
+        
+
+        ImGui::Spacing();
     	ImGui::Text("%.3f ms/frame", 1000.0f / ImGui::GetIO().Framerate);
     	ImGui::Text("(%.1f FPS)", ImGui::GetIO().Framerate);
     	ImGui::End();
@@ -91,93 +101,13 @@ void GuiManager::showGUI()
 
 void GuiManager::addNodoSceneToGUI(NodoScene* nodo, std::string name)
 {
-    recursiveAddNodoSceneToGUI(nodo);
+    
 }
 
 // --------------------------- FUNCIONES PRIVADAS ----------------------------
 void GuiManager::showMenu()
 {
-    IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context. Refer to examples app!"); // Exceptionally add an extra assert here for people confused with initial dear imgui setup
-
-    // Main body of the Demo window starts here.
-    if (!ImGui::Begin("Dear ImGui Demo"))
-    {
-        // Early out if the window is collapsed, as an optimization.
-        ImGui::End();
-        return;
-    }
-
-    // Menu Bar
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("Menu"))
-        {
-            //ShowExampleMenuFile();
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Examples"))
-        {
-            /*ImGui::MenuItem("Main menu bar", NULL, &show_app_main_menu_bar);
-            ImGui::MenuItem("Console", NULL, &show_app_console);
-            ImGui::MenuItem("Log", NULL, &show_app_log);
-            ImGui::MenuItem("Simple layout", NULL, &show_app_layout);
-            ImGui::MenuItem("Property editor", NULL, &show_app_property_editor);
-            ImGui::MenuItem("Long text display", NULL, &show_app_long_text);
-            ImGui::MenuItem("Auto-resizing window", NULL, &show_app_auto_resize);
-            ImGui::MenuItem("Constrained-resizing window", NULL, &show_app_constrained_resize);
-            ImGui::MenuItem("Simple overlay", NULL, &show_app_simple_overlay);
-            ImGui::MenuItem("Manipulating window titles", NULL, &show_app_window_titles);
-            ImGui::MenuItem("Custom rendering", NULL, &show_app_custom_rendering);
-            ImGui::MenuItem("Documents", NULL, &show_app_documents);*/
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Tools"))
-        {
-            /*ImGui::MenuItem("Metrics", NULL, &show_app_metrics);
-            ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
-            ImGui::MenuItem("About Dear ImGui", NULL, &show_app_about);*/
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
-
-    ImGui::Text("dear imgui says hello. (%s)", IMGUI_VERSION);
-    ImGui::Spacing();
-
-    /*
     
-        if (ImGui::CollapsingHeader("Objetos??"))
-        {
-            ImGui::Text("Objetos del mundo:");
-            ImGui::Separator();
-
-            if (ImGui::CollapsingHeader("Nodo 1"))
-            {
-                if (ImGui::CollapsingHeader("Hijo"))
-                {
-                    //ImGui::Image();
-                }
-            }
-
-            if (ImGui::CollapsingHeader("Nodo 2"))
-            {
-                if (ImGui::CollapsingHeader("Hijo 1"))
-                {
-                    ImGui::Separator();
-                    if (ImGui::SliderFloat2("position 2", translation2, -1.0, 1.0)) {
-                        std::cout << "Modificado 2" << std::endl;
-                    }
-                }
-                if (ImGui::CollapsingHeader("Hijo 2"))
-                {
-                    ImGui::Separator();
-                    if (ImGui::SliderFloat2("position 3", translation3, -1.0, 1.0)) {
-                        std::cout << "Modificado 3" << std::endl;
-                    }
-                }
-            }
-        }
-    */
 }
 
 void GuiManager::recursiveAddNodoSceneToGUI(NodoScene* nodo)

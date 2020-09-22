@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Model.h"
-#include "Render.h"
+#include "../Render/Render.h"
 
 #include "../Loaders/AssimpLoader.h"
 #include "../Managers/ShaderManager.h"

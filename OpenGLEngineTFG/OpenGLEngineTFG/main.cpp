@@ -29,7 +29,7 @@ int main() {
 
 	//  -------------------- Creamos la ventana de la app -------------------- 
 	GLFWwindow* window = glfwCreateWindow(WIDHT, HEIGHT, "TFG UJA ENGINE", nullptr, nullptr);
-	glfwSetWindowPos(window, 300, 150);
+	//glfwSetWindowPos(window, 300, 150);
 
 	if (window == nullptr) {
 		std::cout << "ERROR al abrir la ventada de GLFW" << std::endl;

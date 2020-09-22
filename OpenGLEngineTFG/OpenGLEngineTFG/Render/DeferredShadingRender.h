@@ -4,7 +4,7 @@
 #include <glm.hpp>
 #include <GL\glew.h>
 
-#include "NodoScene.h"
+#include "../Scene/NodoScene.h"
 
 struct structDRLight {
 	glm::vec4 Position;

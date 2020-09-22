@@ -4,7 +4,7 @@
 #include <vector>
 #include "Model.h"
 #include "SceneObj.h"
-#include "../PagShaderProgram.h"
+#include "../Managers/PagShaderProgram.h"
 #include "../Camara/Camara.h"
 
 class NodoScene : public Model

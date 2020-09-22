@@ -6,7 +6,7 @@
 #include <GL\glew.h>
 
 #include "../Loaders/AssimpLoader.h"
-#include "../PagShaderProgram.h"
+#include "../Managers/PagShaderProgram.h"
 
 class Render {
 public:

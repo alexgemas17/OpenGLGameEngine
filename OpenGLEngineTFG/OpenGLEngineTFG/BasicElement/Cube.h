@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "../Render/SceneObj.h"
+#include "../Scene/SceneObj.h"
 
 class Cube
 {

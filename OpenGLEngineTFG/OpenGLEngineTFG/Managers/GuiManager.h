@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../Render/SceneObj.h"
-#include "../Render/NodoScene.h"
+#include "../Scene/SceneObj.h"
+#include "../Scene/NodoScene.h"
 
 #include "../Gui/imgui.h"
 #include "../Gui/imgui_impl_glfw.h"

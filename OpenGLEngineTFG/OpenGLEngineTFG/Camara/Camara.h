@@ -6,7 +6,6 @@
 
 #include <glm.hpp>
 #include "../Input/InputManager.h"
-#include "../BasicElement/CPlane.h"
 
 class AABB;
 
@@ -30,10 +29,6 @@ public:
 	glm::mat4 getProjection() const;
 	glm::mat4 getMatrixViewProjection() const;
 
-	bool isPointInFrustum(AABB& aabb, glm::mat4& ModelViewMatrix);
-
-	glm::mat4 getNewLookAt(glm::vec3 Position, glm::vec3 Direction, glm::vec3 UP);
-
 private:
 	// Matrices para el render
 	glm::mat4 mView;
@@ -44,9 +39,6 @@ private:
 	glm::vec3 n;				// Vector delante
 	glm::vec3 u;				// Vector derecha
 	glm::vec3 v;				// Vector arriba
-
-	//Frsutum planes
-	glm::vec4 frustumPlanes[6];
 
 	//Datos de la cámara (Posición, a donde mira y vector de arriba)
 	glm::vec3 vecPositionCamera;
@@ -70,5 +62,4 @@ private:
 
 	/* Funciones privadas */
 	void updateCamaraData();
-	void CalcFrustumPlanes(glm::mat4 mViewProj);
 };

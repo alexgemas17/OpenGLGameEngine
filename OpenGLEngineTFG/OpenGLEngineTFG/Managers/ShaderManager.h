@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../PagShaderProgram.h"
+#include "PagShaderProgram.h"
 
 enum TypeShader { TYPE_POINTS, TYPE_WIREFRAME, TYPE_TEXTURE };
 

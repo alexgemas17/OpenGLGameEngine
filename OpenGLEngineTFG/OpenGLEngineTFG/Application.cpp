@@ -108,6 +108,10 @@ void Application::DrawMainScene()
 }
 
 void Application::ExePath() {
+
+	this->url_Path = ".\\";
+
+#ifndef _DEBUG
 	char buffer[MAX_PATH];
 	GetModuleFileName(NULL, buffer, MAX_PATH);
 	std::string::size_type pos = std::string(buffer).find_last_of("\\/");
@@ -115,6 +119,7 @@ void Application::ExePath() {
 	//pos - 9 --> Para eliminar de "x64\\Debug" de la ruta
 
 	this->url_Path = std::string(buffer).substr(0, pos - 9);
+#endif // _DEBUG
 }
 
 void Application::getInfoHardware()

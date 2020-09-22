@@ -70,12 +70,6 @@
     <Filter Include="Archivos de origen\Render\Cubemap">
       <UniqueIdentifier>{dcd90893-09e5-4e8c-b7d9-85e10c76c9b5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de origen\Math">
-      <UniqueIdentifier>{876731da-eaca-48df-bec4-b07c5601b519}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Archivos de encabezado\Math">
-      <UniqueIdentifier>{bc629ec5-b051-4f10-a53b-222438382557}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Archivos de encabezado\World">
       <UniqueIdentifier>{b015dd67-6f8b-490f-8576-0d7f2ccadda1}</UniqueIdentifier>
     </Filter>
@@ -94,9 +88,6 @@
       <Filter>Archivos de origen\Camara</Filter>
     </ClCompile>
     <ClCompile Include="Render\Render.cpp">
-      <Filter>Archivos de origen\Render</Filter>
-    </ClCompile>
-    <ClCompile Include="Render\Scene.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
     <ClCompile Include="Loaders\lodepng.cpp">
@@ -147,9 +138,6 @@
     <ClCompile Include="Render\Cubemap\CubeMap.cpp">
       <Filter>Archivos de origen\Render\Cubemap</Filter>
     </ClCompile>
-    <ClCompile Include="BasicElement\CPlane.cpp">
-      <Filter>Archivos de origen\BasicElement</Filter>
-    </ClCompile>
     <ClCompile Include="Render\ForwardRender.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
@@ -159,19 +147,19 @@
     <ClCompile Include="Render\ForwardPlusRender.cpp">
       <Filter>Archivos de origen\Render</Filter>
     </ClCompile>
-    <ClCompile Include="Render\SceneObj.cpp">
+    <ClCompile Include="Scene\Model.cpp">
       <Filter>Archivos de origen\World</Filter>
     </ClCompile>
-    <ClCompile Include="Render\NodoScene.cpp">
+    <ClCompile Include="Scene\NodoScene.cpp">
       <Filter>Archivos de origen\World</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Model.cpp">
+    <ClCompile Include="Scene\Scene.cpp">
       <Filter>Archivos de origen\World</Filter>
     </ClCompile>
-    <ClCompile Include="Render\Model\AABB.cpp">
-      <Filter>Archivos de origen\Math</Filter>
+    <ClCompile Include="Scene\SceneObj.cpp">
+      <Filter>Archivos de origen\World</Filter>
     </ClCompile>
-    <ClCompile Include="PagShaderProgram.cpp">
+    <ClCompile Include="Managers\PagShaderProgram.cpp">
       <Filter>Archivos de origen\Managers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -186,9 +174,6 @@
       <Filter>Archivos de encabezado\Camara</Filter>
     </ClInclude>
     <ClInclude Include="Render\Render.h">
-      <Filter>Archivos de encabezado\Render</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Scene.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
     <ClInclude Include="Loaders\lodepng.h">
@@ -248,9 +233,6 @@
     <ClInclude Include="Render\Cubemap\CubeMap.h">
       <Filter>Archivos de encabezado\Render\Cubemap</Filter>
     </ClInclude>
-    <ClInclude Include="BasicElement\CPlane.h">
-      <Filter>Archivos de encabezado\BasicElement</Filter>
-    </ClInclude>
     <ClInclude Include="Render\ForwardRender.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
@@ -260,19 +242,19 @@
     <ClInclude Include="Render\ForwardPlusRender.h">
       <Filter>Archivos de encabezado\Render</Filter>
     </ClInclude>
-    <ClInclude Include="Render\Model\AABB.h">
-      <Filter>Archivos de encabezado\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Render\Model.h">
+    <ClInclude Include="Scene\Model.h">
       <Filter>Archivos de encabezado\World</Filter>
     </ClInclude>
-    <ClInclude Include="Render\NodoScene.h">
+    <ClInclude Include="Scene\NodoScene.h">
       <Filter>Archivos de encabezado\World</Filter>
     </ClInclude>
-    <ClInclude Include="Render\SceneObj.h">
+    <ClInclude Include="Scene\Scene.h">
       <Filter>Archivos de encabezado\World</Filter>
     </ClInclude>
-    <ClInclude Include="PagShaderProgram.h">
+    <ClInclude Include="Scene\SceneObj.h">
+      <Filter>Archivos de encabezado\World</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\PagShaderProgram.h">
       <Filter>Archivos de encabezado\Managers</Filter>
     </ClInclude>
   </ItemGroup>

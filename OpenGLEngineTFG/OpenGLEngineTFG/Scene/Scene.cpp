@@ -65,7 +65,6 @@ void Scene::InitScene()
 	InitLights();
 
 	this->nodoWorld->InitObjs();
-	this->transparentObj->InitObjs();
 
 	skybox = new CubeMap(Type1); 
 	cube = new Cube(10.0f);
@@ -77,7 +76,6 @@ void Scene::LoadObjs()
 	AssimpLoader* loader = new AssimpLoader();
 
 	this->nodoWorld = new NodoScene();
-	this->transparentObj = new NodoScene();
 
 	FileLoader fileLoader;
 	fileLoader.readFromFile(Application::getInstance()->getPath() + "Data\\Objs.txt");
@@ -97,11 +95,10 @@ void Scene::LoadObjs()
 	}
 
 	for (int i = 0; i < MAX_TRANSP_OBJS; i++) {
-		// calculate slightly random offsets
-		float xPos = RandomFloat(-40, 40);
-		float yPos = RandomFloat(-20, 70);
-		float zPos = RandomFloat(-60, 60);
-		transparentObjPositions.push_back(glm::vec3(xPos, yPos, zPos));
+		float xPos = RandomFloat(-5, 5);
+		//float yPos = RandomFloat(-20, 70);
+		float zPos = RandomFloat(-5, 5);
+		transparentObjPositions.push_back(glm::vec3(xPos, 1.0f, zPos));
 	}
 
 	delete loader;
@@ -110,23 +107,21 @@ void Scene::LoadObjs()
 /* Crea aleatoriamente un número determinado de luces*/
 void Scene::InitLights()
 {
-	// lighting info
-	// -------------
-	srand(13);
+	srand(13259271);
 	for (unsigned int i = 0; i < MAX_LIGHTS; i++)
 	{
 		lightIntensity.push_back((RandomFloat(0.2f, 1.5f)));
 
-		// calculate slightly random offsets
+
 		float xPos = RandomFloat(-40, 40);
 		float yPos = RandomFloat(-20, 70);
 		float zPos = RandomFloat(-60, 60);
 		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
 
-		// also calculate random color
-		float rColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
-		float gColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
-		float bColor = RandomFloat(0.1, 1.0); // between 0.1 and 1.0
+
+		float rColor = RandomFloat(0.1, 1.0);
+		float gColor = RandomFloat(0.1, 1.0);
+		float bColor = RandomFloat(0.1, 1.0);
 		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
 	}
 
@@ -163,7 +158,6 @@ void Scene::UpdateObjs(float deltaTime)
 
 void Scene::UpdateLights(float deltaTime)
 {
-	// calculate slightly random offsets
 	float min = -20.0f;
 	float max = 90.0f;
 	float velocidad = 5.5f;
@@ -175,8 +169,6 @@ void Scene::UpdateLights(float deltaTime)
 
 		if (lightPositions[i].y < min)
 			lightPositions[i].y = max;
-
-		//lightPositions[i].y = fmod((lightPositions[i].y + (-4.5f * deltaTime) - min + max), max) + min;
 	}
 }
 
@@ -265,48 +257,55 @@ void Scene::DrawObjs()
 		forwardPlusRender->draw(this->nodoWorld, sceneFBO);
 	}
 
-	skyboxRender();
+	postProcessEffectsPass();
 }
 
+/* Pasasa de efectos */
 /* Pasasa de los objetos que no se han podido incluir dentro del deferred rendering: transparecias, skymap, etc... */
-void Scene::skyboxRender()
+void Scene::postProcessEffectsPass()
 {
 	glm::mat4 mView = camara->getView();
 	glm::mat4 mProj = camara->getProjection();
 
-	if (mode == 1) {
-		// Ccopy content of geometry's depth buffer to default framebuffer's depth buffer
-		// ----------------------------------------------------------------------------------
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, deferredShadingRender->getGBufferID());
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sceneFBO);
-		// write to default framebuffer
-		// blit to default framebuffer. Note that this may or may not work as the internal 
-		//formats of both the FBO and default framebuffer have to match.
-		// the internal formats are implementation defined. This works on all of my systems, 
-		//but if it doesn't on yours you'll likely have to write to the 		
-		// depth buffer in another shader stage (or somehow see to match the default framebuffer's internal 
-		//format with the FBO's internal format).
-
-		glBlitFramebuffer(
-			0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
-			0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
-			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
-	}
-
 	// --------------------------- Transparent objs ----------------------------
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glm::mat4 model = glm::mat4(1.0f);
-	ShaderManager::getInstance()->getTransparentObj()->use();
-	ShaderManager::getInstance()->getTransparentObj()->setUniform("texture1", 0);
-	ShaderManager::getInstance()->getTransparentObj()->setUniform("view", mView);
-	ShaderManager::getInstance()->getTransparentObj()->setUniform("projection", mProj);
-	ShaderManager::getInstance()->getTransparentObj()->setUniform("model", model);
-	cube->Draw();
-	glDisable(GL_BLEND);
+	if (NUM_TRANSP_OBJS > 0) {
+		if (mode == 1) {
+			// Copy content of geometry's depth buffer to default framebuffer's depth buffer
+			// ----------------------------------------------------------------------------------
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, deferredShadingRender->getGBufferID());
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sceneFBO);
+
+			glBlitFramebuffer(
+				0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
+				0, 0, Application::getInstance()->getWIDHT(), Application::getInstance()->getHEIGHT(),
+				GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+			glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+		}
+
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		ShaderManager::getInstance()->getTransparentObj()->use();
+		ShaderManager::getInstance()->getTransparentObj()->setUniform("texture1", 0);
+		ShaderManager::getInstance()->getTransparentObj()->setUniform("view", mView);
+		ShaderManager::getInstance()->getTransparentObj()->setUniform("projection", mProj);
+		for (int i = 0; i < NUM_TRANSP_OBJS; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			float random = RandomFloat(0, 360);
+
+			model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
+			model = glm::translate(model, transparentObjPositions[i]);
+			model = glm::rotate(model, random, glm::vec3(0.0f, 1.0f, 0.0f));
+			ShaderManager::getInstance()->getTransparentObj()->setUniform("model", model);
+			cube->Draw();
+
+			ShaderManager::getInstance()->getTransparentObj()->setUniform("model", model);
+			cube->Draw();
+		}
+		glDisable(GL_BLEND);
+	}
 
 	// ------------------------------- Skybox ------------------------------------------
 	glDepthFunc(GL_LEQUAL);
@@ -327,29 +326,6 @@ void Scene::skyboxRender()
 	ShaderManager::getInstance()->getHDRGAMMA()->setUniform("exposure", exposure);
 	ShaderManager::getInstance()->getHDRGAMMA()->setUniform("gamma", gamma);
 	this->deferredShadingRender->renderQuad();
-}
-
-/* Pasasa de efectos */
-void Scene::postProcessEffectsPass(glm::mat4& mViewProjection)
-{
-	/*ShaderManager::getInstance()->getGodRays()->use();
-	glm::vec3 lightPos = mViewProjection * glm::vec4(glm::vec3(-1.0f, -1.0f, -1.0f),1.0f);
-	ShaderManager::getInstance()->getGodRays()->setUniform("ScreenLightPos", lightPos);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gAlbedo);
-	ShaderManager::getInstance()->getGodRays()->setUniform("input_texture", 0);
-	renderQuad();*/
-
-	//Gamma Correction!!
-
-	//BLOOM
-
-	//HDR
-
-	//fxaa
-
-	//chromaticAberration??
 }
 
 /* ----------------------------------------------------------------------------------------------------------------- */

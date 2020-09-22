@@ -1,9 +1,9 @@
 0.0f,0.0f,0.0f;   //  Position
 1.0f,1.0f,1.0f;   //  Scale
-45.0f		  //  AngleRotation
-1.0f,0.0f,0.0f;   //  AngleRDirection
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\DamagedHelmet.gltf
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_emissive.jpg 
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_metalRoughness.jpg
-D:\\Proyectos\\MODELOS_TFG\\DamagedHelmet\\Textures\\Default_AO.jpg
+25.0f		  //  AngleRotation
+0.0f,0.0f,1.0f;   //  AngleRDirection
+C:\\Users\\Alex\\Desktop\\sibenik\\sibenik.obj
+C:\\Users\\Alex\\Desktop\\sibenik\\
+C:\\Users\\Alex\\Desktop\\sibenik\\
+C:\\Users\\Alex\\Desktop\\sibenik\\
+C:\\Users\\Alex\\Desktop\\sibenik\\

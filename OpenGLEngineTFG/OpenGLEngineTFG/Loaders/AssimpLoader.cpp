@@ -2,8 +2,8 @@
 
 #include "../Application.h"
 
-#include "../Render/NodoScene.h"
-#include "../Render/SceneObj.h"
+#include "../Scene/NodoScene.h"
+#include "../Scene/SceneObj.h"
 
 
 NodoScene* AssimpLoader::loadModelAssimpNode(ObjFile &modelData)
